@@ -1,0 +1,9 @@
+services:
+  backend:
+    build:
+      context: ./Health-Care-Backend
+    container_name: healthcare-backend
+    ports:
+      - "5000:5000"
+    env_file:
+      - ./Health-Care-Backend/.env

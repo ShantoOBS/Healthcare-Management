@@ -1,0 +1,52 @@
+# Dependencies
+node_modules/
+.pnp/
+.pnp.js
+
+# Environment variables
+.env
+.env.*
+!.env.example
+!.env.sample
+!.env.template
+
+# Build output
+dist/
+build/
+.next/
+out/
+coverage/
+.cache/
+.vite/
+
+# Prisma generated files
+src/generated/
+generated/
+.prisma/
+Health-Care-Backend/src/generated/
+Health-Care-Backend/generated/
+Health-Care-Backend/.prisma/
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Local databases
+*.sqlite
+*.sqlite3
+*.db
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE / Editor
+.vscode/
+.idea/
+
+# Temporary files
+*.tmp
+*.temp
