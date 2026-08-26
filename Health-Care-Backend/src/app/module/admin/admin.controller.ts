@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 import status from "http-status";
 import { catchAsync } from "../../shared/catchAsync.js";
 import { sendResponse } from "../../shared/sendResponse.js";
-import { AdminService } from "./admin.service.js"
+import { AdminService } from "./admin.service.js";
 
 const getAllAdmins = catchAsync(
     async (req: Request, res: Response) => {
@@ -65,9 +65,39 @@ const deleteAdmin = catchAsync(
 
 )
 
+const changeUserStatus = catchAsync(
+    async (req: Request, res: Response) => {
+        const user = req.user;
+        const payload = req.body;
+        const result = await AdminService.changeUserStatus(user, payload);
+        sendResponse(res, {
+            httpStatusCode: status.OK,
+            success: true,
+            message: "User status changed successfully",
+            data: result,
+        })
+    }
+);
+
+const changeUserRole = catchAsync(
+    async (req: Request, res: Response) => {
+        const user = req.user;
+        const payload = req.body;
+        const result = await AdminService.changeUserRole(user, payload);
+        sendResponse(res, {
+            httpStatusCode: status.OK,
+            success: true,
+            message: "User role changed successfully",
+            data: result,
+        })
+    }
+);
+
 export const AdminController = {
     getAllAdmins,
     updateAdmin,
     deleteAdmin,
     getAdminById,
+    changeUserStatus,
+    changeUserRole
 };
