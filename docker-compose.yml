@@ -7,3 +7,14 @@ services:
       - "5000:5000"
     env_file:
       - ./Health-Care-Backend/.env
+
+  frontend:
+    build:
+      context: ./Health-Care-Frontned
+    container_name: healthcare-frontend
+    ports:
+      - "3000:3000"
+    env_file:
+      - ./Health-Care-Frontned/.env
+    depends_on:
+      - backend
