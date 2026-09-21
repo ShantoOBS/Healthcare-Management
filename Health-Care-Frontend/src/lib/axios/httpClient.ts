@@ -6,6 +6,7 @@ import { cookies, headers } from 'next/headers';
 import { isTokenExpiringSoon } from '../tokenUtils';
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
+const API_TIMEOUT_MS = Number(process.env.NEXT_PUBLIC_API_TIMEOUT_MS ?? 120000);
 
 if(!API_BASE_URL) {
     throw new Error('API_BASE_URL is not defined in environment variables');
@@ -50,7 +51,7 @@ const axiosInstance = async () => {
 
     const instance = axios.create({
         baseURL : API_BASE_URL,
-        timeout : 30000,
+        timeout : Number.isFinite(API_TIMEOUT_MS) && API_TIMEOUT_MS > 0 ? API_TIMEOUT_MS : 120000,
         headers:{
             'Content-Type' : 'application/json',
             Cookie : cookieHeader

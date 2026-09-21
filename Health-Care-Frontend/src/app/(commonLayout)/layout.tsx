@@ -8,7 +8,11 @@ export default function CommonLayout({
   return (
     <div className="min-h-screen bg-background text-foreground">
       <PublicNavbar />
-      {children}
+      
+    
+
+    {children}
+    
     </div>
   );
 }
