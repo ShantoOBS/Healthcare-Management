@@ -1,4 +1,4 @@
-import PublicNavbar from "@/components/shared/PublicNavbar";
+import PublicLayoutShell from "@/components/shared/PublicLayoutShell";
 
 export default function CommonLayout({
   children,
@@ -6,13 +6,6 @@ export default function CommonLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <div className="min-h-screen bg-background text-foreground">
-      <PublicNavbar />
-      
-    
-
-    {children}
-    
-    </div>
+    <PublicLayoutShell>{children}</PublicLayoutShell>
   );
 }

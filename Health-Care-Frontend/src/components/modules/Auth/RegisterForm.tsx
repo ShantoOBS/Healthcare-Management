@@ -1,50 +1,52 @@
-"use client"
-/* eslint-disable @typescript-eslint/no-explicit-any */
-import { loginAction } from "@/app/(commonLayout)/(authRouteGroup)/login/_action";
-import AppField from "@/components/shared/form/AppField";
-import AppSubmitButton from "@/components/shared/form/AppSubmitButton";
-import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Button } from "@/components/ui/button";
-import { ILoginPayload, loginZodSchema } from "@/zod/auth.validation";
+"use client";
+
+import { registerAction } from "@/app/(commonLayout)/(authRouteGroup)/register/_action";
+import { registerZodSchema, type IRegisterPayload } from "@/zod/auth.validation";
 import { useForm } from "@tanstack/react-form";
 import { useMutation } from "@tanstack/react-query";
-import { CalendarCheck2, Eye, EyeOff, ShieldCheck, Stethoscope } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
 import { useState } from "react";
+import { Eye, EyeOff, ShieldCheck, Stethoscope, CalendarCheck2 } from "lucide-react";
+import AppField from "@/components/shared/form/AppField";
+import AppSubmitButton from "@/components/shared/form/AppSubmitButton";
+import { Button } from "@/components/ui/button";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 import dnaBg from "@/assets/dna-bg.png";
 import Logo from "@/components/shared/Logo";
 
-interface LoginFormProps {
-  redirectPath?: string;
-}
-
-const LoginForm = ({ redirectPath }: LoginFormProps) => {
-  const [serverError, setServerError] = useState<string | null>(null);
+const RegisterForm = () => {
   const [showPassword, setShowPassword] = useState(false);
+  const [serverError, setServerError] = useState<string | null>(null);
 
   const { mutateAsync, isPending } = useMutation({
-    mutationFn: (payload: ILoginPayload) => loginAction(payload, redirectPath),
+    mutationFn: (payload: IRegisterPayload) => registerAction(payload),
   });
 
   const form = useForm({
     defaultValues: {
+      name: "",
       email: "",
       password: "",
     },
-
     onSubmit: async ({ value }) => {
       setServerError(null);
+
+      const parsed = registerZodSchema.safeParse(value);
+      if (!parsed.success) {
+        setServerError(parsed.error.issues[0]?.message || "Invalid form data");
+        return;
+      }
+
       try {
-        const result = await mutateAsync(value) as any;
+        const result = await mutateAsync(parsed.data) as any;
 
         if (!result.success) {
-          setServerError(result.message || "Login failed");
+          setServerError(result.message || "Registration failed");
           return;
         }
       } catch (error: any) {
-        console.log(`Login failed: ${error.message}`);
-        setServerError(`Login failed: ${error.message}`);
+        setServerError(error?.message || "Registration failed");
       }
     },
   });
@@ -58,16 +60,9 @@ const LoginForm = ({ redirectPath }: LoginFormProps) => {
   return (
     <div className="min-h-screen bg-[#edf3ee] px-4 py-6 sm:px-6 lg:px-8">
       <div className="mx-auto flex max-w-[1200px] overflow-hidden rounded-[30px] border border-[#d6e0db] bg-[#f2f7f3] shadow-[0_30px_90px_rgba(18,46,37,0.08)]">
-        <section className="relative hidden flex-1 flex-col 
-        justify-between overflow-hidden bg-[#edf3ee] p-8 lg:flex">
+        <section className="relative hidden flex-1 flex-col justify-between overflow-hidden bg-[#edf3ee] p-8 lg:flex">
           <div className="absolute inset-0">
-            <Image
-              src={dnaBg}
-              alt=""
-              fill
-              priority
-              className="object-cover object-center opacity-80"
-            />
+            <Image src={dnaBg} alt="" fill priority className="object-cover object-center opacity-80" />
             <div className="absolute inset-0 bg-[#edf3ee]/15" />
           </div>
 
@@ -76,14 +71,12 @@ const LoginForm = ({ redirectPath }: LoginFormProps) => {
           </div>
 
           <div className="relative z-10 max-w-[480px]">
-            <p className="mb-4 text-xs font-medium uppercase tracking-[0.2em] text-[#1d5b4b]">
-              Your health, our priority
-            </p>
-            <h1 className="text-[3.2rem] font-medium leading-[0.95] tracking-[-0.06em] text-[#122b26]">
-              Better care starts with a simple login.
+            <p className="mb-4 text-xs font-medium uppercase tracking-[0.2em] text-[#1d5b4b]">Join Dantora</p>
+            <h1 className="text-[3.1rem] font-medium leading-[0.95] tracking-[-0.06em] text-[#122b26]">
+              Create your account and take control of your health.
             </h1>
             <p className="mt-5 max-w-[440px] text-base leading-7 text-[#3a504b]">
-              Access your account to book appointments, consult doctors, and manage your health journey — all in one place.
+              Book appointments, consult specialists, and get the care you deserve — all in one place.
             </p>
           </div>
 
@@ -102,18 +95,14 @@ const LoginForm = ({ redirectPath }: LoginFormProps) => {
         <section className="w-full bg-white/75 p-5 sm:p-7 lg:w-[46%] lg:p-8">
           <div className="mb-8 flex justify-end text-sm text-[#2a3a35]">
             <span>
-              Don&apos;t have an account? <Link href="/register" className="font-semibold text-[#1d5b4b] hover:underline">Sign Up</Link>
+              Already have an account? <Link href="/login" className="font-semibold text-[#1d5b4b] hover:underline">Log In</Link>
             </span>
           </div>
 
           <div className="mx-auto max-w-[420px]">
             <div className="mb-6">
-              <h2 className="text-[2.4rem] font-semibold tracking-[-0.05em] text-[#112b26]">
-                Welcome Back!
-              </h2>
-              <p className="mt-2 text-sm text-[#4d605c]">
-                Please enter your credentials to log in.
-              </p>
+              <h2 className="text-[2.4rem] font-semibold tracking-[-0.05em] text-[#112b26]">Create Account</h2>
+              <p className="mt-2 text-sm text-[#4d605c]">Fill in your details to get started.</p>
             </div>
 
             <form
@@ -127,10 +116,19 @@ const LoginForm = ({ redirectPath }: LoginFormProps) => {
               }}
               className="space-y-4"
             >
-              <form.Field
-                name="email"
-                validators={{ onChange: loginZodSchema.shape.email }}
-              >
+              <form.Field name="name" validators={{ onChange: registerZodSchema.shape.name }}>
+                {(field) => (
+                  <AppField
+                    field={field}
+                    label="Full Name"
+                    type="text"
+                    placeholder="Enter your full name"
+                    className="rounded-xl border-[#dfe8e3] bg-[#f6faf7] px-3 py-2.5 text-base shadow-none"
+                  />
+                )}
+              </form.Field>
+
+              <form.Field name="email" validators={{ onChange: registerZodSchema.shape.email }}>
                 {(field) => (
                   <AppField
                     field={field}
@@ -142,17 +140,13 @@ const LoginForm = ({ redirectPath }: LoginFormProps) => {
                 )}
               </form.Field>
 
-              <form.Field
-                name="password"
-                validators={{ onChange: loginZodSchema.shape.password }}
-              >
+              <form.Field name="password" validators={{ onChange: registerZodSchema.shape.password }}>
                 {(field) => (
                   <AppField
                     field={field}
                     label="Password"
                     type={showPassword ? "text" : "password"}
-                    placeholder="Enter your password"
-                    aria-label={showPassword ? "Hide password" : "Show password"}
+                    placeholder="Create a password"
                     className="rounded-xl border-[#dfe8e3] bg-[#f6faf7] px-3 py-2.5 text-base shadow-none"
                     append={
                       <Button
@@ -162,43 +156,35 @@ const LoginForm = ({ redirectPath }: LoginFormProps) => {
                         size="icon"
                         className="text-[#647772] hover:bg-transparent hover:text-black cursor-pointer"
                       >
-                        {showPassword ? (
-                          <EyeOff className="size-4" aria-hidden="true" />
-                        ) : (
-                          <Eye className="size-4" aria-hidden="true" />
-                        )}
+                        {showPassword ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
                       </Button>
                     }
                   />
                 )}
               </form.Field>
 
-              <div className="flex justify-end">
-                <Link
-                  href="/forgot-password"
-                  className="text-sm text-[#1d5b4b] hover:underline underline-offset-4"
-                >
-                  Forgot password?
-                </Link>
+              <div className="flex items-start gap-2 text-sm text-[#455b57]">
+                <input type="checkbox" className="mt-1 h-4 w-4 rounded border-[#dfe8e3] accent-[#1d5b4b]" />
+                <label>
+                  I agree to the <Link href="#" className="font-medium text-[#1d5b4b] hover:underline">Terms &amp; Conditions</Link> and <Link href="#" className="font-medium text-[#1d5b4b] hover:underline">Privacy Policy</Link>
+                </label>
               </div>
 
               {serverError && (
-                <Alert variant={"destructive"}>
+                <Alert variant="destructive">
                   <AlertDescription>{serverError}</AlertDescription>
                 </Alert>
               )}
 
-              <form.Subscribe
-                selector={(s) => [s.canSubmit, s.isSubmitting] as const}
-              >
+              <form.Subscribe selector={(s) => [s.canSubmit, s.isSubmitting] as const}>
                 {([canSubmit, isSubmitting]) => (
                   <AppSubmitButton
                     isPending={isSubmitting || isPending}
-                    pendingLabel="Logging In...."
+                    pendingLabel="Creating Account..."
                     disabled={!canSubmit}
-                    className="mt-2 w-full cursor-pointer rounded-xl bg-[#1d5b4b] px-4 py-3 text-base font-semibold text-white shadow-[0_12px_25px_rgba(29,91,75,0.2)] hover:bg-[#184d41]"
+                    className="mt-2 cursor-pointer w-full rounded-xl bg-[#1d5b4b] px-4 py-3 text-base font-semibold text-white shadow-[0_12px_25px_rgba(29,91,75,0.2)] hover:bg-[#184d41]"
                   >
-                    Log In
+                    Create Account
                   </AppSubmitButton>
                 )}
               </form.Subscribe>
@@ -227,7 +213,7 @@ const LoginForm = ({ redirectPath }: LoginFormProps) => {
                 <path fill="currentColor" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" />
                 <path fill="currentColor" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" />
               </svg>
-              Sign in with Google
+              Sign up with Google
             </Button>
           </div>
         </section>
@@ -236,4 +222,4 @@ const LoginForm = ({ redirectPath }: LoginFormProps) => {
   );
 };
 
-export default LoginForm;
+export default RegisterForm;

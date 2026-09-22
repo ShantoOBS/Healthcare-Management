@@ -1,108 +1,246 @@
 "use client";
-
-import Link from "next/link";
-import { useState } from "react";
-import { Menu, X } from "lucide-react";
+import Logo from "@/components/shared/Logo";
+import { useEffect, useRef, useState } from "react";
 
 const NAV_LINKS = [
-  { label: "Home", href: "/" },
-  { label: "Find a doctor", href: "/doctors" },
-  { label: "How it works", href: "/how-it-works" },
-  { label: "About", href: "/about" },
+  { label: "Home", href: "#" },
+  { label: "Find a doctor", href: "#" },
+  { label: "How it works", href: "#" },
+  { label: "About", href: "#" },
 ];
 
 function ArrowIcon() {
   return (
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+    <svg
+      width="16"
+      height="16"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.6"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+    >
       <path d="M7 17 17 7M8 7h9v9" />
     </svg>
   );
 }
 
-function LogoMark() {
+
+
+function MenuIcon() {
   return (
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#f3fa9b" strokeWidth="1.6" strokeLinecap="round" aria-hidden="true">
-      <path d="M12 6v12M6 12h12" />
-      <circle cx="12" cy="12" r="3.2" />
-      <circle cx="12" cy="4.4" r="1.2" fill="#f3fa9b" stroke="none" />
-      <circle cx="12" cy="19.6" r="1.2" fill="#f3fa9b" stroke="none" />
-      <circle cx="4.4" cy="12" r="1.2" fill="#f3fa9b" stroke="none" />
-      <circle cx="19.6" cy="12" r="1.2" fill="#f3fa9b" stroke="none" />
+    <svg
+      width="20"
+      height="20"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.8"
+      strokeLinecap="round"
+      aria-hidden="true"
+    >
+      <path d="M4 7h16M4 12h16M4 17h16" />
     </svg>
   );
 }
 
-const PublicNavbar = () => {
+function CloseIcon() {
+  return (
+    <svg
+      width="20"
+      height="20"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.8"
+      strokeLinecap="round"
+      aria-hidden="true"
+    >
+      <path d="M6 6l12 12M18 6 6 18" />
+    </svg>
+  );
+}
+
+export function PublicNavbar() {
   const [open, setOpen] = useState(false);
+  const navRef = useRef<HTMLElement | null>(null);
+
+  useEffect(() => {
+    if (!open) return;
+
+    const onKey = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        setOpen(false);
+      }
+    };
+
+    const onPointer = (event: PointerEvent) => {
+      if (
+        navRef.current &&
+        !navRef.current.contains(event.target as Node)
+      ) {
+        setOpen(false);
+      }
+    };
+
+    const mediaQuery = window.matchMedia("(min-width: 821px)");
+
+    const onMq = () => {
+      if (mediaQuery.matches) {
+        setOpen(false);
+      }
+    };
+
+    document.addEventListener("keydown", onKey);
+    document.addEventListener("pointerdown", onPointer);
+    mediaQuery.addEventListener("change", onMq);
+
+    return () => {
+      document.removeEventListener("keydown", onKey);
+      document.removeEventListener("pointerdown", onPointer);
+      mediaQuery.removeEventListener("change", onMq);
+    };
+  }, [open]);
 
   return (
-    <header className="relative z-50 w-full px-4 pt-4 sm:px-6 lg:px-8">
-      <div className="mx-auto max-w-[1200px]">
-        <div className="flex items-center gap-3 rounded-[18px] border border-white/60 bg-white/80 px-3 py-2 shadow-[0_12px_30px_rgba(18,49,42,0.08)] backdrop-blur-md md:px-4">
-          <Link href="/" className="flex items-center gap-3 rounded-xl px-2 py-1.5 text-[#0e1e19]">
-            <span className="flex h-9 w-9 items-center justify-center rounded-[10px] bg-[#1f5c4b]">
-              <LogoMark />
-            </span>
-            <span className="text-lg font-medium tracking-[-0.03em]">DocLink</span>
-          </Link>
+    <header ref={navRef} className="sticky top-0 z-50 w-full pt-5">
+      <div
+        className="
+          mx-auto flex w-full max-w-[1280px] items-center
+          gap-2 px-5 sm:px-6 lg:px-8
+        "
+      >
+        {/* Logo */}
+        <Logo/>
+   
 
-          <nav className="hidden items-center gap-1 md:flex md:ml-auto md:mr-4">
-            {NAV_LINKS.map((link) => (
-              <Link
-                key={link.label}
-                href={link.href}
-                className="rounded-xl px-4 py-2.5 text-sm font-medium text-[#1a2d29] transition hover:bg-[#edf3ee]"
-              >
-                {link.label}
-              </Link>
-            ))}
-          </nav>
+        {/* Desktop Navigation */}
+        <nav
+          aria-label="Main navigation"
+          className="
+            mr-auto hidden items-center gap-1
+            rounded-sm border border-white/60
+            bg-white/80 px-1 py-1
+            shadow-[0_12px_30px_rgba(18,49,42,0.08)]
+            backdrop-blur-md md:flex
+          "
+        >
+          {NAV_LINKS.map((link) => (
+            <a
+              key={link.label}
+              href={link.href}
+              className="
+                rounded-[10px] px-4 py-2 text-sm font-medium
+                text-[#1a2d29] transition hover:bg-[#e3eee5]
+              "
+            >
+              {link.label}
+            </a>
+          ))}
+        </nav>
 
-          <Link
-            href="/contact"
-            className="hidden items-center gap-3 rounded-full bg-[#1f5c4b] px-2.5 py-2.5 pr-2 text-sm font-medium text-white transition hover:bg-[#194b3f] md:inline-flex"
+        {/* Login */}
+        <a
+          href="#"
+          className="
+            group hidden items-center gap-3
+            rounded-full bg-[#1f5c4b]
+            px-4 py-2 text-sm font-medium text-white
+            shadow-[0_12px_25px_rgba(31,92,75,0.2)]
+            transition hover:bg-[#194b3f] md:inline-flex
+          "
+        >
+          <span>Login</span>
+
+          <span
+            className="
+              flex h-7 w-7 items-center justify-center
+              rounded-full bg-[#f3fa9b]
+              text-[#1c3a2e]
+              transition-transform group-hover:rotate-45
+            "
           >
-            <span>Contact Us</span>
-            <span className="flex h-8 w-8 items-center justify-center rounded-full bg-[#f3fa9b] text-[#1e3b30]">
-              <ArrowIcon />
-            </span>
-          </Link>
+            <ArrowIcon />
+          </span>
+        </a>
 
+        {/* Mobile Menu Button */}
+        <button
+          type="button"
+          className="
+            ml-auto inline-flex h-11 w-11
+            items-center justify-center rounded-sm
+            border border-[#dfe8e3]
+            bg-white/85 text-[#163c35]
+            shadow-sm md:hidden
+          "
+          aria-label={open ? "Close menu" : "Open menu"}
+          aria-expanded={open}
+          onClick={() => setOpen((value) => !value)}
+        >
+          {open ? <CloseIcon /> : <MenuIcon />}
+        </button>
+      </div>
+
+      {/* Mobile Navigation */}
+      {open && (
+        <nav
+          aria-label="Mobile navigation"
+          className="
+            absolute left-5 right-5 top-[calc(100%+0.5rem)]
+            z-30 flex flex-col gap-2
+            rounded-2xl border border-[#dfe8e3]
+            bg-white/95 p-3
+            shadow-[0_14px_34px_rgba(14,30,25,0.14)]
+            backdrop-blur-md md:hidden
+          "
+        >
           <button
             type="button"
-            aria-label={open ? "Close menu" : "Open menu"}
-            aria-expanded={open}
-            className="ml-auto inline-flex h-11 w-11 items-center justify-center rounded-full border border-[#dfe8e3] bg-white text-[#163c35] shadow-sm md:hidden"
-            onClick={() => setOpen((value) => !value)}
+            className="
+              group inline-flex items-center justify-between
+              rounded-xl bg-[#1f5c4b] px-4 py-3
+              text-left text-base font-medium text-white
+              shadow-[0_12px_25px_rgba(31,92,75,0.2)]
+            "
+            onClick={() => {
+              setOpen(false);
+              window.location.href = "/login";
+            }}
           >
-            {open ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
-          </button>
-        </div>
+            <span>Login</span>
 
-        {open && (
-          <nav className="mt-3 flex flex-col gap-2 rounded-2xl border border-[#dfe8e3] bg-white/95 p-3 shadow-[0_14px_34px_rgba(14,30,25,0.14)] md:hidden">
-            {NAV_LINKS.map((link) => (
-              <Link
-                key={link.label}
-                href={link.href}
-                className="rounded-xl px-3 py-2.5 text-base font-medium text-[#1a2d29] hover:bg-[#edf3ee]"
-                onClick={() => setOpen(false)}
-              >
-                {link.label}
-              </Link>
-            ))}
-            <Link
-              href="/contact"
-              className="mt-2 inline-flex items-center justify-center gap-2 rounded-full bg-[#1f5c4b] px-4 py-3 text-sm font-medium text-white"
+            <span
+              className="
+                flex h-7 w-7 items-center justify-center
+                rounded-full bg-[#f3fa9b]
+                text-[#1c3a2e]
+              "
+            >
+              <ArrowIcon />
+            </span>
+          </button>
+
+          {NAV_LINKS.map((link) => (
+            <a
+              key={link.label}
+              href={link.href}
+              className="
+                rounded-xl px-3 py-2.5
+                text-base font-medium text-[#1a2d29]
+                hover:bg-[#edf3ee]
+              "
               onClick={() => setOpen(false)}
             >
-              Contact Us
-            </Link>
-          </nav>
-        )}
-      </div>
+              {link.label}
+            </a>
+          ))}
+        </nav>
+      )}
     </header>
   );
-};
+}
 
 export default PublicNavbar;

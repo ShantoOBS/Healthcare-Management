@@ -171,6 +171,19 @@ const verifyEmail = catchAsync(
     }
 )
 
+const resendVerificationOTP = catchAsync(
+    async (req: Request, res: Response) => {
+        const { email } = req.body;
+        await AuthService.resendVerificationOTP(email);
+
+        sendResponse(res, {
+            httpStatusCode: status.OK,
+            success: true,
+            message: "Verification OTP sent successfully",
+        });
+    }
+)
+
 const forgetPassword = catchAsync(
     async (req: Request, res: Response) => {
         const { email } = req.body;
@@ -266,4 +279,5 @@ export const AuthController = {
     googleLogin,
     googleLoginSuccess,
     handleOAuthError,
+    resendVerificationOTP,
 };

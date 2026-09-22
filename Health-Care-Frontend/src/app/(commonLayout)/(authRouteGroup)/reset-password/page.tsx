@@ -1,8 +1,13 @@
+import ResetPasswordForm from "@/components/modules/Auth/ResetPasswordForm";
 
-const ResetPasswordPage = () => {
-  return (
-    <div>ResetPasswordPage</div>
-  )
-}
+const ResetPasswordPage = async ({
+  searchParams,
+}: {
+  searchParams?: Promise<{ email?: string }>;
+}) => {
+  const params = searchParams ? await searchParams : {};
 
-export default ResetPasswordPage
+  return <ResetPasswordForm defaultEmail={params.email ?? ""} />;
+};
+
+export default ResetPasswordPage;

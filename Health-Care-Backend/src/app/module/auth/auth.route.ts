@@ -3,6 +3,7 @@ import { Role } from "../../../generated/prisma/enums.js";
 import { checkAuth } from "../../middleware/checkAuth.js";
 import { AuthController } from "./auth.controller.js";
 
+
 const router = Router()
 
 router.post("/register", AuthController.registerPatient)
@@ -12,6 +13,7 @@ router.post("/refresh-token", AuthController.getNewToken)
 router.post("/change-password", checkAuth(Role.ADMIN, Role.DOCTOR, Role.PATIENT, Role.SUPER_ADMIN), AuthController.changePassword)
 router.post("/logout", checkAuth(Role.ADMIN, Role.DOCTOR, Role.PATIENT, Role.SUPER_ADMIN), AuthController.logoutUser)
 router.post("/verify-email", AuthController.verifyEmail)
+router.post("/resend-verification-otp", AuthController.resendVerificationOTP)
 router.post("/forget-password", AuthController.forgetPassword)
 router.post("/reset-password", AuthController.resetPassword)
 
