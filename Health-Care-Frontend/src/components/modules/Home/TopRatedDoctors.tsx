@@ -1,13 +1,5 @@
-import { Star } from "lucide-react";
-import {
-  Card,
-  CardContent,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
 import Image from "next/image";
+import { Facebook, Instagram, Linkedin, Twitter } from "lucide-react";
 import cardioDoc from "../../../assets/doctor-cardiologist.jpg";
 import neurolDoc from "../../../assets/doctor-neurologist.jpg";
 import orthoDoc from "../../../assets/doctor-orthopedic.jpg";
@@ -36,61 +28,78 @@ const doctors = [
   },
 ];
 
-const DoctorCard = ({ doctor }: { doctor: (typeof doctors)[0] }) => {
-  return (
-    <Card className="text-center overflow-hidden hover:shadow-xl transition-shadow duration-300">
-      <CardHeader className="bg-blue-50/50 items-center p-6">
-        <Image
-          src={doctor.image}
-          alt={doctor.name}
-          width={96}
-          height={96}
-          className="rounded-full border-4 border-white shadow-md"
-        />
-      </CardHeader>
-      <CardContent className="p-6">
-        <CardTitle className="text-lg">{doctor.name}</CardTitle>
-        <p className="text-primary font-medium mt-1">{doctor.specialty}</p>
-        <div className="flex items-center justify-center my-3 text-sm">
-          <Star className="text-yellow-400 fill-current" size={16} />
-          <span className="ml-2 text-foreground font-semibold">
-            {doctor.rating}
-          </span>
-          <span className="ml-2 text-muted-foreground">
-            ({doctor.reviews} reviews)
-          </span>
-        </div>
-      </CardContent>
-      <CardFooter className="grid grid-cols-2 gap-2 p-4 pt-0">
-        <Button variant="outline">View Profile</Button>
-        <Button>Book Now</Button>
-      </CardFooter>
-    </Card>
-  );
-};
+const socialLinks = [Facebook, Instagram, Linkedin, Twitter];
 
 const TopRatedDoctors = () => {
   return (
-    <section className="bg-blue-50/50 py-24">
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center max-w-2xl mx-auto">
-          <h2 className="text-3xl font-bold text-foreground">
-            Our Top Rated Doctor
-          </h2>
-          <p className="text-muted-foreground mt-4">
-            Access to medical experts from various specialities, ready to
-            provide you with top-notch medical services.
-          </p>
-        </div>
+    <section className="bg-[#dfeae1] py-8 md:py-12">
+      <div className="mx-auto max-w-[1280px] px-4 sm:px-6 lg:px-8">
+        <div className="grid gap-4 lg:grid-cols-[0.85fr_1.25fr_1.25fr_1.25fr]">
+          <div className="flex min-h-[420px] flex-col justify-between rounded-[28px] bg-[#0d4a3d] p-7 text-white shadow-[0_18px_42px_rgba(13,74,61,0.18)] sm:p-8">
+            <div>
+              <p className="mb-5 text-[0.7rem] font-semibold uppercase tracking-[0.18em] text-[#dcefe2]">
+                Our Team
+              </p>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mt-12">
-          {doctors.map((doctor) => (
-            <DoctorCard key={doctor.name} doctor={doctor} />
+              <h2 className="max-w-[9ch] text-[clamp(2.1rem,4vw,3.2rem)] font-medium leading-[0.96] tracking-[-0.06em] text-white">
+                The doctors you&apos;ll actually see, every visit.
+              </h2>
+            </div>
+
+            <div className="flex items-center gap-3">
+              {socialLinks.map((Icon, index) => (
+                <span
+                  key={index}
+                  className="flex h-10 w-10 items-center justify-center rounded-full border border-white/20 bg-white/10 text-white shadow-[0_8px_18px_rgba(0,0,0,0.08)]"
+                >
+                  <Icon className="h-4 w-4" />
+                </span>
+              ))}
+            </div>
+          </div>
+
+          {doctors.map((doctor, index) => (
+            <div
+              key={doctor.name}
+              className="group relative overflow-hidden rounded-[28px] border border-[#dfe7e1] bg-[#e7e5e1] shadow-[0_18px_30px_rgba(17,27,26,0.06)]"
+            >
+              <div className="relative h-[420px] overflow-hidden">
+                <Image
+                  src={doctor.image}
+                  alt={doctor.name}
+                  fill
+                  className="object-cover transition duration-500 group-hover:scale-105"
+                  priority={index === 0}
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/10 via-transparent to-white/10" />
+              </div>
+
+              <div className="absolute inset-x-4 bottom-3 rounded-[18px] border border-[#dfe6e2] bg-white/75 px-4 py-3 shadow-[0_10px_28px_rgba(17,27,26,0.06)] backdrop-blur-sm">
+                <div className="flex items-center justify-between gap-3">
+                  <div>
+                    <p className="text-base font-semibold text-[#18362d]">
+                      {doctor.name.split(" ").slice(0, 2).join(" ")}
+                    </p>
+                    <p className="text-sm text-[#4d6c64]">{doctor.specialty}</p>
+                  </div>
+                  <span className="flex h-8 w-8 items-center justify-center rounded-full bg-[#edf6eb] text-[#0f4a3f]">
+                    <svg
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      className="h-4 w-4"
+                      aria-hidden="true"
+                    >
+                      <path d="M7 17 17 7M8 7h9v9" />
+                    </svg>
+                  </span>
+                </div>
+              </div>
+            </div>
           ))}
-        </div>
-
-        <div className="text-center mt-12">
-          <Button size="lg">View All Doctors</Button>
         </div>
       </div>
     </section>

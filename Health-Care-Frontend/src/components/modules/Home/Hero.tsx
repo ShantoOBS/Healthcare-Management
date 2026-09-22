@@ -3,7 +3,6 @@
 import { useEffect, useRef } from "react";
 
 
-const CHIPS = ["Verified Doctors", "Easy Appointments", "Secure"];
 
 function ArrowIcon() {
   return (
@@ -23,23 +22,7 @@ function ArrowIcon() {
   );
 }
 
-function CheckIcon() {
-  return (
-    <svg
-      width="16"
-      height="16"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      aria-hidden="true"
-    >
-      <path d="m5 12.5 4.5 4.5L19 7.5" />
-    </svg>
-  );
-}
+
 
 interface Particle {
   x: number;
@@ -282,12 +265,12 @@ function HelixCanvas() {
 
       const narrow = W < 820;
 
-      // Keep the DNA diagonally placed on the right side while leaving the left side for the headline.
+      // Keep the DNA visible on mobile by moving it into the top-right area and slightly enlarging it.
       const cx = W * (narrow ? 0.72 : 0.79);
-      const cy = H * (narrow ? 0.52 : 0.47);
+      const cy = H * (narrow ? 0.32 : 0.47);
 
       const L = narrow
-        ? Math.min(W * 0.48, H * 0.34)
+        ? Math.min(W * 0.42, H * 0.28)
         : Math.min(W * 0.3, H * 0.42);
 
       const spin = animationTime * 1.8;
@@ -471,166 +454,106 @@ export function Hero() {
   return (
     <section
       className="
-        relative min-h-screen overflow-hidden
-        bg-[#e8eeeb] text-[#0e1e19]
-        antialiased
+        relative min-h-[560px] overflow-hidden
+        bg-[#e8eeeb] text-[#0f1f1a] antialiased
+        md:min-h-screen
       "
       style={{
         fontFamily:
           '"Outfit", "Google Sans", "Segoe UI", sans-serif',
       }}
     >
-      {/* Background Animation */}
-      <div className="absolute inset-0">
+      <div className="absolute inset-0 overflow-hidden">
+        <div className="absolute -left-20 top-10 h-80 w-80 rounded-full bg-[#dff6d4]/60 blur-3xl" />
+        <div className="absolute right-0 top-0 h-[28rem]
+         w-[28rem] rounded-full bg-[#c9ebc0]/50 blur-3xl" />
+        <div className="absolute bottom-0 left-1/3 h-72 w-72 rounded-full bg-[#94c5a3]/30 blur-3xl" />
         <HelixCanvas />
       </div>
 
-      <div className="relative z-10 flex min-h-screen flex-col">
-      
-
-        {/* Hero Content */}
-        <main
-          className="
-            mx-auto flex w-full max-w-[1280px]
-            flex-1 items-center
-            px-5 pb-8 pt-10
-            sm:px-6 lg:px-8
-          "
-        >
-          <div className="max-w-[620px]">
+      <div className="relative z-10 mx-auto flex
+       md:min-h-screen w-full max-w-[1280px] flex-col px-5 pb-8 pt-6 sm:px-6 lg:px-8">
+        <main className="flex flex-1 items-start pt-6 md:items-center md:pt-0">
+          <div className="w-full max-w-[660px]">
             <p
               className="
-                mb-6 text-xs font-medium uppercase
-                tracking-[0.12em] text-[#1f5c4b]
+                mb-6 inline-flex items-center gap-3 rounded-full
+                border border-[#1f5c4b]/10 bg-[#f2f8f3]/80
+                 px-3.5 py-2
+                text-[0.68rem] font-semibold
+                 uppercase tracking-[0.18em]
+                text-[#1f5c4b]
               "
             >
+              <span className="h-2.5 w-2.5 rounded-full bg-[#7ecf8d] shadow-[0_0_0_4px_rgba(126,207,141,0.18)]" />
               Your health, connected
             </p>
 
             <h1
               className="
-                text-[clamp(2.8rem,7vw,5.2rem)]
-                font-light leading-[0.95]
-                tracking-[-0.06em]
-                text-[#0e1e19]
+                max-w-[12ch] text-[clamp(3.1rem,7vw,6rem)]
+                font-sm leading-[0.9] tracking-[-0.07em]
+                text-[#062d21]
               "
             >
-              Connect with the right doctor, anytime.
+              Connect With The Right Doctor, Anytime.
             </h1>
 
             <p
               className="
-                mt-8 max-w-[44ch]
-                text-base leading-7
-                text-[#37534d]
+                mt-7 max-w-[48ch] text-base leading-8
+                text-[#3b544f]
                 sm:text-lg
               "
             >
-              DocLink makes healthcare simple. Find trusted
-              doctors, book appointments and consult with
-              healthcare professionals through one secure
-              platform.
+              DocLink makes healthcare simple. Find trusted doctors,
+              schedule appointments faster, and speak with clinicians in
+              one secure, beautifully designed care platform.
             </p>
-          </div>
-        </main>
 
-        {/* Hero Footer / CTA */}
-        <footer
-          className="
-            mx-auto w-full max-w-[1280px]
-            px-5 pb-8
-            sm:px-6 lg:px-8
-          "
-        >
-          <div className="h-px w-full bg-[#1f5c4b]/20" />
-
-          <div
-            className="
-              mt-6 flex flex-col
-              items-start justify-between gap-6
-              md:flex-row md:items-end
-            "
-          >
-            <div>
-              <p
+            <div className="mt-8 flex  items-center gap-1 md:gap-3">
+              <a
+                href="#"
                 className="
-                  mb-5 flex items-center gap-4
-                  text-sm text-[#1f5c4b]
-                  before:h-px before:w-14
-                  before:bg-[#1f5c4b]/80
-                  before:content-['']
+                  group inline-flex items-center gap-1 md:gap-3
+                  rounded-full bg-[#123a2d] px-4 md:px-5 py-2.5
+                   text-sm md:text-md
+                   font-medium
+                  text-white shadow-[0_18px_36px_rgba(18,58,45,0.24)]
+                  transition-all duration-300 
+                  hover:-translate-y-0.5 hover:bg-[#184c3d]
                 "
               >
-                Doctors, appointments and consults in one place
-              </p>
+                <span>Find a Doctor</span>
 
-              <div className="flex flex-wrap gap-3">
-                <a
-                  href="#"
+                <span
                   className="
-                    group inline-flex items-center gap-3
-                    rounded-full bg-[#1f5c4b]
-                    px-5 py-3 text-base font-medium
-                    text-white
-                    shadow-[0_12px_25px_rgba(31,92,75,0.2)]
-                    transition hover:bg-[#194b3f]
+                    flex h-7 w-7 items-center justify-center rounded-full
+                    bg-[#dff884] text-[#143f33] transition-transform
+                    duration-300 group-hover:rotate-45
                   "
                 >
-                  <span>Find a Doctor</span>
+                  <ArrowIcon />
+                </span>
+              </a>
 
-                  <span
-                    className="
-                      flex h-8 w-8 items-center
-                      justify-center rounded-full
-                      bg-[#f3fa9b] text-[#1c3a2e]
-                      transition-transform
-                      group-hover:rotate-45
-                    "
-                  >
-                    <ArrowIcon />
-                  </span>
-                </a>
-
-                <a
-                  href="#"
-                  className="
-                    inline-flex items-center
-                    rounded-full bg-[#f3fa9b]
-                    px-5 py-3 text-base
-                    font-medium text-[#1c3a2e]
-                    transition hover:brightness-95
-                  "
-                >
-                  Book an Appointment
-                </a>
-              </div>
+              <a
+                href="#"
+                className="
+                  inline-flex items-center rounded-full border border-[#1f5c4b]/20
+                  bg-[#f9fbf9]/80 px-4 md:px-5 py-3.5 text-sm
+                  md:text-md font-medium
+                  text-[#123a2d] shadow-[0_10px_20px_rgba(19,32,28,0.05)]
+                  transition hover:-translate-y-0.5 hover:bg-white
+                "
+              >
+                Book an Appointment
+              </a>
             </div>
 
-            {/* Feature Chips */}
-            <ul
-              className="flex flex-wrap gap-2.5"
-              aria-label="Why DocLink"
-            >
-              {CHIPS.map((chip) => (
-                <li
-                  key={chip}
-                  className="
-                    inline-flex items-center gap-2
-                    rounded-full
-                    border border-white/50
-                    bg-white/60 px-4 py-2
-                    text-sm text-[#1a2d29]
-                    shadow-[0_12px_20px_rgba(17,27,26,0.04)]
-                    backdrop-blur-sm
-                  "
-                >
-                  <CheckIcon />
-                  {chip}
-                </li>
-              ))}
-            </ul>
+        
           </div>
-        </footer>
+        </main>
         
       </div>
     </section>
