@@ -1,12 +1,14 @@
 "use client";
 import Logo from "@/components/shared/Logo";
+import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 
 const NAV_LINKS = [
-  { label: "Home", href: "#" },
-  { label: "Find a doctor", href: "#" },
-  { label: "How it works", href: "#" },
-  { label: "About", href: "#" },
+  { label: "Consultation", href: "/consultation" },
+  { label: "Diagnostics", href: "/diagnostics" },
+  { label: "Medicine", href: "/medicine" },
+  { label: "Health Plans", href: "/health-plans" },
+  { label: "NGOs", href: "/ngos" },
 ];
 
 function ArrowIcon() {
@@ -128,7 +130,7 @@ export function PublicNavbar() {
           "
         >
           {NAV_LINKS.map((link) => (
-            <a
+            <Link
               key={link.label}
               href={link.href}
               className="
@@ -137,13 +139,13 @@ export function PublicNavbar() {
               "
             >
               {link.label}
-            </a>
+            </Link>
           ))}
         </nav>
 
         {/* Login */}
-        <a
-          href="#"
+        <Link
+          href="/login"
           className="
             group hidden items-center gap-3
             rounded-full bg-[#1f5c4b]
@@ -164,7 +166,7 @@ export function PublicNavbar() {
           >
             <ArrowIcon />
           </span>
-        </a>
+        </Link>
 
         {/* Mobile Menu Button */}
         <button
@@ -197,18 +199,15 @@ export function PublicNavbar() {
             backdrop-blur-md md:hidden
           "
         >
-          <button
-            type="button"
+          <Link
+            href="/login"
             className="
               group inline-flex items-center justify-between
               rounded-xl bg-[#1f5c4b] px-4 py-3
               text-left text-base font-medium text-white
               shadow-[0_12px_25px_rgba(31,92,75,0.2)]
             "
-            onClick={() => {
-              setOpen(false);
-              window.location.href = "/login";
-            }}
+            onClick={() => setOpen(false)}
           >
             <span>Login</span>
 
@@ -221,10 +220,10 @@ export function PublicNavbar() {
             >
               <ArrowIcon />
             </span>
-          </button>
+          </Link>
 
           {NAV_LINKS.map((link) => (
-            <a
+            <Link
               key={link.label}
               href={link.href}
               className="
@@ -235,7 +234,7 @@ export function PublicNavbar() {
               onClick={() => setOpen(false)}
             >
               {link.label}
-            </a>
+            </Link>
           ))}
         </nav>
       )}

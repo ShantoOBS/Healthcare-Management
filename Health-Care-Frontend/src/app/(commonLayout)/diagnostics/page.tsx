@@ -29,10 +29,12 @@ const services = [
 
 const DiagnosticsPage = () => {
   return (
-    <main className="min-h-screen bg-[#dfe7e2] px-4 py-8 text-[#0e1d1b] sm:px-6 lg:px-8">
-      <div className="mx-auto max-w-[1440px]">
-        <div className="mb-8 grid gap-8 lg:grid-cols-[1.45fr_0.55fr] lg:items-end">
-          <h1 className="max-w-[760px] text-[clamp(3rem,5vw,6rem)] font-medium leading-[0.95] tracking-[-0.06em] text-[#1a1e1d]">
+    <main className="min-h-screen bg-[#e8eeeb]   py-8 text-[#0e1d1b] ">
+      <div className="mx-auto max-w-[1280px] px-5 sm:px-6 lg:px-8">
+        <div className="mb-8 grid gap-8 
+        lg:grid-cols-[1.45fr_0.55fr] ">
+          <h1 className="max-w-[700px] text-5xl md:text-6xl
+          font-medium leading-[0.95] tracking-[-0.06em] text-[#1a1e1d]">
             Everything your diagnosis needs, under one roof
           </h1>
 
