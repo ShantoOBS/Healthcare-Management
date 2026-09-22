@@ -32,7 +32,7 @@ const socialLinks = [Facebook, Instagram, Linkedin, Twitter];
 
 const TopRatedDoctors = () => {
   return (
-    <section className="bg-[#dfeae1] py-8 md:py-12">
+    <section className="bg-[#dfeae1]  py-8 md:py-12">
       <div className="mx-auto max-w-[1280px] px-4 sm:px-6 lg:px-8">
         <div className="grid gap-4 lg:grid-cols-[0.85fr_1.25fr_1.25fr_1.25fr]">
           <div className="flex min-h-[420px] flex-col justify-between rounded-[28px] bg-[#0d4a3d] p-7 text-white shadow-[0_18px_42px_rgba(13,74,61,0.18)] sm:p-8">
@@ -41,7 +41,8 @@ const TopRatedDoctors = () => {
                 Our Team
               </p>
 
-              <h2 className="max-w-[9ch] text-[clamp(2.1rem,4vw,3.2rem)] font-medium leading-[0.96] tracking-[-0.06em] text-white">
+              <h2 className="max-w-[9ch] 
+              text-4xl font-medium leading-[0.96] tracking-[-0.06em] text-white">
                 The doctors you&apos;ll actually see, every visit.
               </h2>
             </div>
