@@ -6,11 +6,11 @@ const steps = [
   { icon: Search, title: 'Search Doctor', description: 'Find your doctor easily with a minimum of effort.' },
   { icon: ClipboardList, title: 'Check Doctor Profile', description: 'Get to know your doctor better.' },
   { icon: CalendarCheck, title: 'Schedule Appointment', description: 'Choose the time and date that suits you.' },
-  { icon: ShieldCheck, title: 'Get Your Solution', description: 'Our doctors are here to help you.' },
+   { icon: CreditCard, title: 'Easy payment options', description: 'Pay with ease using various methods.' },
   { icon: FileText, title: 'Electronic prescription', description: 'Get your prescription instantly.' },
   { icon: Video, title: 'Instant video consultation', description: 'Consult with your doctor from anywhere.' },
-  { icon: CreditCard, title: 'Easy payment options', description: 'Pay with ease using various methods.' },
-  { icon: HeartPulse, title: 'Health recovery', description: 'Start your journey to better health.' },
+  { icon: ShieldCheck, title: 'Get Your Solution', description: 'Our doctors are here to help you.' },
+ 
 ];
 
 const StepCard = ({ icon: Icon, title, description, index }: { icon: React.ElementType, title: string, description: string, index: number }) => {
