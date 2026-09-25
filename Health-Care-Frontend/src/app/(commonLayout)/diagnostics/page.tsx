@@ -9,60 +9,54 @@ const services = [
     title: "Health Screening",
     description:
       "Comprehensive health screening designed to identify potential health concerns early.",
-    accent:
-      "from-[#dcebe5] via-[#d3e3dd] to-[#c4d9d0]",
+    accent: "from-[#f5f8f6] via-[#e8f0ec] to-[#dbe8e2]",
     imageClass:
-      "bg-[radial-gradient(circle_at_75%_20%,rgba(255,255,255,0.85),transparent_28%),radial-gradient(circle_at_85%_75%,rgba(113,154,139,0.16),transparent_32%)]",
+      "bg-[radial-gradient(circle_at_80%_18%,rgba(255,255,255,0.95),transparent_28%),radial-gradient(circle_at_90%_85%,rgba(83,125,111,0.12),transparent_35%)]",
   },
   {
     id: "02",
     title: "Advanced Imaging",
     description:
       "Modern diagnostic imaging that helps doctors understand your condition with greater clarity.",
-    accent:
-      "from-[#e1ebe7] via-[#d6e3de] to-[#c5d8d0]",
+    accent: "from-[#f7f9f8] via-[#eaf0ed] to-[#dce8e3]",
     imageClass:
-      "bg-[radial-gradient(circle_at_20%_25%,rgba(255,255,255,0.8),transparent_26%),radial-gradient(circle_at_80%_70%,rgba(92,137,123,0.15),transparent_34%)]",
+      "bg-[radial-gradient(circle_at_18%_20%,rgba(255,255,255,0.95),transparent_28%),radial-gradient(circle_at_82%_78%,rgba(72,119,103,0.12),transparent_36%)]",
   },
   {
     id: "03",
     title: "Genetic Testing",
     description:
       "Advanced genetic testing to understand inherited risks and support personalized healthcare.",
-    accent:
-      "from-[#dcece6] via-[#d0e1da] to-[#bfd6cc]",
+    accent: "from-[#f4f8f5] via-[#e6efea] to-[#d8e7df]",
     imageClass:
-      "bg-[radial-gradient(circle_at_70%_30%,rgba(255,255,255,0.85),transparent_28%),radial-gradient(circle_at_25%_80%,rgba(89,140,123,0.14),transparent_35%)]",
+      "bg-[radial-gradient(circle_at_72%_24%,rgba(255,255,255,0.96),transparent_30%),radial-gradient(circle_at_22%_82%,rgba(73,124,105,0.11),transparent_36%)]",
   },
   {
     id: "04",
     title: "Laboratory",
     description:
       "Reliable laboratory testing with accurate results to support confident medical decisions.",
-    accent:
-      "from-[#e3ece8] via-[#d6e3de] to-[#c6d9d1]",
+    accent: "from-[#f8faf9] via-[#e9f0ed] to-[#dce9e3]",
     imageClass:
-      "bg-[radial-gradient(circle_at_30%_20%,rgba(255,255,255,0.85),transparent_30%),radial-gradient(circle_at_80%_80%,rgba(95,143,128,0.15),transparent_32%)]",
+      "bg-[radial-gradient(circle_at_30%_18%,rgba(255,255,255,0.95),transparent_30%),radial-gradient(circle_at_82%_82%,rgba(79,127,111,0.11),transparent_34%)]",
   },
   {
     id: "05",
     title: "Specialist Care",
     description:
       "Connect with experienced specialists for focused diagnosis, treatment and guidance.",
-    accent:
-      "from-[#dcebe6] via-[#d1e1db] to-[#c1d6cd]",
+    accent: "from-[#f5f9f6] via-[#e7efea] to-[#d9e7df]",
     imageClass:
-      "bg-[radial-gradient(circle_at_80%_20%,rgba(255,255,255,0.82),transparent_28%),radial-gradient(circle_at_20%_80%,rgba(86,137,121,0.15),transparent_34%)]",
+      "bg-[radial-gradient(circle_at_82%_18%,rgba(255,255,255,0.96),transparent_28%),radial-gradient(circle_at_18%_82%,rgba(69,120,101,0.12),transparent_36%)]",
   },
   {
     id: "06",
     title: "Neurology",
     description:
       "Specialized neurological care focused on accurate diagnosis and personalized treatment.",
-    accent:
-      "from-[#e2ece8] via-[#d4e2dc] to-[#c3d7ce]",
+    accent: "from-[#f7faf8] via-[#e8efeb] to-[#dae8e1]",
     imageClass:
-      "bg-[radial-gradient(circle_at_25%_25%,rgba(255,255,255,0.85),transparent_28%),radial-gradient(circle_at_80%_75%,rgba(91,139,124,0.16),transparent_35%)]",
+      "bg-[radial-gradient(circle_at_22%_22%,rgba(255,255,255,0.95),transparent_30%),radial-gradient(circle_at_82%_76%,rgba(77,124,108,0.12),transparent_36%)]",
   },
 ];
 
@@ -81,34 +75,16 @@ const DiagnosticsPage = () => {
 
       const rect = section.getBoundingClientRect();
 
-      /*
-       * How far the user has travelled vertically
-       * inside this section.
-       */
       const sectionTop = window.scrollY + rect.top;
       const currentScroll = window.scrollY - sectionTop;
 
-      /*
-       * Calculate the maximum horizontal distance.
-       *
-       * The track contains all 6 cards while the viewport
-       * only shows a portion of them.
-       */
-      const maxTranslate =
-        track.scrollWidth - window.innerWidth;
+      const maxTranslate = track.scrollWidth - window.innerWidth;
 
       if (maxTranslate <= 0) {
         track.style.transform = "translate3d(0, 0, 0)";
         return;
       }
 
-      /*
-       * The section height is based on the amount of
-       * horizontal movement required.
-       *
-       * This means the user cannot leave this section
-       * before reaching the last card.
-       */
       const scrollableDistance =
         section.offsetHeight - window.innerHeight;
 
@@ -121,9 +97,6 @@ const DiagnosticsPage = () => {
 
       track.style.transform = `translate3d(-${translateX}px, 0, 0)`;
 
-      /*
-       * Calculate the closest card.
-       */
       const cardWidth =
         track.children[0]?.getBoundingClientRect().width ?? 1;
 
@@ -134,7 +107,10 @@ const DiagnosticsPage = () => {
       );
 
       setActiveIndex(
-        Math.min(Math.max(currentCard, 0), services.length - 1)
+        Math.min(
+          Math.max(currentCard, 0),
+          services.length - 1
+        )
       );
     };
 
@@ -165,9 +141,6 @@ const DiagnosticsPage = () => {
     };
   }, []);
 
-  /*
-   * Jump directly to a particular card.
-   */
   const goToCard = (index: number) => {
     const section = sectionRef.current;
 
@@ -176,8 +149,7 @@ const DiagnosticsPage = () => {
     const scrollableDistance =
       section.offsetHeight - window.innerHeight;
 
-    const progress =
-      index / (services.length - 1);
+    const progress = index / (services.length - 1);
 
     const sectionTop =
       window.scrollY +
@@ -193,15 +165,6 @@ const DiagnosticsPage = () => {
     });
   };
 
-  /*
-   * Number of horizontal movements required.
-   *
-   * Desktop:
-   * 3 cards are visible → 3 horizontal movements.
-   *
-   * Mobile:
-   * 1 card is visible → 5 horizontal movements.
-   */
   const getSectionHeight = () => {
     if (typeof window === "undefined") {
       return "600vh";
@@ -221,11 +184,7 @@ const DiagnosticsPage = () => {
   };
 
   return (
-    <main className="bg-[#e8eeeb] text-[#0e1d1b]">
-      {/* =====================================================
-          HORIZONTAL SCROLL SECTION
-      ====================================================== */}
-
+    <main className="bg-[#f3f6f4] text-[#172521]">
       <section
         ref={sectionRef}
         className="relative"
@@ -233,39 +192,43 @@ const DiagnosticsPage = () => {
           height: getSectionHeight(),
         }}
       >
-        {/* Sticky viewport */}
-        <div className="sticky top-0 flex h-screen w-full items-center overflow-hidden">
-          <div className="w-full">
-            {/* =================================================
-                HEADER
-            ================================================= */}
+        <div className="sticky top-0 flex 
+         w-full items-center overflow-hidden">
+          <div className="w-full py-8 sm:py-10 lg:py-10">
 
-            <div className="mx-auto mb-8 max-w-[1280px] px-5 sm:px-6 lg:px-8">
-              <div className="grid gap-8 lg:grid-cols-[1.45fr_0.55fr]">
-                {/* Main heading */}
-                <h1 className="max-w-[850px] text-4xl font-medium leading-[1.02] tracking-[-0.045em] sm:text-5xl lg:text-[64px]">
-                  Everything your diagnosis needs, under one roof
-                </h1>
+            {/* HEADER */}
+            <div className="mx-auto mb-7 w-full max-w-[1280px] px-5 sm:px-6 lg:px-8">
+              <div className="grid items-end gap-6 lg:grid-cols-[1.5fr_0.5fr] lg:gap-12">
 
-                {/* Description */}
-                <div className="lg:pt-2">
-                  <p className="mb-3 text-xs font-medium uppercase tracking-[0.18em] text-[#668078]">
-                    Our Services
-                  </p>
+                <div>
+                  <div className="mb-4 flex items-center gap-3 sm:mb-5">
+                    <span className="h-px w-8 bg-[#557a6c]" />
 
-                  <p className="max-w-[430px] text-sm leading-6 text-[#61736e] sm:text-[15px]">
-                    From preventive screening to specialized care,
-                    access trusted diagnostic services designed to
-                    give you clarity and confidence at every step.
+                    <span className="text-[10px] font-semibold uppercase tracking-[0.24em] text-[#607970] sm:text-[11px]">
+                      Our Services
+                    </span>
+                  </div>
+
+                  <h1 className="max-w-[900px] text-[38px] font-medium leading-[0.98] tracking-[-0.055em] text-[#14231f] sm:text-5xl md:text-[56px] lg:text-[66px]">
+                    Everything your diagnosis needs,
+                    <span className="text-[#658176]">
+                      {" "}under one roof.
+                    </span>
+                  </h1>
+                </div>
+
+                <div className="lg:pb-1">
+                  <p className="max-w-[430px] text-[14px] leading-6 text-[#667871] sm:text-[15px]">
+                    From preventive screening to specialized
+                    care, access trusted diagnostic services
+                    designed to give you clarity and confidence
+                    at every step.
                   </p>
                 </div>
               </div>
             </div>
 
-            {/* =================================================
-                CARD TRACK
-            ================================================= */}
-
+            {/* CARD TRACK */}
             <div className="w-full overflow-visible">
               <div
                 ref={trackRef}
@@ -274,11 +237,20 @@ const DiagnosticsPage = () => {
                   w-max
                   gap-5
                   pl-5
+                  pr-5
+                  sm:pl-6
+                  sm:pr-6
+                  md:pl-8
+                  md:pr-8
+                  lg:pl-10
+                  lg:pr-10
+                  xl:pl-[max(3rem,calc((100vw-1440px)/2))]
+                  xl:pr-[max(3rem,calc((100vw-1440px)/2))]
+                  2xl:pl-[max(0px,calc((100vw-1440px)/2))]
+                  2xl:pr-[max(0px,calc((100vw-1440px)/2))]
                   transition-transform
                   duration-100
                   ease-out
-                  sm:pl-6
-                  lg:pl-[max(2rem,calc((100vw-1280px)/2))]
                 "
               >
                 {services.map((service) => (
@@ -287,26 +259,32 @@ const DiagnosticsPage = () => {
                     className={`
                       group
                       relative
-                      min-h-[430px]
+                      min-h-[450px]
                       w-[calc(100vw-40px)]
                       shrink-0
                       overflow-hidden
-                      rounded-[30px]
+                      rounded-[28px]
                       border
-                      border-white/70
+                      border-white/80
                       bg-gradient-to-br
                       ${service.accent}
                       p-6
-                      shadow-[0_18px_60px_rgba(26,55,47,0.06)]
-                      sm:min-h-[470px]
-                      sm:w-[430px]
+                      shadow-[0_20px_70px_rgba(42,68,59,0.08)]
+                      transition-all
+                      duration-500
+                      hover:-translate-y-1
+                      hover:shadow-[0_28px_80px_rgba(42,68,59,0.13)]
+                      sm:min-h-[480px]
+                      sm:w-[420px]
+                      sm:rounded-[30px]
                       sm:p-7
-                      lg:min-h-[520px]
-                      lg:w-[calc((100vw-140px)/3)]
-                      xl:w-[calc((1280px-40px)/3)]
+                      lg:min-h-[525px]
+                      lg:w-[calc((100vw-220px)/3)]
+                      lg:p-8
+                      xl:w-[calc((1420px-96px)/3)]
+                      2xl:w-[calc((1440px-96px)/3)]
                     `}
                   >
-                    {/* Background visual */}
                     <div
                       className={`
                         pointer-events-none
@@ -316,40 +294,48 @@ const DiagnosticsPage = () => {
                       `}
                     />
 
-                    {/* Subtle decorative circle */}
-                    <div className="pointer-events-none absolute -right-20 -top-20 h-52 w-52 rounded-full border border-white/40" />
+                    <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-white/10 via-transparent to-[#9db8aa]/10" />
 
-                    <div className="pointer-events-none absolute -right-10 -top-10 h-32 w-32 rounded-full border border-white/30" />
+                    <div className="pointer-events-none absolute -right-20 -top-20 h-56 w-56 rounded-full border border-white/50" />
 
-                    {/* =================================================
-                        CARD CONTENT
-                    ================================================= */}
+                    <div className="pointer-events-none absolute -right-10 -top-10 h-36 w-36 rounded-full border border-white/45" />
+
+                    <div className="pointer-events-none absolute bottom-[-70px] left-[-70px] h-40 w-40 rounded-full bg-white/20 blur-2xl" />
 
                     <div className="relative flex h-full flex-col justify-between">
-                      {/* Top */}
-                      <div className="flex items-start justify-between">
-                        <span className="text-sm font-medium tracking-[0.12em] text-[#607970]">
-                          {service.id}
-                        </span>
 
-                        <div className="rounded-full border border-white/60 bg-white/25 px-3 py-1.5 text-[10px] font-medium uppercase tracking-[0.12em] text-[#557169] backdrop-blur-sm">
+                      {/* TOP */}
+                      <div className="flex items-start justify-between gap-4">
+                        <div className="flex items-center gap-3">
+                          <span className="text-[12px] font-semibold tracking-[0.16em] text-[#557267]">
+                            {service.id}
+                          </span>
+
+                          <span className="h-px w-5 bg-[#8fa99f]" />
+                        </div>
+
+                        <div className="rounded-full border border-white/70 bg-white/35 px-3.5 py-1.5 text-[9px] font-semibold uppercase tracking-[0.16em] text-[#5b756b] shadow-sm backdrop-blur-md">
                           Healthcare
                         </div>
                       </div>
 
-                      {/* Bottom */}
-                      <div>
-                        <h2 className="max-w-[360px] text-[32px] font-medium leading-[1.04] tracking-[-0.035em] sm:text-[36px]">
+                      {/* BOTTOM */}
+                      <div className="mt-auto pt-10">
+                        <p className="mb-4 text-[10px] font-medium uppercase tracking-[0.2em] text-[#71867f]">
+                          Diagnostic service
+                        </p>
+
+                        <h2 className="max-w-[390px] text-[34px] font-medium leading-[1] tracking-[-0.045em] text-[#182c26] sm:text-[38px]">
                           {service.title}
                         </h2>
 
-                        <p className="mt-4 max-w-[380px] text-sm leading-6 text-[#5c7069]">
+                        <p className="mt-5 max-w-[390px] text-[14px] leading-6 text-[#60736c]">
                           {service.description}
                         </p>
 
-                        <div className="mt-6 flex items-center justify-between">
-                          <span className="text-sm font-medium text-[#203b34]">
-                            Discover
+                        <div className="mt-7 flex items-center justify-between border-t border-white/50 pt-5">
+                          <span className="text-[13px] font-semibold text-[#29473d]">
+                            Explore service
                           </span>
 
                           <button
@@ -357,20 +343,28 @@ const DiagnosticsPage = () => {
                             aria-label={`Discover ${service.title}`}
                             className="
                               flex
-                              h-11
-                              w-11
+                              h-12
+                              w-12
+                              shrink-0
                               items-center
                               justify-center
                               rounded-full
-                              bg-[#102d26]
+                              border
+                              border-[#29473d]/10
+                              bg-[#17382f]
                               text-white
+                              shadow-[0_8px_25px_rgba(23,56,47,0.16)]
                               transition-all
                               duration-300
                               group-hover:rotate-45
-                              group-hover:bg-[#173e34]
+                              group-hover:bg-[#234c40]
+                              group-hover:shadow-[0_12px_30px_rgba(23,56,47,0.22)]
                             "
                           >
-                            <ArrowUpRight size={18} />
+                            <ArrowUpRight
+                              size={18}
+                              strokeWidth={1.8}
+                            />
                           </button>
                         </div>
                       </div>
@@ -378,42 +372,35 @@ const DiagnosticsPage = () => {
                   </article>
                 ))}
 
-                {/* Right breathing space */}
-                <div className="w-5 shrink-0 lg:w-[max(2rem,calc((100vw-1280px)/2))]" />
+                <div className="w-5 shrink-0 sm:w-6 md:w-8 lg:w-10 xl:w-[max(3rem,calc((100vw-1440px)/2))] 2xl:w-[max(0px,calc((100vw-1440px)/2))]" />
               </div>
             </div>
 
-            {/* =================================================
-                PROGRESS
-            ================================================= */}
+            {/* PROGRESS */}
+            <div className="mx-auto mt-6 flex w-full max-w-[1440px] items-center justify-between px-5 sm:mt-7 sm:px-6 md:px-8 lg:mt-8 lg:px-10 xl:px-12 2xl:px-0">
 
-            <div className="mx-auto mt-7 flex max-w-[1280px] items-center justify-between px-5 sm:px-6 lg:px-8">
-              {/* Counter */}
               <div className="flex items-center gap-3">
-                <span className="font-mono text-xs font-medium text-[#526d65]">
+                <span className="font-mono text-[11px] font-semibold tracking-wider text-[#47665c]">
                   {String(activeIndex + 1).padStart(2, "0")}
                 </span>
 
-                <div className="relative h-[2px] w-24 overflow-hidden bg-[#c1d0ca] sm:w-40">
+                <div className="relative h-[2px] w-20 overflow-hidden rounded-full bg-[#ccd8d3] sm:w-32 lg:w-48">
                   <div
-                    className="absolute left-0 top-0 h-full bg-[#183d34] transition-all duration-150"
+                    className="absolute left-0 top-0 h-full rounded-full bg-[#31594c] transition-all duration-150"
                     style={{
                       width: `${
-                        ((activeIndex + 1) /
-                          services.length) *
-                        100
+                        ((activeIndex + 1) / services.length) * 100
                       }%`,
                     }}
                   />
                 </div>
 
-                <span className="font-mono text-xs text-[#82938e]">
+                <span className="font-mono text-[11px] text-[#91a19c]">
                   {String(services.length).padStart(2, "0")}
                 </span>
               </div>
 
-              {/* Dots */}
-              <div className="hidden items-center gap-1.5 sm:flex">
+              <div className="hidden items-center gap-2 sm:flex">
                 {services.map((service, index) => (
                   <button
                     key={service.id}
@@ -427,38 +414,19 @@ const DiagnosticsPage = () => {
                       duration-300
                       ${
                         index === activeIndex
-                          ? "w-8 bg-[#183d34]"
-                          : "w-1.5 bg-[#aebfba] hover:bg-[#728b83]"
+                          ? "w-9 bg-[#31594c]"
+                          : "w-1.5 bg-[#b4c3bd] hover:bg-[#718a81]"
                       }
                     `}
                   />
                 ))}
               </div>
 
-              <span className="hidden text-[10px] uppercase tracking-[0.2em] text-[#72847e] sm:block">
+              <span className="hidden text-[9px] font-semibold uppercase tracking-[0.22em] text-[#788a84] sm:block">
                 Scroll to explore
               </span>
             </div>
           </div>
-        </div>
-      </section>
-
-      {/* =====================================================
-          NEXT SECTION
-
-          This cannot be reached until the horizontal
-          animation has completed.
-      ====================================================== */}
-
-      <section className="bg-[#102d26] px-5 py-28 text-white sm:px-8">
-        <div className="mx-auto max-w-[1280px]">
-          <p className="text-xs uppercase tracking-[0.2em] text-white/50">
-            Continue exploring
-          </p>
-
-          <h2 className="mt-5 max-w-[800px] text-4xl font-medium leading-tight tracking-[-0.04em] sm:text-6xl">
-            Healthcare that keeps you connected to the care you need.
-          </h2>
         </div>
       </section>
     </main>
@@ -466,3 +434,4 @@ const DiagnosticsPage = () => {
 };
 
 export default DiagnosticsPage;
+
