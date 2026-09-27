@@ -7,8 +7,9 @@ const steps = [
   { icon: ClipboardList, title: 'Check Doctor Profile', description: 'Get to know your doctor better.' },
   { icon: CalendarCheck, title: 'Schedule Appointment', description: 'Choose the time and date that suits you.' },
    { icon: CreditCard, title: 'Easy payment options', description: 'Pay with ease using various methods.' },
-  { icon: FileText, title: 'Electronic prescription', description: 'Get your prescription instantly.' },
+  
   { icon: Video, title: 'Instant video consultation', description: 'Consult with your doctor from anywhere.' },
+  { icon: FileText, title: 'Electronic prescription', description: 'Get your prescription instantly.' },
   { icon: ShieldCheck, title: 'Get Your Solution', description: 'Our doctors are here to help you.' },
  
 ];

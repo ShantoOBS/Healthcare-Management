@@ -116,7 +116,8 @@ const Testimonials = () => {
   };
 
   return (
-    <section className="relative overflow-hidden bg-[#f5f6f3]  
+    <section className="relative overflow-hidden
+     bg-[#f5f6f3]  
      py-5 md:py-10">
       {/* Decorative background */}
       <div className="pointer-events-none absolute -left-32 top-20 h-72 w-72 rounded-full bg-[#d9eadf]/50 blur-3xl" />

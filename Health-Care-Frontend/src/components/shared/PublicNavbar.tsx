@@ -107,7 +107,8 @@ export function PublicNavbar() {
   }, [open]);
 
   return (
-    <header ref={navRef} className="sticky top-0 z-50 w-full pt-5">
+    <header ref={navRef} className="sticky top-0 z-50
+     w-full pt-5">
       <div
         className="
           mx-auto flex w-full max-w-[1280px] items-center

@@ -1,6 +1,7 @@
+import Link from 'next/link';
 import React from 'react'
 
-function LogoMark() {
+export function LogoMark() {
   return (
     <svg
       width="20"
@@ -25,7 +26,7 @@ function LogoMark() {
 export default function Logo() {
   return (
     <div>
-          <a
+          <Link
           href="/"
           aria-label="DocLink home"
           className="
@@ -43,7 +44,7 @@ export default function Logo() {
           <span className="text-sm font-medium tracking-[-0.04em] text-[#0e1e19]">
             DocLink
           </span>
-        </a>
+        </Link>
       
     </div>
   )
