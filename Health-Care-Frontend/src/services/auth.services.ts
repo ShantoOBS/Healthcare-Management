@@ -77,3 +77,31 @@ export async function getUserInfo() {
         return null;
     }
 }
+
+export async function logoutUser() {
+    try {
+        const cookieStore = await cookies();
+        const accessToken = cookieStore.get("accessToken")?.value;
+        const sessionToken = cookieStore.get("better-auth.session_token")?.value;
+
+        // Clear auth cookies on Next.js server side
+        cookieStore.delete("accessToken");
+        cookieStore.delete("refreshToken");
+        cookieStore.delete("better-auth.session_token");
+
+        if (accessToken && BASE_API_URL) {
+            await fetch(`${BASE_API_URL}/auth/logout`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    Cookie: `accessToken=${accessToken}; better-auth.session_token=${sessionToken}`
+                }
+            }).catch((err) => console.error("Backend logout error:", err));
+        }
+
+        return { success: true };
+    } catch (error) {
+        console.error("Error during logout:", error);
+        return { success: false };
+    }
+}

@@ -4,7 +4,7 @@ import React from "react"
 
 const RootDashboardLayout = async ({children} : {children: React.ReactNode}) => {
   return (
-    <div className="flex h-screen overflow-hidden">
+    <div className="flex h-screen overflow-hidden bg-[#f4f7f5] text-[#1a2d29]">
         {/* Dashboard Sidebar */}
         <DashboardSidebar />
 
@@ -12,7 +12,7 @@ const RootDashboardLayout = async ({children} : {children: React.ReactNode}) => 
             {/* DashboardNavbar */}
             <DashboardNavbar />
             {/* Dashboard Content */}
-            <main className="flex-1 overflow-y-auto bg-muted/10 p-4 md:p-6">
+            <main className="flex-1 overflow-y-auto bg-[#f4f7f5] p-4 md:p-6 lg:p-8">
                 <div>
                     {children}
                 </div>
@@ -22,4 +22,4 @@ const RootDashboardLayout = async ({children} : {children: React.ReactNode}) => 
   )
 }
 
-export default RootDashboardLayout
+export default RootDashboardLayout

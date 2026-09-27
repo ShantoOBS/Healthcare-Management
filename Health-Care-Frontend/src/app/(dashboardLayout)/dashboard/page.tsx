@@ -1,7 +1,7 @@
 import VideoCallDashboard from "@/components/modules/Dashboord/VideoCallDashboard";
 
-const DoctorsDashboard = () => {
+const PatientDashboard = () => {
   return <VideoCallDashboard />;
 };
 
-export default DoctorsDashboard;
+export default PatientDashboard;

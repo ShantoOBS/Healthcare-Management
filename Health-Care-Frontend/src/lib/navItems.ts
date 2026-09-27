@@ -2,21 +2,17 @@ import { NavSection } from "@/types/dashboard.types";
 import { getDefaultDashboardRoute, UserRole } from "./authUtils";
 
 
-export const getCommonNavItems = (role : UserRole) : NavSection[] => {
+export const getCommonNavItems = (role: UserRole): NavSection[] => {
     const defaultDashboard = getDefaultDashboardRoute(role);
     return [
         {
             // title : "Dashboard",
-            items : [
+            items: [
+
                 {
-                    title : "Home",
-                    href : "/",
-                    icon : "Home"
-                },
-                {
-                    title : "Dashboard",
-                    href : defaultDashboard,
-                    icon : "LayoutDashboard"
+                    title: "Dashboard",
+                    href: defaultDashboard,
+                    icon: "LayoutDashboard"
 
                 },
                 {
@@ -27,27 +23,28 @@ export const getCommonNavItems = (role : UserRole) : NavSection[] => {
             ]
         },
         {
-            title : "Settings",
-            items : [
+            title: "Settings",
+            items: [
                 {
-                    title : "Change Password",
-                    href : "change-password",
-                    icon : "Settings"
+                    title: "Change Password",
+                    href: "change-password",
+                    icon: "Settings"
                 }
             ]
         }
+
     ]
 }
 
 
-export const doctorNavItems : NavSection[] = [
+export const doctorNavItems: NavSection[] = [
     {
         title: " Patient Management",
-        items : [
+        items: [
             {
-                title : "Appointments",
-                href : "/doctor/dashboard/appointments",
-                icon : "Calender"
+                title: "Appointments",
+                href: "/doctor/dashboard/appointments",
+                icon: "Calender"
             },
             {
                 title: "My Schedules",
@@ -167,9 +164,11 @@ export const patientNavItems: NavSection[] = [
             },
         ],
     },
+
+
 ];
 
-export const getNavItemsByRole = (role : UserRole) : NavSection[] => {
+export const getNavItemsByRole = (role: UserRole): NavSection[] => {
     const commonNavItems = getCommonNavItems(role);
 
     switch (role) {

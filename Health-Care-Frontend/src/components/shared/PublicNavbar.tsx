@@ -2,6 +2,8 @@
 import Logo from "@/components/shared/Logo";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
+import { getUserInfo } from "@/services/auth.services";
+import { getDefaultDashboardRoute, UserRole } from "@/lib/authUtils";
 
 const NAV_LINKS = [
   { label: "Consultation", href: "/consultation" },
@@ -28,8 +30,6 @@ function ArrowIcon() {
     </svg>
   );
 }
-
-
 
 function MenuIcon() {
   return (
@@ -67,7 +67,28 @@ function CloseIcon() {
 
 export function PublicNavbar() {
   const [open, setOpen] = useState(false);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const [userInfo, setUserInfo] = useState<any>(null);
   const navRef = useRef<HTMLElement | null>(null);
+
+  useEffect(() => {
+    let isMounted = true;
+    getUserInfo()
+      .then((data) => {
+        if (isMounted && data) {
+          setUserInfo(data);
+        }
+      })
+      .catch(() => {
+        if (isMounted) {
+          setUserInfo(null);
+        }
+      });
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
 
   useEffect(() => {
     if (!open) return;
@@ -106,9 +127,13 @@ export function PublicNavbar() {
     };
   }, [open]);
 
+  const dashboardHref = userInfo
+    ? getDefaultDashboardRoute(userInfo.role as UserRole)
+    : "/login";
+  const buttonLabel = userInfo ? "Dashboard" : "Login";
+
   return (
-    <header ref={navRef} className="sticky top-0 z-50
-     w-full pt-5">
+    <header ref={navRef} className="sticky top-0 z-50 w-full pt-5">
       <div
         className="
           mx-auto flex w-full max-w-[1280px] items-center
@@ -117,7 +142,6 @@ export function PublicNavbar() {
       >
         {/* Logo */}
         <Logo/>
-   
 
         {/* Desktop Navigation */}
         <nav
@@ -144,9 +168,9 @@ export function PublicNavbar() {
           ))}
         </nav>
 
-        {/* Login */}
+        {/* Login / Dashboard */}
         <Link
-          href="/login"
+          href={dashboardHref}
           className="
             group hidden items-center gap-3
             rounded-full bg-[#1f5c4b]
@@ -155,7 +179,7 @@ export function PublicNavbar() {
             transition hover:bg-[#194b3f] md:inline-flex
           "
         >
-          <span>Login</span>
+          <span>{buttonLabel}</span>
 
           <span
             className="
@@ -201,7 +225,7 @@ export function PublicNavbar() {
           "
         >
           <Link
-            href="/login"
+            href={dashboardHref}
             className="
               group inline-flex items-center justify-between
               rounded-xl bg-[#1f5c4b] px-4 py-3
@@ -210,7 +234,7 @@ export function PublicNavbar() {
             "
             onClick={() => setOpen(false)}
           >
-            <span>Login</span>
+            <span>{buttonLabel}</span>
 
             <span
               className="

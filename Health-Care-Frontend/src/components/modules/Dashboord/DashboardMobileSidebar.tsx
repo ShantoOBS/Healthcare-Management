@@ -1,6 +1,6 @@
 "use client"
+import Logo from "@/components/shared/Logo";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Separator } from "@/components/ui/separator";
 import { SheetTitle } from "@/components/ui/sheet";
 import { getIconComponent } from "@/lib/iconMapper";
 import { cn } from "@/lib/utils";
@@ -15,33 +15,31 @@ interface DashboardMobileSidebarProps{
     dashboardHome : string;
 }
 
-
 const DashboardMobileSidebar = ({dashboardHome, navItems, userInfo} : DashboardMobileSidebarProps ) => {
     const pathname = usePathname()
   return (
-    <div className="flex h-full flex-col overflow-y-auto">
-      {/* Logo / Brand */}
-      <div className="flex h-16 items-center border-b px-6">
-        <Link href={dashboardHome}>
-          <span className="text-xl font-bold text-primary">PH Healthcare</span>
+    <div className="flex h-full max-h-screen flex-col bg-white text-[#1a2d29] overflow-hidden">
+      {/* Logo Header */}
+      <div className="flex h-20 items-center border-b border-[#f0f4f2] px-6 flex-shrink-0">
+        <Link href={dashboardHome} className="flex items-center gap-2">
+          <Logo />
         </Link>
       </div>
 
       <SheetTitle className="sr-only">Navigation Menu</SheetTitle>
 
-      {/* Navigation Area  */}
-
-      <ScrollArea className="flex-1 px-3 py-4">
-        <nav className="space-y-1">
+      {/* Vertically Scrollable Navigation Area */}
+      <ScrollArea className="flex-1 min-h-0 px-4 py-5 touch-pan-y">
+        <nav className="space-y-6 pb-6">
           {navItems.map((section, sectionId) => (
             <div key={sectionId}>
               {section.title && (
-                <h4 className="mb-2 px-3 text-xs font-semibold text-muted-foreground uppercase">
+                <h4 className="mb-3 px-3 text-[11px] font-bold text-[#8fa09b] tracking-wider uppercase">
                   {section.title}
                 </h4>
               )}
 
-              <div className="space-y-1">
+              <div className="space-y-1.5">
                 {section.items.map((item, id) => {
                   const isActive = pathname === item.href;
                   const Icon = getIconComponent(item.icon);
@@ -51,40 +49,33 @@ const DashboardMobileSidebar = ({dashboardHome, navItems, userInfo} : DashboardM
                       href={item.href}
                       key={id}
                       className={cn(
-                        "flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-all",
+                        "flex items-center gap-3.5 rounded-2xl px-4 py-3 text-sm font-semibold transition-all duration-200",
                         isActive
-                          ? "bg-primary text-primary-foreground"
-                          : "text-muted-foreground hover:bg-accent hover:text-accent-foreground",
+                          ? "bg-[#1f5c4b] text-white shadow-md shadow-[#1f5c4b]/20"
+                          : "text-[#5e716c] hover:bg-[#edf4f0] hover:text-[#1f5c4b]",
                       )}
                     >
-                      <Icon className="h-4 w-4" />
-                      <span className="flex-1">{item.title}</span>
+                      <Icon className={cn("h-4 w-4 flex-shrink-0", isActive ? "text-white" : "text-[#5e716c]")} />
+                      <span className="flex-1 truncate">{item.title}</span>
                     </Link>
                   );
                 })}
               </div>
-
-              {sectionId < navItems.length - 1 && (
-                <Separator className="my-4" />
-              )}
             </div>
           ))}
         </nav>
       </ScrollArea>
 
-      {/* User Info */}
-      <div className="border-t p-4">
-        <div className="flex items-center gap-3">
-          <div className="h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center">
-          {/* if profile doesnt exist , use first letter of user name as profile photo like component */}
-            <span className="text-sm font-semibold text-primary">
-              {userInfo.name.charAt(0).toUpperCase()}
-            </span>
+      {/* User Info Footer */}
+      <div className="border-t border-[#f0f4f2] p-4 bg-[#fbfdfc] flex-shrink-0">
+        <div className="flex items-center gap-3 p-2.5 rounded-2xl bg-white border border-[#e5ebe7] shadow-sm">
+          <div className="h-9 w-9 rounded-full bg-[#1f5c4b] text-white flex items-center justify-center font-bold text-sm flex-shrink-0">
+            {userInfo.name.charAt(0).toUpperCase()}
           </div>
 
           <div className="flex-1 overflow-hidden">
-            <p className="text-sm font-medium truncate">{userInfo.name}</p>
-            <p className="text-xs text-muted-foreground capitalize">
+            <p className="text-xs font-bold truncate text-[#1a2d29]">{userInfo.name}</p>
+            <p className="text-[11px] text-[#788a85] capitalize">
               {userInfo.role.toLocaleLowerCase().replace("_", " ")}
             </p>
           </div>
@@ -95,3 +86,4 @@ const DashboardMobileSidebar = ({dashboardHome, navItems, userInfo} : DashboardM
 }
 
 export default DashboardMobileSidebar
+

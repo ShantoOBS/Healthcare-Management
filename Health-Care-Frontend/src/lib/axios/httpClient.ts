@@ -83,6 +83,9 @@ const httpGet = async <TData>(endpoint: string, options?: ApiRequestOptions) : P
 const httpPost = async <TData>(endpoint: string, data: unknown, options?: ApiRequestOptions) : Promise<ApiResponse<TData>> => {
     try {
         const instance = await axiosInstance();
+        if (typeof FormData !== "undefined" && data instanceof FormData) {
+            delete instance.defaults.headers["Content-Type"];
+        }
         const response = await instance.post<ApiResponse<TData>>(endpoint, data, {
             params: options?.params,
             headers: options?.headers,
@@ -97,6 +100,9 @@ const httpPost = async <TData>(endpoint: string, data: unknown, options?: ApiReq
 const httpPut = async <TData>(endpoint: string, data: unknown, options?: ApiRequestOptions) : Promise<ApiResponse<TData>> => {
     try {
         const instance = await axiosInstance();
+        if (typeof FormData !== "undefined" && data instanceof FormData) {
+            delete instance.defaults.headers["Content-Type"];
+        }
         const response = await instance.put<ApiResponse<TData>>(endpoint, data, {
             params: options?.params,
             headers: options?.headers,
@@ -111,6 +117,9 @@ const httpPut = async <TData>(endpoint: string, data: unknown, options?: ApiRequ
 const httpPatch = async <TData>(endpoint: string, data: unknown, options?: ApiRequestOptions) : Promise<ApiResponse<TData>> => {
     try {
         const instance = await axiosInstance();
+        if (typeof FormData !== "undefined" && data instanceof FormData) {
+            delete instance.defaults.headers["Content-Type"];
+        }
         const response = await instance.patch<ApiResponse<TData>>(endpoint, data, {
             params: options?.params,
             headers: options?.headers,

@@ -10,10 +10,10 @@ import { PatientValidation } from "./patient.validation.js";
 const router = Router();
 
 router.patch("/update-my-profile",
-    checkAuth(Role.PATIENT),
+    checkAuth(Role.PATIENT, Role.ADMIN, Role.SUPER_ADMIN),
     multerUpload.fields([
-        { name : "profilePhoto", maxCount : 1},
-        { name : "medicalReports", maxCount : 5}
+        { name: "profilePhoto", maxCount: 1 },
+        { name: "medicalReports", maxCount: 5 }
     ]),
     //     const payload : IUpdatePatientProfilePayload = req.body;
 

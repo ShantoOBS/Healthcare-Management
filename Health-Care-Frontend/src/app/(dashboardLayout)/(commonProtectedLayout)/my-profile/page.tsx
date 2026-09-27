@@ -1,8 +1,10 @@
+import MyProfileClient from "@/components/modules/Profile/MyProfileClient";
+import { getUserInfo } from "@/services/auth.services";
 
-const MyProfilePage = () => {
-  return (
-    <div>MyProfilePage</div>
-  )
-}
+const MyProfilePage = async () => {
+  const userInfo = await getUserInfo();
 
-export default MyProfilePage
+  return <MyProfileClient userInfo={userInfo} />;
+};
+
+export default MyProfilePage;
