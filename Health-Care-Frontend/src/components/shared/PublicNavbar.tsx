@@ -149,7 +149,7 @@ export function PublicNavbar() {
           className="
             mr-auto hidden items-center gap-1
             rounded-sm border border-white/60
-            bg-white/80 px-1 py-1
+            bg-white px-1 py-1
             shadow-[0_12px_30px_rgba(18,49,42,0.08)]
             backdrop-blur-md md:flex
           "

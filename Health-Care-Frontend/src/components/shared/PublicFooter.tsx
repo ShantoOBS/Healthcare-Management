@@ -15,11 +15,13 @@ const quickLinks = ['Help Center', 'Patient Portal', 'Insurance & Billing', 'Ter
 
 function PublicFooter() {
   return (
-    <footer className="mx-auto relative w-full max-w-[1280px] px-5 pb-8 sm:px-6 lg:px-8">
+    <footer className="mx-auto 
+    bg-linear-to-r from-[#1f5c4b]/90 via-[#184b3d]/80 to-[#1f5c4b]/75 
+    relative w-full  px-5 sm:px-6 lg:px-8">
     
      
-      <div className="overflow-hidden rounded-[38px]
-       bg-[#0a5f87] text-white">
+      <div className="overflow-hidden max-w-[1280px] mx-auto
+         text-white">
         <div className="grid gap-8 px-6 py-8 sm:px-8 
         lg:grid-cols-4 lg:px-10 lg:py-10 ">
           <div>

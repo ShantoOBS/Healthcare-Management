@@ -1,14 +1,10 @@
 "use client"
 
-import DataTableFilters, {
-  DataTableFilterConfig,
-  DataTableFilterValues,
-} from "@/components/shared/table/DataTableFilters"
 import BookAppointmentModal from "@/components/modules/Patient/Appointments/BookAppointmentModal"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
+import { Skeleton } from "@/components/ui/skeleton"
 import {
   Select,
   SelectContent,
@@ -17,18 +13,13 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import { useServerManagedDataTable } from "@/hooks/useServerManagedDataTable"
-import {
-  serverManagedFilter,
-  useServerManagedDataTableFilters,
-} from "@/hooks/useServerManagedDataTableFilters"
-import { useServerManagedDataTableSearch } from "@/hooks/useServerManagedDataTableSearch"
 import { getAllSpecialties, getDoctors } from "@/services/doctor.services"
 import { type IDoctor } from "@/types/doctor.types"
 import { type ISpecialty } from "@/types/specialty.types"
 import { useQuery } from "@tanstack/react-query"
 import Link from "next/link"
 import { useSearchParams } from "next/navigation"
-import { useMemo } from "react"
+import { useMemo, useState } from "react"
 
 const DEFAULT_PAGE = 1
 const DEFAULT_LIMIT = 12
@@ -46,11 +37,27 @@ const CONSULTATION_ALLOWED_QUERY_KEYS = new Set([
   `${APPOINTMENT_FEE_FILTER_KEY}[lte]`,
 ])
 
-const CONSULTATION_FILTER_DEFINITIONS = [
-  serverManagedFilter.single("gender"),
-  serverManagedFilter.multi(SPECIALTIES_FILTER_KEY),
-  serverManagedFilter.range(APPOINTMENT_FEE_FILTER_KEY),
-]
+type ConsultationDraftFilters = {
+  searchTerm: string
+  department: string
+  gender: string
+  feeMin: string
+  feeMax: string
+}
+
+const getDraftFiltersFromSearchParams = (
+  searchParams: URLSearchParams | { get: (key: string) => string | null; getAll: (key: string) => string[] },
+): ConsultationDraftFilters => {
+  const departmentFromUrl = searchParams.getAll(SPECIALTIES_FILTER_KEY)[0] ?? "all"
+
+  return {
+    searchTerm: searchParams.get("searchTerm") ?? "",
+    department: departmentFromUrl || "all",
+    gender: searchParams.get("gender") ?? "all",
+    feeMin: searchParams.get(`${APPOINTMENT_FEE_FILTER_KEY}[gte]`) ?? "",
+    feeMax: searchParams.get(`${APPOINTMENT_FEE_FILTER_KEY}[lte]`) ?? "",
+  }
+}
 
 const getSanitizedConsultationQueryString = (queryString: string) => {
   const currentParams = new URLSearchParams(queryString)
@@ -82,6 +89,33 @@ const getDoctorInitials = (name: string) => {
   const initials = parts.slice(0, 2).map((part) => part[0]?.toUpperCase() ?? "")
   return initials.join("") || "DR"
 }
+
+const DOCTOR_CARD_SKELETON_COUNT = 4
+
+const DoctorCardSkeleton = () => (
+  <article className="flex flex-col gap-4 rounded-sm border border-b-4 border-[#dee7e1] border-b-red-500 bg-white p-4 shadow-[0_8px_28px_rgba(24,39,33,0.03)] md:flex-row md:items-center md:p-5">
+    <Skeleton className="h-[260px] w-full rounded-[14px] md:h-[220px] md:w-[260px]" />
+
+    <div className="flex-1 space-y-3">
+      <Skeleton className="h-8 w-2/3 max-w-[280px]" />
+      <Skeleton className="h-4 w-full max-w-[360px]" />
+      <Skeleton className="h-4 w-full max-w-[320px]" />
+
+      <div className="flex items-center gap-3 pt-2">
+        <Skeleton className="h-12 w-40 rounded-[12px]" />
+        <Skeleton className="h-12 w-44 rounded-[12px]" />
+      </div>
+    </div>
+  </article>
+)
+
+const DoctorsListSkeleton = () => (
+  <div className="space-y-5">
+    {Array.from({ length: DOCTOR_CARD_SKELETON_COUNT }).map((_, index) => (
+      <DoctorCardSkeleton key={`doctor-skeleton-${index}`} />
+    ))}
+  </div>
+)
 
 const Pagination = ({
   currentPage,
@@ -148,11 +182,9 @@ const DoctorsList = ({
 
   const {
     queryStringFromUrl,
-    optimisticSortingState,
     optimisticPaginationState,
     isRouteRefreshPending,
     updateParams,
-    handleSortingChange,
     handlePaginationChange,
   } = useServerManagedDataTable({
     searchParams,
@@ -164,23 +196,73 @@ const DoctorsList = ({
     return getSanitizedConsultationQueryString(queryStringFromUrl || initialQueryString)
   }, [initialQueryString, queryStringFromUrl])
 
-  const {
-    searchTermFromUrl,
-    handleDebouncedSearchChange,
-  } = useServerManagedDataTableSearch({
-    searchParams,
-    updateParams,
-  })
+  const [draftFilters, setDraftFilters] = useState<ConsultationDraftFilters>(() =>
+    getDraftFiltersFromSearchParams(searchParams),
+  )
 
-  const {
-    filterValues,
-    handleFilterChange,
-    clearAllFilters,
-  } = useServerManagedDataTableFilters({
-    searchParams,
-    definitions: CONSULTATION_FILTER_DEFINITIONS,
-    updateParams,
-  })
+  const updateDraftFilter = <K extends keyof ConsultationDraftFilters>(
+    key: K,
+    value: ConsultationDraftFilters[K],
+  ) => {
+    setDraftFilters((current) => ({
+      ...current,
+      [key]: value,
+    }))
+  }
+
+  const handleApplyFilters = () => {
+    updateParams((params) => {
+      const normalizedSearchTerm = draftFilters.searchTerm.trim()
+
+      if (normalizedSearchTerm) {
+        params.set("searchTerm", normalizedSearchTerm)
+      } else {
+        params.delete("searchTerm")
+      }
+
+      params.delete(SPECIALTIES_FILTER_KEY)
+      if (draftFilters.department !== "all" && draftFilters.department.trim()) {
+        params.set(SPECIALTIES_FILTER_KEY, draftFilters.department.trim())
+      }
+
+      if (draftFilters.gender !== "all" && draftFilters.gender.trim()) {
+        params.set("gender", draftFilters.gender.trim())
+      } else {
+        params.delete("gender")
+      }
+
+      params.delete(`${APPOINTMENT_FEE_FILTER_KEY}[gte]`)
+      params.delete(`${APPOINTMENT_FEE_FILTER_KEY}[lte]`)
+
+      if (draftFilters.feeMin.trim()) {
+        params.set(`${APPOINTMENT_FEE_FILTER_KEY}[gte]`, draftFilters.feeMin.trim())
+      }
+
+      if (draftFilters.feeMax.trim()) {
+        params.set(`${APPOINTMENT_FEE_FILTER_KEY}[lte]`, draftFilters.feeMax.trim())
+      }
+    }, { resetPage: true })
+  }
+
+  const handleClearFilters = () => {
+    const emptyFilters: ConsultationDraftFilters = {
+      searchTerm: "",
+      department: "all",
+      gender: "all",
+      feeMin: "",
+      feeMax: "",
+    }
+
+    setDraftFilters(emptyFilters)
+
+    updateParams((params) => {
+      params.delete("searchTerm")
+      params.delete(SPECIALTIES_FILTER_KEY)
+      params.delete("gender")
+      params.delete(`${APPOINTMENT_FEE_FILTER_KEY}[gte]`)
+      params.delete(`${APPOINTMENT_FEE_FILTER_KEY}[lte]`)
+    }, { resetPage: true })
+  }
 
   const { data: doctorsResponse, isLoading, isFetching } = useQuery({
     queryKey: ["doctors", queryString],
@@ -198,103 +280,160 @@ const DoctorsList = ({
   const meta = doctorsResponse?.meta
   const specialties = useMemo(() => specialtiesResponse?.data ?? [], [specialtiesResponse?.data])
 
-  const filterConfigs = useMemo<DataTableFilterConfig[]>(() => {
-    return [
-      {
-        id: "gender",
-        label: "Gender",
-        type: "single-select",
-        options: [
-          { label: "Male", value: "MALE" },
-          { label: "Female", value: "FEMALE" },
-          { label: "Other", value: "OTHER" },
-        ],
-      },
-      {
-        id: SPECIALTIES_FILTER_KEY,
-        label: "Specialties",
-        type: "multi-select",
-        options: specialties.map((specialty: ISpecialty) => ({
-          label: specialty.title,
-          value: specialty.title,
-        })),
-      },
-      {
-        id: APPOINTMENT_FEE_FILTER_KEY,
-        label: "Fee Range",
-        type: "range",
-      },
-    ]
-  }, [specialties])
-
-  const filterValuesForControls = useMemo<DataTableFilterValues>(() => {
-    return {
-      gender: filterValues.gender,
-      [SPECIALTIES_FILTER_KEY]: filterValues[SPECIALTIES_FILTER_KEY],
-      [APPOINTMENT_FEE_FILTER_KEY]: filterValues[APPOINTMENT_FEE_FILTER_KEY],
-    }
-  }, [filterValues])
-
   const isBusy = isLoading || isFetching || isRouteRefreshPending
+
+  const sidebarFieldClassName =
+    "mt-3 h-12 w-full border-0 cursor-pointer border-b border-[#d2d9d5] bg-transparent px-2 text-[16px] shadow-none focus-visible:ring-0"
 
   return (
     <section className="min-h-screen max-w-[1280px] mx-auto py-5
            px-5 sm:px-6 lg:px-8">
       <div className="mx-auto grid  gap-6 xl:grid-cols-[0.95fr_1.35fr]">
-        <aside className="rounded-sm border border-[#dfe5e1] bg-white p-6 shadow-[0_0_0_1px_rgba(18,26,22,0.02)]">
+        <aside className="rounded-sm border border-[#dfe5e1] bg-white p-6 h-fit
+         shadow-[0_0_0_1px_rgba(18,26,22,0.02)]">
           <div className="space-y-6">
-            <div className="border-b border-[#dfe5e2] pb-4">
-              <label className="block text-[15px] font-medium text-[#1a2b27]">Department</label>
-              <Select
-                value={Array.isArray(filterValues[SPECIALTIES_FILTER_KEY]) ? filterValues[SPECIALTIES_FILTER_KEY]?.[0] ?? "all" : (filterValues[SPECIALTIES_FILTER_KEY] as string | undefined) ?? "all"}
-                onValueChange={(value) => {
-                  handleFilterChange(
-                    SPECIALTIES_FILTER_KEY,
-                    value === "all" ? undefined : [value],
-                  )
-                }}
-              >
-                <SelectTrigger className="mt-3 h-12 w-full border-0 border-b border-[#d2d9d5] bg-transparent px-0 text-[18px] font-semibold text-[#0f1d1a] shadow-none focus:ring-0">
-                  <SelectValue placeholder="Select department" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">All specialties</SelectItem>
-                  {specialties.map((specialty: ISpecialty) => (
-                    <SelectItem key={specialty.id} value={specialty.title}>
-                      {specialty.title.toUpperCase()}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+
+            <div className="flex gap-2 w-full ">
+
+
+              <div className="border-b border-[#dfe5e2] pb-4 w-full ">
+                <label htmlFor="doctor-department-filter"
+                  className="block text-[15px] font-medium text-[#1a2b27]">
+                  Department
+                </label>
+                <Select
+                  value={draftFilters.department}
+                  onValueChange={(value) => updateDraftFilter("department", value)}
+                >
+                  <SelectTrigger
+                    id="doctor-department-filter"
+                    className="mt-3 h-12 w-full border-0 border-b px-2 cursor-pointer
+                     border-[#d2d9d5] bg-transparent text-[18px] font-semibold text-[#0f1d1a] shadow-none focus:ring-0"
+                  >
+                    <SelectValue placeholder="Select department" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">All specialties</SelectItem>
+                    {specialties.map((specialty: ISpecialty) => (
+                      <SelectItem key={specialty.id} value={specialty.title}>
+                        {specialty.title.toUpperCase()}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+
+
+              <div className="border-b border-[#dfe5e2] pb-4 w-full ">
+                <label htmlFor="doctor-gender-filter" className="block text-[15px] font-medium text-[#1a2b27]">
+                  Gender
+                </label>
+                <Select
+                  value={draftFilters.gender}
+                  onValueChange={(value) => updateDraftFilter("gender", value)}
+                >
+                  <SelectTrigger id="doctor-gender-filter" className={sidebarFieldClassName}>
+                    <SelectValue placeholder="Select gender" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">All genders</SelectItem>
+                    <SelectItem value="MALE">Male</SelectItem>
+                    <SelectItem value="FEMALE">Female</SelectItem>
+                    <SelectItem value="OTHER">Other</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+
             </div>
 
             <div className="border-b border-[#dfe5e2] pb-4">
-              <label className="block text-[15px] font-medium text-[#1a2b27]">Doctor&apos;s Name</label>
+              <label htmlFor="doctor-name-filter" className="block text-[15px] font-medium text-[#1a2b27]">
+                Doctor&apos;s Name
+              </label>
               <Input
-                value={searchTermFromUrl ?? ""}
-                onChange={(event) => handleDebouncedSearchChange(event.target.value)}
+                id="doctor-name-filter"
+                value={draftFilters.searchTerm}
+                onChange={(event) => updateDraftFilter("searchTerm", event.target.value)}
+                onKeyDown={(event) => {
+                  if (event.key === "Enter") {
+                    handleApplyFilters()
+                  }
+                }}
                 placeholder="Type doctor's name"
-                className="mt-3 h-12 border-0 border-b border-[#d2d9d5] bg-transparent px-0 text-[16px] shadow-none focus-visible:ring-0"
-                disabled={isBusy}
+                className={sidebarFieldClassName}
               />
             </div>
 
-            <Button
-              type="button"
-              className="h-12 w-full rounded-[12px] bg-[#4ca27a] text-[15px] font-semibold tracking-[0.08em] text-white shadow-[0_10px_25px_rgba(76,162,122,0.25)] hover:bg-[#3f8d68]"
-              onClick={() => handleDebouncedSearchChange(searchTermFromUrl ?? "")}
-            >
-              SEARCH
-            </Button>
+
+
+
+
+            <div className="border-b border-[#dfe5e2] pb-4">
+
+              <label className="block text-[15px] font-medium text-[#1a2b27]">Appointment Fee</label>
+              <div className="mt-3 space-y-3 flex gap-2">
+                <Input
+                  type="number"
+                  min="0"
+                  value={draftFilters.feeMin}
+                  onChange={(event) => updateDraftFilter("feeMin", event.target.value)}
+                  onKeyDown={(event) => {
+                    if (event.key === "Enter") {
+                      handleApplyFilters()
+                    }
+                  }}
+                  placeholder="Minimum fee"
+                  className={sidebarFieldClassName}
+                />
+                <Input
+                  type="number"
+                  min="0"
+                  value={draftFilters.feeMax}
+                  onChange={(event) => updateDraftFilter("feeMax", event.target.value)}
+                  onKeyDown={(event) => {
+                    if (event.key === "Enter") {
+                      handleApplyFilters()
+                    }
+                  }}
+                  placeholder="Maximum fee"
+                  className={sidebarFieldClassName}
+                />
+              </div>
+
+            </div>
+
+            <div className="space-y-3 pt-1 flex w-full gap-2">
+              <Button
+                type="button"
+                className="h-12 w-1/2 rounded-[12px] cursor-pointer bg-[#4ca27a]
+                 text-[15px] font-semibold tracking-[0.08em]
+                  text-white shadow-[0_10px_25px_rgba(76,162,122,0.25)] 
+                  hover:bg-[#3f8d68]"
+                onClick={handleApplyFilters}
+                disabled={isBusy}
+              >
+                SEARCH
+              </Button>
+
+              <Button
+                type="button"
+                variant="outline"
+                className="h-12 w-1/2 rounded-[12px] border-[#d2d9d5] 
+                text-[15px] font-semibold text-[#1a2b27] hover:bg-[#3f8d68] cursor-pointer"
+                onClick={handleClearFilters}
+                disabled={isBusy}
+              >
+                CLEAR
+              </Button>
+            </div>
+
           </div>
         </aside>
 
         <div className="space-y-6">
-          {isBusy && (
-            <div className="rounded-md border p-4 text-sm text-muted-foreground">
-              Loading doctors...
-            </div>
-          )}
+          {isBusy && <DoctorsListSkeleton />}
 
           {!isBusy && doctors.length === 0 && (
             <div className="rounded-[18px] border border-dashed border-[#d4ddd7] bg-white/50 p-8 text-center text-sm text-[#516961]">
@@ -304,14 +443,14 @@ const DoctorsList = ({
 
           {!isBusy && doctors.length > 0 && (
             <>
-              <div className="space-y-5">
+              <div className="space-y-5 ">
                 {doctors.map((doctor: IDoctor) => {
                   const specialtiesList = doctor.specialties?.map((item) => item.specialty.title) ?? []
 
                   return (
                     <article
                       key={String(doctor.id)}
-                      className="flex flex-col gap-4 rounded-sm border
+                      className="flex flex-col gap-4 rounded-sm border border-b-red-500 border-b-4
                        border-[#dee7e1] bg-white p-4 shadow-[0_8px_28px_rgba(24,39,33,0.03)] md:flex-row md:items-center md:p-5"
                     >
                       <div className="overflow-hidden rounded-[14px] bg-[#eef3ef] md:w-[260px]">
@@ -323,7 +462,8 @@ const DoctorsList = ({
                         </Avatar>
                       </div>
 
-                      <div className="flex-1">
+                      <div className="flex-1 ">
+
                         <h3 className="text-[22px] font-medium leading-[1.1] tracking-[-0.05em] text-[#d93d3d] sm:text-[30px]">
                           {doctor.name}
                         </h3>
@@ -340,15 +480,24 @@ const DoctorsList = ({
                           </p>
                         </div>
 
-                        <div className="mt-5 flex flex-wrap items-center gap-3">
-                          <Button type="button" className="h-12 rounded-[12px] bg-[#4ca27a] px-6 text-sm font-semibold tracking-[0.02em] text-white hover:bg-[#3f8d68]">
-                            Get Appointment
-                          </Button>
+                        <div className="mt-5 flex items-center gap-3">
+                          <BookAppointmentModal
+                            doctorId={String(doctor.id)}
+                            doctorName={doctor.name}
+                            isAuthenticated={isAuthenticated}
+                            viewerRole={viewerRole ?? null}
+                            triggerLabel="Get Appointment"
+                            showTriggerIcon={false}
+                            triggerClassName="h-12 cursor-pointer rounded-[12px] bg-[#4ca27a] px-6 text-sm font-semibold tracking-[0.02em] text-white hover:bg-[#3f8d68]"
+                          />
 
                           <Button
                             type="button"
                             variant="outline"
-                            className="h-12 rounded-[12px] border border-[#4ca27a] bg-transparent px-6 text-sm font-semibold tracking-[0.02em] text-[#1d453a] hover:bg-[#edf7f1]"
+                            className="h-12 rounded-[12px]
+                           bg-[#4ca27a] px-6 text-sm
+                            font-semibold tracking-[0.02em] cursor-pointer
+                             text-white hover:bg-[#3f8d68]"
                             asChild
                           >
                             <Link href={`/consultation/doctor/${doctor.id}`}>
@@ -356,6 +505,7 @@ const DoctorsList = ({
                             </Link>
                           </Button>
                         </div>
+
                       </div>
                     </article>
                   )

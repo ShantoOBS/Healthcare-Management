@@ -27,6 +27,8 @@ interface BookAppointmentModalProps {
   isAuthenticated: boolean
   viewerRole?: string | null
   triggerClassName?: string
+  triggerLabel?: string
+  showTriggerIcon?: boolean
   fullWidth?: boolean
 }
 
@@ -49,6 +51,8 @@ const BookAppointmentModal = ({
   isAuthenticated,
   viewerRole,
   triggerClassName,
+  triggerLabel = "Book Appointment",
+  showTriggerIcon = true,
   fullWidth = false,
 }: BookAppointmentModalProps) => {
   const [open, setOpen] = useState(false)
@@ -124,8 +128,8 @@ const BookAppointmentModal = ({
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>
         <Button type="button" className={triggerClassName} variant="outline">
-          <CalendarPlus className="size-4" />
-          Book Appointment
+          {showTriggerIcon && <CalendarPlus className="size-4" />}
+          {triggerLabel}
         </Button>
       </DialogTrigger>
 
