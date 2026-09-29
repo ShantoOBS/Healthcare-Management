@@ -4,7 +4,7 @@ import Steps from "@/components/modules/Home/Steps";
 import Testimonials from "@/components/modules/Home/Testimonials";
 import TopRatedDoctors from "@/components/modules/Home/TopRatedDoctors";
 import WhyChooseUs from "@/components/modules/Home/WhyChooseUs";
-import PublicFooter from "@/components/shared/PublicFooter";
+import Fqa from "@/components/modules/Home/Fqa";
 import Head from "next/head";
 
 export default function Home() {
@@ -26,6 +26,7 @@ export default function Home() {
         <Steps />
         <WhyChooseUs />
         <Testimonials />
+        <Fqa/>
       </main>
     </>
   );

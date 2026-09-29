@@ -134,7 +134,8 @@ const Testimonials = () => {
               transition={{ duration: 0.5 }}
               className="mb-4 flex items-center gap-3 text-sm font-medium text-slate-500"
             >
-              <span className="flex h-7 w-7 items-center justify-center rounded-full bg-slate-900">
+              <span className="flex h-7 w-7 items-center justify-center
+               rounded-full bg-[#1f5c4b]">
                 <span className="h-2 w-2 rounded-full bg-white" />
               </span>
 
@@ -174,7 +175,8 @@ const Testimonials = () => {
               <ArrowLeft className="h-4 w-4 transition-transform duration-300 group-hover:-translate-x-0.5" />
             </button>
 
-            <div className="flex h-12 min-w-[100px] items-center justify-center rounded-full bg-slate-950 px-4 text-sm font-medium text-white shadow-sm">
+            <div className="flex h-12 min-w-[100px] items-center 
+            justify-center rounded-full bg-[#1f5c4b] px-4 text-sm font-medium text-white shadow-sm">
               <AnimatePresence mode="wait">
                 <motion.span
                   key={currentIndex}
@@ -199,7 +201,9 @@ const Testimonials = () => {
               aria-label="Next testimonial"
               onClick={handleNext}
               className="group flex h-12 w-12 cursor-pointer
-               items-center justify-center rounded-full bg-slate-950 text-white shadow-sm transition-all duration-300 hover:translate-x-1 hover:bg-slate-800 active:scale-95"
+               items-center justify-center rounded-full bg-[#1f5c4b]
+                text-white shadow-sm transition-all duration-300 
+                hover:translate-x-1 hover:bg-[#194b3f] active:scale-95"
             >
               <ArrowRight className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-0.5" />
             </button>
@@ -388,7 +392,7 @@ const Testimonials = () => {
                   duration: 0.3,
                   ease: [0.22, 1, 0.36, 1],
                 }}
-                className="block h-1.5 rounded-full bg-slate-900"
+                className="block h-1.5 rounded-full bg-[#1f5c4b]"
               />
             </button>
           ))}
