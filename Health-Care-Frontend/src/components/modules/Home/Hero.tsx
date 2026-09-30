@@ -1,6 +1,7 @@
 ﻿"use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
+import Image from "next/image";
 
 function ArrowIcon() {
   return (
@@ -654,6 +655,8 @@ function HelixCanvas() {
 }
 
 export function Hero() {
+  const [videoUnavailable, setVideoUnavailable] = useState(false);
+
   return (
     <section
       className="
@@ -666,6 +669,9 @@ export function Hero() {
         lg:min-h-screen
       "
       style={{
+        backgroundImage:
+          "radial-gradient(rgba(23, 76, 59, 0.09) 0.7px, transparent 0.7px)",
+        backgroundSize: "18px 18px",
         fontFamily:
           '"Outfit", "Google Sans", "Segoe UI", sans-serif',
       }}
@@ -682,47 +688,6 @@ export function Hero() {
           overflow-hidden
         "
       >
-        {/* Soft healthcare glow */}
-
-        <div
-          className="
-            absolute
-            -left-40
-            -top-40
-            h-[500px]
-            w-[500px]
-            rounded-full
-            bg-[#dff3d8]/70
-            blur-[120px]
-          "
-        />
-
-        <div
-          className="
-            absolute
-            right-[-120px]
-            top-[-80px]
-            h-[520px]
-            w-[520px]
-            rounded-full
-            bg-[#cce9c9]/55
-            blur-[120px]
-          "
-        />
-
-        <div
-          className="
-            absolute
-            bottom-[-200px]
-            left-[40%]
-            h-[500px]
-            w-[500px]
-            rounded-full
-            bg-[#a8ceb4]/25
-            blur-[130px]
-          "
-        />
-
         {/* =================================================
             FIXED DNA BACKGROUND
         ================================================== */}
@@ -751,7 +716,7 @@ export function Hero() {
           flex
           min-h-screen
           w-full
-          max-w-[1380px]
+          max-w-7xl
           flex-col
           px-5
           py-5
@@ -759,15 +724,7 @@ export function Hero() {
           lg:px-10
         "
       >
-        {/* ===================================================
-            TOP STATUS
-        ==================================================== */}
-
-       
-
-        {/* ===================================================
-            HERO GRID
-        ==================================================== */}
+     
 
         <main
           className="
@@ -871,10 +828,11 @@ export function Hero() {
             <h1
               className="
                 max-w-[650px]
-                text-[clamp(3.25rem,6.2vw,6.3rem)]
+                text-[3.25rem]
                 font-medium
                 leading-[0.91]
-                tracking-[-0.065em]
+                sm:text-7xl
+                xl:text-[6.3rem]
                 text-[#082d21]
               "
             >
@@ -925,7 +883,10 @@ export function Hero() {
                 SEARCH BOX
             ================================================== */}
 
-            <div
+            <form
+              action="/consultation"
+              method="get"
+              role="search"
               className="
                 mt-8
                 max-w-[590px]
@@ -985,8 +946,9 @@ export function Hero() {
                   </svg>
 
                   <input
-                    type="text"
-                    placeholder="Search doctor or specialty"
+                    type="search"
+                    name="searchTerm"
+                    placeholder="Doctor name or specialty"
                     aria-label="Search doctor or specialty"
                     className="
                       min-w-0
@@ -1000,292 +962,22 @@ export function Hero() {
                   />
                 </div>
 
-                {/* Location */}
-
-                <button
-                  type="button"
-                  className="
-                    hidden
-                    items-center
-                    gap-2
-                    rounded-[16px]
-                    px-3
-                    py-3
-                    text-left
-                    transition
-                    hover:bg-[#f3f7f4]
-                    sm:flex
-                  "
-                >
-                  <svg
-                    width="18"
-                    height="18"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="1.7"
-                    className="text-[#668078]"
-                    aria-hidden="true"
-                  >
-                    <path d="M20 10c0 5-8 11-8 11S4 15 4 10a8 8 0 1 1 16 0Z" />
-
-                    <circle
-                      cx="12"
-                      cy="10"
-                      r="2.5"
-                    />
-                  </svg>
-
-                  <span
-                    className="
-                      whitespace-nowrap
-                      text-xs
-                      font-medium
-                      text-[#526962]
-                    "
-                  >
-                    Your location
-                  </span>
-                </button>
+               
 
                 {/* Search button */}
 
                 <button
-                  type="button"
-                  className="
-                    group
-                    flex
-                    items-center
-                    justify-center
-                    gap-2
-                    rounded-[16px]
-                    bg-[#123a2d]
-                    px-5
-                    py-3
-                    text-sm
-                    font-medium
-                    text-white
-                    shadow-[0_12px_25px_rgba(18,58,45,0.18)]
-                    transition-all
-                    duration-300
-                    hover:bg-[#184c3d]
-                    hover:shadow-[0_16px_32px_rgba(18,58,45,0.22)]
-                    focus:outline-none
-                    focus:ring-2
-                    focus:ring-[#123a2d]/30
-                    focus:ring-offset-2
-                  "
+                  type="submit"
+                  className="home-primary-button group"
                 >
-                  <span>Search</span>
+                  <span>Find a doctor</span>
 
                   <ArrowIcon />
                 </button>
               </div>
-            </div>
+            </form>
 
-            {/* =================================================
-                CTA
-            ================================================== */}
 
-            <div
-              className="
-                mt-5
-                flex
-                flex-wrap
-                items-center
-                gap-3
-              "
-            >
-              <a
-                href="#doctors"
-                className="
-                  group
-                  inline-flex
-                  items-center
-                  gap-3
-                  rounded-full
-                  bg-[#123a2d]
-                  px-5
-                  py-3
-                  text-sm
-                  font-medium
-                  text-white
-                  shadow-[0_18px_35px_rgba(18,58,45,0.18)]
-                  transition-all
-                  duration-300
-                  hover:-translate-y-0.5
-                  hover:bg-[#184c3d]
-                "
-              >
-                <span>Find a Doctor</span>
-
-                <span
-                  className="
-                    flex
-                    h-7
-                    w-7
-                    items-center
-                    justify-center
-                    rounded-full
-                    bg-[#dff884]
-                    text-[#173e32]
-                    transition-transform
-                    duration-300
-                    group-hover:rotate-45
-                  "
-                >
-                  <ArrowIcon />
-                </span>
-              </a>
-
-              <a
-                href="#appointment"
-                className="
-                  inline-flex
-                  items-center
-                  rounded-full
-                  border
-                  border-[#1f5c4b]/15
-                  bg-white/70
-                  px-5
-                  py-3
-                  text-sm
-                  font-medium
-                  text-[#173f33]
-                  backdrop-blur-md
-                  transition-all
-                  hover:-translate-y-0.5
-                  hover:bg-white
-                "
-              >
-                Book an appointment
-              </a>
-            </div>
-
-            {/* =================================================
-                TRUST
-            ================================================== */}
-
-            <div
-              className="
-                mt-8
-                flex
-                flex-wrap
-                items-center
-                gap-x-6
-                gap-y-4
-              "
-            >
-              <div
-                className="
-                  flex
-                  items-center
-                  gap-2.5
-                "
-              >
-                <div
-                  className="
-                    flex
-                    h-8
-                    w-8
-                    items-center
-                    justify-center
-                    rounded-full
-                    bg-[#e0f0df]
-                    text-sm
-                    text-[#39714f]
-                  "
-                >
-                  ✓
-                </div>
-
-                <div>
-                  <p
-                    className="
-                      text-xs
-                      font-semibold
-                      text-[#193e32]
-                    "
-                  >
-                    Verified doctors
-                  </p>
-
-                  <p
-                    className="
-                      text-[10px]
-                      text-[#778681]
-                    "
-                  >
-                    Trusted professionals
-                  </p>
-                </div>
-              </div>
-
-              <div
-                className="
-                  hidden
-                  h-7
-                  w-px
-                  bg-[#174c3b]/10
-                  sm:block
-                "
-              />
-
-              <div
-                className="
-                  flex
-                  items-center
-                  gap-2.5
-                "
-              >
-                <div
-                  className="
-                    flex
-                    h-8
-                    w-8
-                    items-center
-                    justify-center
-                    rounded-full
-                    bg-[#edf3d9]
-                    text-[#55753f]
-                  "
-                >
-                  <svg
-                    width="16"
-                    height="16"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="1.7"
-                  >
-                    <path d="M12 3 4 6v5c0 5.2 3.4 8.8 8 10 4.6-1.2 8-4.8 8-10V6l-8-3Z" />
-
-                    <path d="m8.5 12 2.2 2.2 4.8-5" />
-                  </svg>
-                </div>
-
-                <div>
-                  <p
-                    className="
-                      text-xs
-                      font-semibold
-                      text-[#193e32]
-                    "
-                  >
-                    Secure & private
-                  </p>
-
-                  <p
-                    className="
-                      text-[10px]
-                      text-[#778681]
-                    "
-                  >
-                    Your data stays protected
-                  </p>
-                </div>
-              </div>
-            </div>
           </div>
 
           {/* =================================================
@@ -1343,7 +1035,8 @@ export function Hero() {
                 lg:h-[545px]
               "
             >
-              <video
+              {!videoUnavailable ? (
+                <video
                 className="
                   h-full
                   w-full
@@ -1353,10 +1046,12 @@ export function Hero() {
                 autoPlay
                 muted
                 loop
+                controls
                 playsInline
-                preload="auto"
-                poster="https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?auto=format&fit=crop&w=1000&q=85"
+                preload="metadata"
+                poster="/dashboard/doctor_video_call.png"
                 aria-label="Female physician providing an online medical consultation"
+                onError={() => setVideoUnavailable(true)}
               >
                 <source
                   src="/videos/doctor-online-consultation.mp4"
@@ -1366,6 +1061,15 @@ export function Hero() {
                 Your browser does not support
                 the video element.
               </video>
+              ) : (
+                <Image
+                  src="/dashboard/doctor_video_call.png"
+                  alt="Doctor ready for an online consultation"
+                  fill
+                  sizes="(max-width: 1024px) 78vw, 40vw"
+                  className="object-cover object-center"
+                />
+              )}
 
               {/* Video overlay */}
 
@@ -1836,182 +1540,7 @@ export function Hero() {
           </div>
         </main>
 
-        {/* =====================================================
-            BOTTOM TRUST BAR
-        ====================================================== */}
-
-        <div
-          className="
-            relative
-            z-20
-            flex
-            flex-wrap
-            items-center
-            justify-between
-            gap-5
-            rounded-[22px]
-            border
-            border-white
-            bg-white/50
-            px-5
-            py-4
-            shadow-[0_15px_45px_rgba(20,60,45,0.045)]
-            backdrop-blur-xl
-            sm:px-6
-          "
-        >
-          <div
-            className="
-              flex
-              items-center
-              gap-3
-            "
-          >
-            <div className="flex -space-x-2">
-              {[
-                "https://images.unsplash.com/photo-1550831107-1553da8c8464?auto=format&fit=crop&w=100&q=80",
-                "https://images.unsplash.com/photo-1594824476967-48c8b964273f?auto=format&fit=crop&w=100&q=80",
-                "https://images.unsplash.com/photo-1531123897727-8f129e1688ce?auto=format&fit=crop&w=100&q=80",
-              ].map((src) => (
-                <img
-                  key={src}
-                  src={src}
-                  alt=""
-                  className="
-                    h-7
-                    w-7
-                    rounded-full
-                    border-2
-                    border-[#f1f5f2]
-                    object-cover
-                  "
-                />
-              ))}
-            </div>
-
-            <div>
-              <p
-                className="
-                  text-xs
-                  font-semibold
-                  text-[#193e32]
-                "
-              >
-                Trusted by patients
-              </p>
-
-              <p
-                className="
-                  text-[9px]
-                  text-[#7a8783]
-                "
-              >
-                Simple healthcare for everyone
-              </p>
-            </div>
-          </div>
-
-          <div
-            className="
-              hidden
-              h-6
-              w-px
-              bg-[#174c3b]/10
-              md:block
-            "
-          />
-
-          <div
-            className="
-              flex
-              items-center
-              gap-2
-            "
-          >
-            <span className="text-[#4c8a5c]">
-              ✓
-            </span>
-
-            <span
-              className="
-                text-xs
-                font-medium
-                text-[#426057]
-              "
-            >
-              Verified specialists
-            </span>
-          </div>
-
-          <div
-            className="
-              hidden
-              h-6
-              w-px
-              bg-[#174c3b]/10
-              md:block
-            "
-          />
-
-          <div
-            className="
-              flex
-              items-center
-              gap-2
-            "
-          >
-            <span className="text-[#6d8a48]">
-              ★
-            </span>
-
-            <span
-              className="
-                text-xs
-                font-medium
-                text-[#426057]
-              "
-            >
-              4.9/5 patient rating
-            </span>
-          </div>
-
-          <div
-            className="
-              hidden
-              h-6
-              w-px
-              bg-[#174c3b]/10
-              md:block
-            "
-          />
-
-          <div
-            className="
-              flex
-              items-center
-              gap-2
-            "
-          >
-            <span
-              className="
-                h-2
-                w-2
-                rounded-full
-                bg-[#67bf77]
-              "
-            />
-
-            <span
-              className="
-                text-xs
-                font-medium
-                text-[#426057]
-              "
-            >
-              Secure platform
-            </span>
-          </div>
-        </div>
+      
       </div>
     </section>
   );

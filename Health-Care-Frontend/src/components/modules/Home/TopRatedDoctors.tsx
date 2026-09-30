@@ -1,5 +1,5 @@
 import Image from "next/image";
-import { Facebook, Instagram, Linkedin, Twitter } from "lucide-react";
+import { ArrowUpRight, Star } from "lucide-react";
 import cardioDoc from "../../../assets/doctor-cardiologist.jpg";
 import neurolDoc from "../../../assets/doctor-neurologist.jpg";
 import orthoDoc from "../../../assets/doctor-orthopedic.jpg";
@@ -28,78 +28,67 @@ const doctors = [
   },
 ];
 
-const socialLinks = [Facebook, Instagram, Linkedin, Twitter];
-
 const TopRatedDoctors = () => {
   return (
-    <section className="bg-[#dfeae1]  py-5 md:py-10">
-      <div className="mx-auto max-w-[1280px] px-4 sm:px-6 lg:px-8">
-        <div className="grid gap-4 lg:grid-cols-[0.85fr_1.25fr_1.25fr_1.25fr]">
-          <div className="flex min-h-[420px] flex-col justify-between rounded-[28px] bg-[#0d4a3d] p-7 text-white shadow-[0_18px_42px_rgba(13,74,61,0.18)] sm:p-8">
-            <div>
-              <p className="mb-5 text-[0.7rem] font-semibold uppercase tracking-[0.18em] text-[#dcefe2]">
-                Our Team
-              </p>
-
-              <h2 className="max-w-[9ch] 
-              text-4xl font-medium leading-[0.96] tracking-[-0.06em] text-white">
-                The doctors you&apos;ll actually see, every visit.
-              </h2>
-            </div>
-
-            <div className="flex items-center gap-3">
-              {socialLinks.map((Icon, index) => (
-                <span
-                  key={index}
-                  className="flex h-10 w-10 items-center justify-center rounded-full border border-white/20 bg-white/10 text-white shadow-[0_8px_18px_rgba(0,0,0,0.08)]"
-                >
-                  <Icon className="h-4 w-4" />
-                </span>
-              ))}
-            </div>
+    <section className="bg-[#f3f7f4] py-16 sm:py-20">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div className="mb-10 grid gap-8 lg:mb-14 lg:grid-cols-[1.1fr_0.9fr] lg:items-end">
+          <div className="max-w-2xl">
+            <p className="mb-4 flex items-center gap-2 text-sm font-medium text-[#61736b]">
+              <span className="h-1.5 w-1.5 rounded-full bg-[#174c3b]" />
+              Featured doctors
+            </p>
+            <h2 className="text-4xl font-semibold leading-tight text-[#17372d] sm:text-5xl">
+              Meet the people behind your care.
+            </h2>
           </div>
 
+          <div className="flex flex-col items-start gap-4 sm:flex-row sm:items-end sm:justify-between lg:justify-self-end lg:gap-8">
+            <p className="max-w-sm text-sm leading-6 text-[#61736b]">
+              Explore experienced physicians and find the right fit for your next visit.
+            </p>
+            <a href="/consultation" className="home-secondary-button shrink-0">
+              Browse doctors
+              <ArrowUpRight className="h-4 w-4" />
+            </a>
+          </div>
+        </div>
+
+        <div className="grid gap-4 md:grid-cols-3">
           {doctors.map((doctor, index) => (
-            <div
+            <a
               key={doctor.name}
-              className="group relative overflow-hidden rounded-[28px] border border-[#dfe7e1] bg-[#e7e5e1] shadow-[0_18px_30px_rgba(17,27,26,0.06)]"
+              href={`/consultation?searchTerm=${encodeURIComponent(doctor.specialty)}`}
+              className="home-card-link group block overflow-hidden rounded-lg border border-[#dce7df] bg-[#f7f8f7] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#174c3b]"
             >
-              <div className="relative h-[420px] overflow-hidden">
+              <div className="relative h-[280px] overflow-hidden sm:h-[340px]">
                 <Image
                   src={doctor.image}
                   alt={doctor.name}
                   fill
-                  className="object-cover transition duration-500 group-hover:scale-105"
+                  className="object-cover motion-safe:transition-transform motion-safe:duration-500 motion-safe:group-hover:scale-[1.03]"
                   priority={index === 0}
+                  sizes="(max-width: 768px) 100vw, (max-width: 1280px) 50vw, 33vw"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/10 via-transparent to-white/10" />
               </div>
 
-              <div className="absolute inset-x-4 bottom-3 rounded-[18px] border border-[#dfe6e2] bg-white/75 px-4 py-3 shadow-[0_10px_28px_rgba(17,27,26,0.06)] backdrop-blur-sm">
-                <div className="flex items-center justify-between gap-3">
-                  <div>
-                    <p className="text-base font-semibold text-[#18362d]">
-                      {doctor.name.split(" ").slice(0, 2).join(" ")}
-                    </p>
-                    <p className="text-sm text-[#4d6c64]">{doctor.specialty}</p>
+              <div className="flex items-center justify-between gap-4 p-5">
+                <div className="min-w-0">
+                  <p className="truncate text-base font-semibold text-[#17372d]">
+                    {doctor.name}
+                  </p>
+                  <p className="mt-1 text-sm text-[#61736b]">{doctor.specialty}</p>
+                  <div className="mt-3 flex items-center gap-1.5 text-sm text-[#61736b]">
+                    <Star className="h-4 w-4 fill-[#c5a858] text-[#c5a858]" />
+                    <span className="font-semibold text-[#17372d]">{doctor.rating}</span>
+                    <span>({doctor.reviews} reviews)</span>
                   </div>
-                  <span className="flex h-8 w-8 items-center justify-center rounded-full bg-[#edf6eb] text-[#0f4a3f]">
-                    <svg
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      className="h-4 w-4"
-                      aria-hidden="true"
-                    >
-                      <path d="M7 17 17 7M8 7h9v9" />
-                    </svg>
-                  </span>
                 </div>
+                <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-white text-[#174c3b] transition-colors group-hover:bg-[#174c3b] group-hover:text-white">
+                  <ArrowUpRight className="h-4 w-4" />
+                </span>
               </div>
-            </div>
+            </a>
           ))}
         </div>
       </div>

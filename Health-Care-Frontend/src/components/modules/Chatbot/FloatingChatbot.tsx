@@ -10,7 +10,6 @@ import {
   Bot,
   User,
   Sparkles,
-  ChevronDown,
 } from "lucide-react";
 import { toast } from "sonner";
 import {
@@ -57,22 +56,22 @@ const SUGGESTED_QUERIES = [
 
 function TypingIndicator() {
   return (
-    <div className="flex items-end gap-2 max-w-[85%]">
-      <div className="w-8 h-8 rounded-full bg-linear-to-br from-blue-500 to-violet-600 flex items-center justify-center shrink-0 shadow-md">
+    <div role="status" aria-label="Assistant is typing" className="flex max-w-[85%] items-end gap-2">
+      <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[#174c3b] text-white">
         <Bot size={16} className="text-white" />
       </div>
       <div className="bg-white border border-slate-200 rounded-2xl rounded-bl-sm px-4 py-3 shadow-sm">
         <div className="flex items-center gap-1">
           <span
-            className="w-2 h-2 rounded-full bg-slate-400 inline-block animate-bounce"
+            className="inline-block h-2 w-2 animate-bounce rounded-full bg-[#6c9a78] motion-reduce:animate-none"
             style={{ animationDelay: "0ms" }}
           />
           <span
-            className="w-2 h-2 rounded-full bg-slate-400 inline-block animate-bounce"
+            className="inline-block h-2 w-2 animate-bounce rounded-full bg-[#6c9a78] motion-reduce:animate-none"
             style={{ animationDelay: "150ms" }}
           />
           <span
-            className="w-2 h-2 rounded-full bg-slate-400 inline-block animate-bounce"
+            className="inline-block h-2 w-2 animate-bounce rounded-full bg-[#6c9a78] motion-reduce:animate-none"
             style={{ animationDelay: "300ms" }}
           />
         </div>
@@ -100,14 +99,14 @@ function MessageBubble({
       <div
         className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 shadow-md ${
           isUser
-            ? "bg-linear-to-br from-slate-600 to-slate-800"
-            : "bg-linear-to-br from-blue-500 to-violet-600"
+            ? "bg-[#e8f1e8] text-[#174c3b]"
+            : "bg-[#174c3b] text-white"
         }`}
       >
         {isUser ? (
-          <User size={16} className="text-white" />
+          <User size={16} className="text-current" />
         ) : (
-          <Bot size={16} className="text-white" />
+          <Bot size={16} className="text-current" />
         )}
       </div>
 
@@ -118,8 +117,8 @@ function MessageBubble({
         <div
           className={`px-3.5 py-2.5 text-sm leading-relaxed whitespace-pre-wrap ${
             isUser
-              ? "bg-linear-to-br from-blue-600 to-violet-600 text-white rounded-2xl rounded-br-sm shadow-md"
-              : "bg-white border border-slate-200 text-slate-800 rounded-2xl rounded-bl-sm shadow-sm"
+              ? "rounded-2xl rounded-br-sm bg-[#174c3b] text-white"
+              : "rounded-2xl rounded-bl-sm border border-[#dce7df] bg-white text-[#253d32] shadow-sm"
           }`}
         >
           {typeof message.content === "string"
@@ -139,7 +138,7 @@ function MessageBubble({
         {message.isError && onRetry && message.queryToRetry && (
           <button
             onClick={() => onRetry(message.queryToRetry!)}
-            className="flex items-center gap-1 text-[10px] text-blue-600 hover:text-blue-700 font-medium mt-1 cursor-pointer bg-blue-50 px-2 py-1 rounded-md border border-blue-100"
+            className="mt-1 inline-flex cursor-pointer items-center gap-1 rounded-md border border-[#dce7df] bg-white px-2 py-1 text-[11px] font-medium text-[#174c3b] transition-colors hover:bg-[#f3f7f4]"
           >
             <RefreshCw size={10} />
             Retry
@@ -149,20 +148,20 @@ function MessageBubble({
         {/* Sources */}
         {!isUser && message.sources && message.sources.length > 0 && (
           <div className="flex flex-wrap gap-1 px-1">
-            <span className="text-[10px] text-slate-400 w-full mb-0.5">
+            <span className="mb-0.5 w-full text-[10px] text-[#718177]">
               Sources:
             </span>
             {message.sources.map((src, i) => (
               <span
                 key={i}
-                className="inline-flex items-center gap-1 text-[10px] bg-blue-50 text-blue-700 border border-blue-200 px-2 py-0.5 rounded-full font-medium"
+                className="inline-flex items-center gap-1 rounded-full border border-[#dce7df] bg-[#f3f7f4] px-2 py-1 text-[10px] font-medium text-[#174c3b]"
               >
                 <Sparkles size={8} />
                 {src?.metadata?.name
                   ? String(src.metadata.name)
                   : `Source ${i + 1}`}
                 {typeof src.similarity === "number" && (
-                  <span className="text-blue-400">
+                  <span className="text-[#718177]">
                     {(src.similarity * 100).toFixed(0)}%
                   </span>
                 )}
@@ -186,6 +185,7 @@ export default function FloatingChatbot() {
   const [userRole, setUserRole] = useState<string | null>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+  const triggerRef = useRef<HTMLButtonElement>(null);
 
   // Fetch user role on mount
   useEffect(() => {
@@ -206,8 +206,23 @@ export default function FloatingChatbot() {
   // Focus input when chat opens
   useEffect(() => {
     if (isOpen) {
-      setTimeout(() => inputRef.current?.focus(), 300);
+      const focusTimer = window.setTimeout(() => inputRef.current?.focus(), 160);
+      return () => window.clearTimeout(focusTimer);
     }
+  }, [isOpen]);
+
+  useEffect(() => {
+    if (!isOpen) return;
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        setIsOpen(false);
+        triggerRef.current?.focus();
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
   }, [isOpen]);
 
   // ── Sync handler ────────────────────────────────────────────────────────
@@ -261,26 +276,31 @@ export default function FloatingChatbot() {
     <>
       {/* ── Chat Window ────────────────────────────────────────────────── */}
       <div
-        className={`fixed bottom-24 right-6 z-50 w-88 sm:w-104 flex flex-col rounded-2xl shadow-2xl border border-slate-200/80 overflow-hidden bg-white transition-all duration-300 ease-in-out ${
+        id="ai-health-assistant"
+        role="region"
+        aria-label="AI healthcare assistant"
+        className={`fixed inset-x-4 bottom-24 z-50 mx-auto flex w-auto max-w-104 flex-col overflow-hidden rounded-xl border border-[#dce7df] bg-white shadow-[0_24px_70px_rgba(23,55,45,0.2)] transition-all duration-200 ease-out motion-reduce:transform-none motion-reduce:transition-none sm:inset-x-auto sm:right-6 ${
           isOpen
             ? "opacity-100 translate-y-0 pointer-events-auto"
             : "opacity-0 translate-y-6 pointer-events-none"
         }`}
-        style={{ maxHeight: "78vh" }}
+        style={{ maxHeight: "calc(100dvh - 7rem)" }}
         aria-hidden={!isOpen}
+        inert={!isOpen}
       >
         {/* Header */}
-        <div className="bg-linear-to-br from-blue-600 to-violet-600 px-4 py-3 flex items-center justify-between shrink-0">
+        <div className="flex shrink-0 items-center justify-between bg-[#174c3b] px-4 py-3.5">
           <div className="flex items-center gap-2.5">
-            <div className="w-9 h-9 rounded-full bg-white/20 flex items-center justify-center backdrop-blur-sm">
+            <div className="flex h-9 w-9 items-center justify-center rounded-full bg-white/12 text-[#d9ef9f]">
               <Bot size={20} className="text-white" />
             </div>
             <div>
               <p className="text-white font-semibold text-sm leading-none">
                 AI Health Assistant
               </p>
-              <p className="text-blue-100 text-[10px] mt-0.5">
-                Powered by RAG · Always online
+              <p className="mt-1 flex items-center gap-1.5 text-[10px] text-white/75">
+                <span className="h-1.5 w-1.5 rounded-full bg-[#d9ef9f]" />
+                Ready to help
               </p>
             </div>
           </div>
@@ -291,7 +311,8 @@ export default function FloatingChatbot() {
                 onClick={handleSync}
                 disabled={isSyncing}
                 title="Sync Doctor Data"
-                className="w-8 h-8 rounded-full flex items-center justify-center text-white hover:bg-white/20 transition-colors disabled:opacity-60 cursor-pointer"
+                aria-label={isSyncing ? "Syncing doctor data" : "Sync doctor data"}
+                className="flex h-9 w-9 cursor-pointer items-center justify-center rounded-full text-white transition-colors hover:bg-white/15 disabled:cursor-not-allowed disabled:opacity-60"
               >
                 <RefreshCw
                   size={16}
@@ -301,10 +322,14 @@ export default function FloatingChatbot() {
             )}
             {/* Close button */}
             <button
-              onClick={() => setIsOpen(false)}
-              className="w-8 h-8 rounded-full flex items-center justify-center text-white hover:bg-white/20 transition-colors cursor-pointer"
+              onClick={() => {
+                setIsOpen(false);
+                triggerRef.current?.focus();
+              }}
+              aria-label="Minimize assistant"
+              className="flex h-9 w-9 cursor-pointer items-center justify-center rounded-full text-white transition-colors hover:bg-white/15"
             >
-              <ChevronDown size={18} />
+              <X size={18} />
             </button>
           </div>
         </div>
@@ -312,8 +337,8 @@ export default function FloatingChatbot() {
         {/* Messages area */}
         <div
           ref={scrollRef}
-          className="flex-1 overflow-y-auto p-4 space-y-4 bg-slate-50/60 min-h-0"
-          style={{ minHeight: "200px", maxHeight: "55vh" }}
+          className="min-h-0 flex-1 space-y-4 overflow-y-auto bg-[#f5f8f5] p-4"
+          style={{ minHeight: "200px", maxHeight: "55dvh" }}
         >
           {messages.map((msg) => (
             <MessageBubble key={msg.id} message={msg} onRetry={handleSend} />
@@ -324,14 +349,14 @@ export default function FloatingChatbot() {
           {/* Suggested queries — only shown when only welcome message exists */}
           {messages.length === 1 && !isQuerying && (
             <div className="flex flex-col gap-2 mt-2">
-              <p className="text-[11px] text-slate-400 font-medium px-1">
-                Try asking:
+              <p className="px-1 text-[11px] font-medium text-[#718177]">
+                Suggested questions
               </p>
               {SUGGESTED_QUERIES.map((q) => (
                 <button
                   key={q}
                   onClick={() => handleSend(q)}
-                  className="text-left text-xs bg-white border border-slate-200 text-slate-600 px-3 py-2 rounded-xl hover:border-blue-400 hover:text-blue-600 hover:bg-blue-50 transition-all cursor-pointer shadow-sm"
+                  className="cursor-pointer rounded-lg border border-[#dce7df] bg-white px-3 py-2.5 text-left text-xs text-[#43564a] shadow-sm transition-colors hover:border-[#9dbba4] hover:bg-[#f3f7f4] hover:text-[#174c3b]"
                 >
                   {q}
                 </button>
@@ -341,7 +366,7 @@ export default function FloatingChatbot() {
         </div>
 
         {/* Input area */}
-        <div className="shrink-0 px-3 py-3 bg-white border-t border-slate-100">
+        <div className="shrink-0 border-t border-[#e7eee8] bg-white px-3 py-3">
           <form
             onSubmit={(e) => {
               e.preventDefault();
@@ -356,12 +381,14 @@ export default function FloatingChatbot() {
               value={inputValue}
               onChange={(e) => setInputValue(e.target.value)}
               disabled={isQuerying}
-              className="flex-1 text-sm bg-slate-100 border border-transparent focus:border-blue-300 focus:bg-white rounded-xl px-3 py-2.5 outline-none transition-all placeholder:text-slate-400 disabled:opacity-60"
+              aria-label="Ask the healthcare assistant"
+              className="min-w-0 flex-1 rounded-lg border border-transparent bg-[#f3f7f4] px-3 py-2.5 text-sm text-[#253d32] outline-none transition-colors placeholder:text-[#85938a] focus:border-[#174c3b] focus:bg-white focus:ring-2 focus:ring-[#174c3b]/10 disabled:opacity-60"
             />
             <button
               type="submit"
               disabled={isQuerying || !inputValue.trim()}
-              className="w-10 h-10 rounded-xl bg-linear-to-br from-blue-600 to-violet-600 flex items-center justify-center text-white hover:opacity-90 active:scale-95 transition-all disabled:opacity-40 disabled:cursor-not-allowed shrink-0 cursor-pointer shadow-md"
+              aria-label="Send message"
+              className="flex h-10 w-10 shrink-0 cursor-pointer items-center justify-center rounded-lg bg-[#174c3b] text-white shadow-sm transition-all hover:bg-[#23634d] active:scale-95 disabled:cursor-not-allowed disabled:opacity-40 motion-reduce:transition-none motion-reduce:active:scale-100"
             >
               <Send size={16} />
             </button>
@@ -371,16 +398,19 @@ export default function FloatingChatbot() {
 
       {/* ── Floating Trigger Button ────────────────────────────────────── */}
       <button
+        ref={triggerRef}
         onClick={() => setIsOpen((prev) => !prev)}
         aria-label={isOpen ? "Close AI assistant" : "Open AI assistant"}
-        className={`fixed bottom-6 right-6 z-50 w-14 h-14 rounded-full bg-linear-to-br from-blue-600 to-violet-600 text-white flex items-center justify-center shadow-xl hover:shadow-2xl hover:scale-105 active:scale-95 transition-all duration-200 cursor-pointer ${
+        aria-expanded={isOpen}
+        aria-controls="ai-health-assistant"
+        className={`fixed bottom-5 right-5 z-50 flex h-14 w-14 cursor-pointer items-center justify-center rounded-full bg-[#174c3b] text-white shadow-lg transition-all duration-200 hover:bg-[#23634d] hover:shadow-xl hover:scale-105 active:scale-95 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#174c3b] motion-reduce:transition-none motion-reduce:hover:scale-100 motion-reduce:active:scale-100 ${
           isOpen ? "rotate-90" : "rotate-0"
         }`}
       >
         {isOpen ? <X size={24} /> : <MessageSquare size={24} />}
         {/* Pulsing ring when closed */}
         {!isOpen && (
-          <span className="absolute inset-0 rounded-full bg-blue-500 opacity-30 animate-ping" />
+          <span className="absolute inset-0 animate-ping rounded-full bg-[#6c9a78] opacity-25 motion-reduce:animate-none" />
         )}
       </button>
     </>

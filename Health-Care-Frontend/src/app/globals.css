@@ -127,3 +127,145 @@
     @apply bg-background text-foreground;
   }
 }
+
+.home-page {
+  --home-brand: #174c3b;
+  --home-brand-hover: #23634d;
+  --home-ink: #17372d;
+  --home-muted: #61736b;
+  --home-accent: #d9ef9f;
+  --home-line: #dce7df;
+  --home-wash: #f3f7f4;
+  color: var(--home-ink);
+}
+
+.home-page .home-primary-button,
+.home-page .home-secondary-button {
+  cursor: pointer;
+  display: inline-flex;
+  min-height: 2.75rem;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  border-radius: 0.5rem;
+  padding: 0.75rem 1rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  transition:
+    background-color 160ms ease,
+    border-color 160ms ease,
+    color 160ms ease,
+    transform 160ms ease;
+}
+
+.home-page .home-primary-button:hover,
+.home-page .home-secondary-button:hover {
+  transform: translateY(-1px);
+}
+
+.home-page .home-primary-button:active,
+.home-page .home-secondary-button:active {
+  transform: translateY(0) scale(0.98);
+}
+
+.home-page .home-card-link {
+  cursor: pointer;
+  transition:
+    border-color 180ms ease,
+    background-color 180ms ease,
+    transform 180ms ease;
+}
+
+.home-page .home-card-link:hover {
+  transform: translateY(-3px);
+}
+
+.home-page .home-card-link:active {
+  transform: translateY(-1px);
+}
+
+.home-page .home-info-card {
+  transition:
+    border-color 180ms ease,
+    transform 180ms ease;
+}
+
+.home-page .home-info-card:hover {
+  transform: translateY(-2px);
+}
+
+.home-page .home-image-frame img {
+  transition: transform 500ms ease;
+}
+
+.home-page .home-image-frame:hover img {
+  transform: scale(1.02);
+}
+
+.home-page [role="search"] {
+  transition:
+    border-color 160ms ease,
+    box-shadow 160ms ease;
+}
+
+.home-page [role="search"]:focus-within {
+  border-color: var(--home-brand);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--home-brand) 14%, transparent);
+}
+
+.home-page .home-primary-button {
+  background-color: var(--home-brand);
+  color: #fff;
+}
+
+.home-page .home-primary-button:hover {
+  background-color: var(--home-brand-hover);
+}
+
+.home-page .home-secondary-button {
+  border: 1px solid var(--home-line);
+  background-color: #fff;
+  color: var(--home-brand);
+}
+
+.home-page .home-secondary-button:hover {
+  border-color: var(--home-brand);
+  background-color: var(--home-wash);
+}
+
+.home-page .home-primary-button:focus-visible,
+.home-page .home-secondary-button:focus-visible {
+  outline: 2px solid var(--home-brand);
+  outline-offset: 3px;
+}
+
+.home-page .home-icon-button {
+  width: 3rem;
+  height: 3rem;
+  min-height: 3rem;
+  padding: 0;
+  border-radius: 9999px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .home-page .home-primary-button,
+  .home-page .home-secondary-button,
+  .home-page .home-card-link,
+  .home-page .home-info-card,
+  .home-page .home-image-frame img,
+  .home-page [role="search"] {
+    transition: none;
+  }
+
+  .home-page .home-primary-button:hover,
+  .home-page .home-secondary-button:hover,
+  .home-page .home-primary-button:active,
+  .home-page .home-secondary-button:active,
+  .home-page .home-card-link:hover,
+  .home-page .home-card-link:active,
+  .home-page .home-info-card:hover,
+  .home-page .home-image-frame:hover img,
+  .home-page [role="search"]:focus-within {
+    transform: none;
+  }
+}
