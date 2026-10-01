@@ -10,6 +10,7 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { createSpecialtyAction } from "@/app/(dashboardLayout)/admin/dashboard/specialties-management/_action";
@@ -27,6 +28,7 @@ export default function CreateSpecialtyModal({
   onOpenChange,
 }: CreateSpecialtyModalProps) {
   const [title, setTitle] = useState("");
+  const [description, setDescription] = useState("");
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
 
@@ -54,6 +56,9 @@ export default function CreateSpecialtyModal({
 
     const formData = new FormData();
     formData.append("title", title.trim());
+    if (description.trim()) {
+      formData.append("description", description.trim());
+    }
     if (selectedFile) {
       formData.append("file", selectedFile);
     }
@@ -71,6 +76,7 @@ export default function CreateSpecialtyModal({
       
       // Reset Form State
       setTitle("");
+      setDescription("");
       setSelectedFile(null);
       setPreviewUrl(null);
       onOpenChange(false);
@@ -108,6 +114,20 @@ export default function CreateSpecialtyModal({
               onChange={(e) => setTitle(e.target.value)}
               className="rounded-xl border-[#e5ebe7] focus:border-[#1f5c4b] focus:ring-[#1f5c4b]"
               required
+            />
+          </div>
+
+          <div className="space-y-1.5">
+            <Label htmlFor="specialty-description" className="text-xs font-semibold text-[#1a2d29]">
+              Description
+            </Label>
+            <Textarea
+              id="specialty-description"
+              placeholder="Describe the care provided by this specialty"
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              className="rounded-xl border-[#e5ebe7] focus:border-[#1f5c4b] focus:ring-[#1f5c4b]"
+              rows={3}
             />
           </div>
 

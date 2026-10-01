@@ -1,58 +1,13 @@
 
-import BookAppointmentModal from "@/components/modules/Patient/Appointments/BookAppointmentModal"
 import DoctorProfileActions from "@/components/modules/Consultation/DoctorProfileActions"
+import ConsultationPageBanner from "@/components/modules/Consultation/ConsultationPageBanner"
 import { Badge } from "@/components/ui/badge"
-import { getUserInfo } from "@/services/auth.services"
+import { Button } from "@/components/ui/button"
 import { getDoctorById } from "@/services/doctor.services"
 import { type IDoctorDetails } from "@/types/doctor.types"
 import { format } from "date-fns"
 import Image from "next/image"
 import Link from "next/link"
-
-const CONSULTATION_BANNER_IMAGE =
-  "https://www.squarehospital.com/frontEnd/images/common-banner.jpg"
-
-type BreadcrumbItem = {
-  label: string
-  href?: string
-}
-
-const ConsultationPageBanner = ({
-  title,
-  breadcrumbs,
-}: {
-  title: string
-  breadcrumbs: BreadcrumbItem[]
-}) => (
-  <div
-    className="relative bg-cover bg-center bg-no-repeat mt-5"
-    style={{ backgroundImage: `url(${CONSULTATION_BANNER_IMAGE})` }}
-  >
-    <div className="absolute inset-0 bg-linear-to-r from-[#1f5c4b]/90 via-[#184b3d]/80 to-[#1f5c4b]/75" />
-    <div className="relative mx-auto max-w-7xl px-4 py-10 sm:px-6 sm:py-12 lg:px-8">
-      <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
-        <h1 className="text-3xl font-bold tracking-tight text-white sm:text-4xl">{title}</h1>
-        <nav
-          aria-label="Breadcrumb"
-          className="flex flex-wrap items-center gap-x-2 gap-y-1 text-sm text-white/90 md:justify-end"
-        >
-          {breadcrumbs.map((item, index) => (
-            <span key={`${item.label}-${index}`} className="inline-flex items-center gap-2">
-              {index > 0 && <span className="text-white/60">/</span>}
-              {item.href ? (
-                <Link href={item.href} className="transition hover:text-white">
-                  {item.label}
-                </Link>
-              ) : (
-                <span className="font-medium text-white">{item.label}</span>
-              )}
-            </span>
-          ))}
-        </nav>
-      </div>
-    </div>
-  </div>
-)
 
 const formatDateTime = (value?: string | Date | null) => {
   if (!value) {
@@ -86,82 +41,12 @@ const getTodayStart = () => {
   return today
 }
 
-const getSpecialtySummary = (doctorDetails: IDoctorDetails) => {
+const getSpecialtyNames = (doctorDetails: IDoctorDetails) => {
   const specialtyTitles = (doctorDetails.specialties ?? [])
     .map((item) => item.specialty.title)
     .filter(Boolean)
 
-  const designation = doctorDetails.designation?.trim()
-
-  if (designation && specialtyTitles.length > 0) {
-    return `${designation}, ${specialtyTitles.join(", ")}`
-  }
-
-  if (designation) {
-    return designation
-  }
-
-  if (specialtyTitles.length > 0) {
-    return specialtyTitles.join(", ")
-  }
-
-  return "N/A"
-}
-
-const buildDoctorBioParagraphs = (doctorDetails: IDoctorDetails) => {
-  const paragraphs: string[] = []
-  const specialtySummary = getSpecialtySummary(doctorDetails)
-  const workplace = doctorDetails.currentWorkingPlace?.trim()
-  const qualification = doctorDetails.qualification?.trim()
-  const registrationNumber = doctorDetails.registrationNumber?.trim()
-  const experience = doctorDetails.experience ?? 0
-  const appointmentFee = doctorDetails.appointmentFee?.toFixed(2) ?? "N/A"
-  const averageRating = doctorDetails.averageRating?.toFixed(1) ?? "0.0"
-  const email = doctorDetails.email?.trim()
-  const contactNumber = doctorDetails.contactNumber?.trim()
-  const address = doctorDetails.address?.trim()
-  const gender = doctorDetails.gender?.replace(/_/g, " ").toLowerCase()
-
-  paragraphs.push(
-    `${doctorDetails.name} is a ${specialtySummary !== "N/A" ? specialtySummary.toLowerCase() : "healthcare professional"}${workplace ? ` currently serving at ${workplace}` : ""}.`,
-  )
-
-  if (qualification || registrationNumber) {
-    const qualificationPart = qualification
-      ? `holds the qualification ${qualification}`
-      : "is a registered medical professional"
-    const registrationPart = registrationNumber
-      ? ` with registration number ${registrationNumber}`
-      : ""
-
-    paragraphs.push(
-      `${doctorDetails.name} ${qualificationPart}${registrationPart}.`,
-    )
-  }
-
-  paragraphs.push(
-    `With ${experience} ${experience === 1 ? "year" : "years"} of professional experience, ${doctorDetails.name} provides consultation services at an appointment fee of $${appointmentFee} and maintains an average patient rating of ${averageRating} out of 5.`,
-  )
-
-  const contactDetails = [email, contactNumber].filter(Boolean)
-  if (contactDetails.length > 0 || address || gender) {
-    const contactPart = contactDetails.length > 0
-      ? `Patients can reach out via ${contactDetails.join(" or ")}`
-      : "Patients can contact the clinic for appointments"
-    const addressPart = address ? ` at ${address}` : ""
-    const genderPart = gender ? ` Gender: ${gender}.` : ""
-
-    paragraphs.push(`${contactPart}${addressPart}.${genderPart}`)
-  }
-
-  const reviewCount = doctorDetails.reviews?.length ?? 0
-  if (reviewCount > 0) {
-    paragraphs.push(
-      `${doctorDetails.name} has received ${reviewCount} patient ${reviewCount === 1 ? "review" : "reviews"}, reflecting ongoing feedback from people who have consulted with this doctor.`,
-    )
-  }
-
-  return paragraphs
+  return specialtyTitles.length > 0 ? specialtyTitles.join(", ") : "N/A"
 }
 
 const ConsultationDoctorByIdPage = async ({
@@ -170,8 +55,6 @@ const ConsultationDoctorByIdPage = async ({
   params: Promise<{ id: string }>
 }) => {
   const { id } = await params
-  const currentUser = await getUserInfo()
-
   let doctorDetails: IDoctorDetails | null = null
   let errorMessage = ""
 
@@ -272,18 +155,14 @@ const ConsultationDoctorByIdPage = async ({
               )}
             </div>
 
-            <BookAppointmentModal
-              doctorId={String(doctorDetails.id)}
-              doctorName={doctorDetails.name}
-              isAuthenticated={Boolean(currentUser)}
-              viewerRole={currentUser?.role ?? null}
-              triggerLabel="Get Appointment"
-              showTriggerIcon={false}
-              fullWidth
-              triggerClassName="h-11 w-full rounded-md border-0 
-               bg-[#4ca27a] cursor-pointer text-white transition hover:bg-[#3f8d68]
-               text-sm font-semibold "
-            />
+            <Button
+              asChild
+              className="h-11 w-full rounded-md border-0 bg-[#4ca27a] text-sm font-semibold text-white transition hover:bg-[#3f8d68]"
+            >
+              <Link href={`/consultation/doctor/${doctorDetails.id}/appointment`}>
+                Get Appointment
+              </Link>
+            </Button>
           </div>
 
           <div className="space-y-5">
@@ -298,7 +177,7 @@ const ConsultationDoctorByIdPage = async ({
             <div className="space-y-1 text-sm sm:text-[15px]">
               <p>
                 <span className="font-semibold text-[#333333]">Specialty -</span>{" "}
-                <span className="text-[#555555]">{getSpecialtySummary(doctorDetails)}</span>
+                <span className="text-[#555555]">{getSpecialtyNames(doctorDetails)}</span>
               </p>
               <p>
                 <span className="font-semibold text-[#333333]">Degree -</span>{" "}
@@ -306,10 +185,8 @@ const ConsultationDoctorByIdPage = async ({
               </p>
             </div>
 
-            <div className="space-y-4 text-sm leading-7 text-[#555555] sm:text-[15px] sm:leading-8">
-              {buildDoctorBioParagraphs(doctorDetails).map((paragraph, index) => (
-                <p key={`bio-${index}`}>{paragraph}</p>
-              ))}
+            <div className="whitespace-pre-line text-sm leading-7 text-[#555555] sm:text-[15px] sm:leading-8">
+              {doctorDetails.description?.trim() || "No description available."}
             </div>
           </div>
         </div>

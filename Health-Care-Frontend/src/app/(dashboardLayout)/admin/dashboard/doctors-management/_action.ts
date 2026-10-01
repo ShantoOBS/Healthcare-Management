@@ -1,6 +1,6 @@
 "use server"
 
-import { createDoctor, deleteDoctor, getDoctorById, updateDoctor } from "@/services/doctor.services"
+import { createDoctor, deleteDoctor, getDoctorById, updateDoctor, updateDoctorProfilePhoto } from "@/services/doctor.services"
 import { type ApiErrorResponse, type ApiResponse } from "@/types/api.types"
 import { type ICreateDoctorPayload, type IDoctor, type IDoctorDetails, type IUpdateDoctorPayload } from "@/types/doctor.types"
 import { createDoctorServerZodSchema, updateDoctorServerZodSchema } from "@/zod/doctor.validation"
@@ -30,6 +30,7 @@ const getActionErrorMessage = (error: unknown, fallbackMessage: string) => {
 
 export const createDoctorAction = async (
   payload: ICreateDoctorPayload,
+  profilePhoto?: File,
 ): Promise<ApiResponse<IDoctor> | ApiErrorResponse> => {
   const parsedPayload = createDoctorServerZodSchema.safeParse(payload)
 
@@ -41,7 +42,7 @@ export const createDoctorAction = async (
   }
 
   try {
-    return await createDoctor(parsedPayload.data)
+    return await createDoctor(parsedPayload.data, profilePhoto)
   } catch (error: unknown) {
     return {
       success: false,
@@ -69,6 +70,24 @@ export const updateDoctorAction = async (
     return {
       success: false,
       message: getActionErrorMessage(error, "Failed to update doctor"),
+    }
+  }
+}
+
+export const updateDoctorProfilePhotoAction = async (
+  id: string,
+  file: File,
+): Promise<ApiResponse<IDoctor> | ApiErrorResponse> => {
+  if (!id || !file || file.size === 0) {
+    return { success: false, message: "Choose a profile photo to upload" }
+  }
+
+  try {
+    return await updateDoctorProfilePhoto(id, file)
+  } catch (error: unknown) {
+    return {
+      success: false,
+      message: getActionErrorMessage(error, "Failed to update doctor profile photo"),
     }
   }
 }

@@ -18,6 +18,7 @@ export interface IDoctor {
     profilePhoto?: string;
     contactNumber?: string;
     address?: string;
+    description?: string;
     registrationNumber: string;
     experience?: number;
     gender: Gender;
@@ -48,6 +49,7 @@ export interface ICreateDoctorPayload {
         email: string;
         contactNumber: string;
         address?: string;
+        description?: string;
         registrationNumber: string;
         experience?: number;
         gender: Gender.MALE | Gender.FEMALE;
@@ -69,6 +71,7 @@ export interface IUpdateDoctorPayload {
         name?: string;
         contactNumber?: string;
         address?: string;
+        description?: string | null;
         registrationNumber?: string;
         experience?: number;
         gender?: Gender.MALE | Gender.FEMALE;

@@ -33,6 +33,7 @@ export const createDoctorFormZodSchema = z.object({
       (value) => value.length === 0 || value.length >= 10,
       "Address must be at least 10 characters",
     ),
+  description: z.string().trim().max(1000, "Description must be at most 1000 characters"),
   registrationNumber: z
     .string()
     .trim()
@@ -57,17 +58,17 @@ export const createDoctorFormZodSchema = z.object({
     .string()
     .trim()
     .min(2, "Qualification must be at least 2 characters")
-    .max(50, "Qualification must be at most 50 characters"),
+    .max(200, "Qualification must be at most 200 characters"),
   currentWorkingPlace: z
     .string()
     .trim()
     .min(2, "Current working place must be at least 2 characters")
-    .max(50, "Current working place must be at most 50 characters"),
+    .max(200, "Current working place must be at most 200 characters"),
   designation: z
     .string()
     .trim()
     .min(2, "Designation must be at least 2 characters")
-    .max(50, "Designation must be at most 50 characters"),
+    .max(200, "Designation must be at most 200 characters"),
   specialties: z
     .array(z.uuid("Please select a valid specialty"))
     .min(1, "At least one specialty is required"),
@@ -99,6 +100,10 @@ export const createDoctorServerZodSchema = z.object({
         .max(100, "Address must be at most 100 characters")
         .optional(),
     ),
+    description: z.preprocess(
+      emptyStringToUndefined,
+      z.string().trim().max(1000, "Description must be at most 1000 characters").optional(),
+    ),
     registrationNumber: z
       .string()
       .trim()
@@ -123,17 +128,17 @@ export const createDoctorServerZodSchema = z.object({
       .string()
       .trim()
       .min(2, "Qualification must be at least 2 characters")
-      .max(50, "Qualification must be at most 50 characters"),
+      .max(200, "Qualification must be at most 200 characters"),
     currentWorkingPlace: z
       .string()
       .trim()
       .min(2, "Current working place must be at least 2 characters")
-      .max(50, "Current working place must be at most 50 characters"),
+      .max(200, "Current working place must be at most 200 characters"),
     designation: z
       .string()
       .trim()
       .min(2, "Designation must be at least 2 characters")
-      .max(50, "Designation must be at most 50 characters"),
+      .max(200, "Designation must be at most 200 characters"),
   }),
   specialties: z
     .array(z.uuid("Please select a valid specialty"))
@@ -159,6 +164,7 @@ export const editDoctorFormZodSchema = z.object({
       (value) => value.length === 0 || value.length >= 10,
       "Address must be at least 10 characters",
     ),
+  description: z.string().trim().max(1000, "Description must be at most 1000 characters"),
   registrationNumber: z
     .string()
     .trim()
@@ -183,17 +189,17 @@ export const editDoctorFormZodSchema = z.object({
     .string()
     .trim()
     .min(2, "Qualification must be at least 2 characters")
-    .max(50, "Qualification must be at most 50 characters"),
+    .max(200, "Qualification must be at most 200 characters"),
   currentWorkingPlace: z
     .string()
     .trim()
     .min(2, "Current working place must be at least 2 characters")
-    .max(50, "Current working place must be at most 50 characters"),
+    .max(200, "Current working place must be at most 200 characters"),
   designation: z
     .string()
     .trim()
     .min(2, "Designation must be at least 2 characters")
-    .max(50, "Designation must be at most 50 characters"),
+    .max(200, "Designation must be at most 200 characters"),
   specialties: z
     .array(z.uuid("Please select a valid specialty"))
     .min(1, "At least one specialty is required"),
@@ -223,6 +229,12 @@ export const updateDoctorServerZodSchema = z.object({
           .max(100, "Address must be at most 100 characters")
           .optional(),
       ),
+      description: z
+        .string()
+        .trim()
+        .max(1000, "Description must be at most 1000 characters")
+        .nullable()
+        .optional(),
       registrationNumber: z
         .string()
         .trim()
@@ -254,19 +266,19 @@ export const updateDoctorServerZodSchema = z.object({
         .string()
         .trim()
         .min(2, "Qualification must be at least 2 characters")
-        .max(50, "Qualification must be at most 50 characters")
+        .max(200, "Qualification must be at most 200 characters")
         .optional(),
       currentWorkingPlace: z
         .string()
         .trim()
         .min(2, "Current working place must be at least 2 characters")
-        .max(50, "Current working place must be at most 50 characters")
+        .max(200, "Current working place must be at most 200 characters")
         .optional(),
       designation: z
         .string()
         .trim()
         .min(2, "Designation must be at least 2 characters")
-        .max(50, "Designation must be at most 50 characters")
+        .max(200, "Designation must be at most 200 characters")
         .optional(),
     })
     .optional(),

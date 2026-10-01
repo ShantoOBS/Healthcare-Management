@@ -8,9 +8,13 @@ export const createDoctorZodSchema = z.object({
 
         email: z.email("Invalid email address"),
 
+        profilePhoto: z.url("Profile photo must be a valid URL").optional(),
+
         contactNumber: z.string("Contact number is required").min(11, "Contact number must be at least 11 characters").max(14, "Contact number must be at most 15 characters"),
 
         address: z.string("Address is required").min(10, "Address must be at least 10 characters").max(100, "Address must be at most 100 characters").optional(),
+
+        description: z.string("Description must be a string").max(1000, "Description must be at most 1000 characters").optional(),
 
         registrationNumber: z.string("Registration number is required"),
 
@@ -20,11 +24,11 @@ export const createDoctorZodSchema = z.object({
 
         appointmentFee: z.number("Appointment fee must be a number").nonnegative("Appointment fee cannot be negative"),
 
-        qualification: z.string("Qualification is required").min(2, "Qualification must be at least 2 characters").max(50, "Qualification must be at most 50 characters"),
+        qualification: z.string("Qualification is required").min(2, "Qualification must be at least 2 characters").max(200, "Qualification must be at most 200 characters"),
 
-        currentWorkingPlace: z.string("Current working place is required").min(2, "Current working place must be at least 2 characters").max(50, "Current working place must be at most 50 characters"),
+        currentWorkingPlace: z.string("Current working place is required").min(2, "Current working place must be at least 2 characters").max(200, "Current working place must be at most 200 characters"),
 
-        designation: z.string("Designation is required").min(2, "Designation must be at least 2 characters").max(50, "Designation must be at most 50 characters"),
+        designation: z.string("Designation is required").min(2, "Designation must be at least 2 characters").max(200, "Designation must be at most 200 characters"),
 
     }),
     specialties: z.array(z.uuid(), "Specialties must be an array of strings").min(1, "At least one specialty is required")

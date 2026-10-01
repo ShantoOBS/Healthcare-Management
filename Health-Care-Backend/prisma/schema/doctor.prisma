@@ -6,6 +6,7 @@ model Doctor {
   profilePhoto  String?
   contactNumber String?
   address       String?
+  description   String? 
   isDeleted     Boolean   @default(false)
   deletedAt     DateTime?
 

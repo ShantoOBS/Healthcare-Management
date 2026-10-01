@@ -14,6 +14,7 @@ import {
     DialogTrigger,
 } from "@/components/ui/dialog"
 import { Label } from "@/components/ui/label"
+import { Input } from "@/components/ui/input"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import {
     Select,
@@ -24,7 +25,7 @@ import {
 } from "@/components/ui/select"
 import { Textarea } from "@/components/ui/textarea"
 import { cn } from "@/lib/utils"
-import { Gender } from "@/types/doctor.types"
+import { Gender, type ICreateDoctorPayload } from "@/types/doctor.types"
 import { type ISpecialty } from "@/types/specialty.types"
 import {
     createDoctorFormZodSchema,
@@ -32,7 +33,7 @@ import {
 } from "@/zod/doctor.validation"
 import { useForm } from "@tanstack/react-form"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
-import { Plus } from "lucide-react"
+import { Camera, Plus } from "lucide-react"
 import { useRouter } from "next/navigation"
 import { useCallback, useState } from "react"
 import { toast } from "sonner"
@@ -49,6 +50,7 @@ const defaultValues: ICreateDoctorFormValues = {
   email: "",
   contactNumber: "",
   address: "",
+  description: "",
   registrationNumber: "",
   experience: "",
   gender: Gender.MALE,
@@ -84,11 +86,13 @@ const CreateDoctorFormModal = ({
   isLoadingSpecialties = false,
 }: CreateDoctorFormModalProps) => {
   const [open, setOpen] = useState(false)
+  const [profilePhotoFile, setProfilePhotoFile] = useState<File | null>(null)
   const queryClient = useQueryClient()
   const router = useRouter()
 
   const { mutateAsync, isPending } = useMutation({
-    mutationFn: createDoctorAction,
+    mutationFn: ({ payload, profilePhoto }: { payload: ICreateDoctorPayload; profilePhoto?: File }) =>
+      createDoctorAction(payload, profilePhoto),
   })
 
   const form = useForm({
@@ -101,6 +105,7 @@ const CreateDoctorFormModal = ({
           email: value.email,
           contactNumber: value.contactNumber,
           address: value.address,
+          description: value.description.trim() || undefined,
           registrationNumber: value.registrationNumber,
           experience: value.experience ? Number(value.experience) : undefined,
           gender: value.gender,
@@ -112,7 +117,10 @@ const CreateDoctorFormModal = ({
         specialties: value.specialties,
       } as const
 
-      const result = await mutateAsync(payload)
+      const result = await mutateAsync({
+        payload,
+        profilePhoto: profilePhotoFile ?? undefined,
+      })
 
       if (!result.success) {
         toast.error(result.message || "Failed to create doctor")
@@ -121,6 +129,7 @@ const CreateDoctorFormModal = ({
 
       toast.success(result.message || "Doctor created successfully")
       setOpen(false)
+      setProfilePhotoFile(null)
       form.reset()
 
       void queryClient.invalidateQueries({ queryKey: ["doctors"] })
@@ -135,6 +144,7 @@ const CreateDoctorFormModal = ({
 
       if (!nextOpen) {
         form.reset()
+        setProfilePhotoFile(null)
       }
     },
     [form],
@@ -174,6 +184,25 @@ const CreateDoctorFormModal = ({
               }}
               className="space-y-5"
             >
+              <div className="space-y-1.5">
+                <Label htmlFor="new-doctor-profile-photo">Profile photo</Label>
+                <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+                  <Input
+                    id="new-doctor-profile-photo"
+                    type="file"
+                    accept="image/*"
+                    onChange={(event) => setProfilePhotoFile(event.target.files?.[0] ?? null)}
+                    className="sm:max-w-md"
+                  />
+                  {profilePhotoFile && (
+                    <span className="flex items-center gap-2 text-sm text-muted-foreground">
+                      <Camera aria-hidden="true" className="h-4 w-4" />
+                      {profilePhotoFile.name}
+                    </span>
+                  )}
+                </div>
+              </div>
+
               <div className="grid gap-4 md:grid-cols-2">
                 <form.Field
                   name="name"
@@ -385,6 +414,38 @@ const CreateDoctorFormModal = ({
                   }}
                 </form.Field>
               </div>
+
+              <form.Field
+                name="description"
+                validators={{ onChange: createDoctorFormZodSchema.shape.description }}
+              >
+                {(field) => {
+                  const firstError =
+                    field.state.meta.isTouched && field.state.meta.errors.length > 0
+                      ? field.state.meta.errors[0]
+                      : null
+
+                  return (
+                    <div className="space-y-1.5">
+                      <Label htmlFor={field.name} className={cn(firstError && "text-destructive")}>
+                        Description
+                      </Label>
+                      <Textarea
+                        id={field.name}
+                        name={field.name}
+                        value={field.state.value}
+                        placeholder="Describe the doctor's professional background and care focus"
+                        onBlur={field.handleBlur}
+                        onChange={(event) => field.handleChange(event.target.value)}
+                        aria-invalid={!!firstError}
+                        maxLength={1000}
+                        className={cn(firstError && "border-destructive")}
+                      />
+                      <FieldMessage error={firstError} />
+                    </div>
+                  )
+                }}
+              </form.Field>
 
               <form.Field
                 name="specialties"

@@ -1,6 +1,6 @@
 "use client"
 
-import { updateDoctorAction } from "@/app/(dashboardLayout)/admin/dashboard/doctors-management/_action"
+import { updateDoctorAction, updateDoctorProfilePhotoAction } from "@/app/(dashboardLayout)/admin/dashboard/doctors-management/_action"
 import AppField from "@/components/shared/form/AppField"
 import AppSubmitButton from "@/components/shared/form/AppSubmitButton"
 import { Button } from "@/components/ui/button"
@@ -13,6 +13,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog"
 import { Label } from "@/components/ui/label"
+import { Input } from "@/components/ui/input"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import {
   Select,
@@ -32,8 +33,10 @@ import {
 import { useForm } from "@tanstack/react-form"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { useRouter } from "next/navigation"
-import { useEffect } from "react"
+import Image from "next/image"
+import { useEffect, useState } from "react"
 import { toast } from "sonner"
+import { Camera } from "lucide-react"
 import SpecialtiesMultiSelect from "./SpecialtiesMultiSelect"
 
 interface EditDoctorFormModalProps {
@@ -48,6 +51,7 @@ const getInitialValues = (doctor: IDoctor | null): IEditDoctorFormValues => ({
   name: doctor?.name ?? "",
   contactNumber: doctor?.contactNumber ?? "",
   address: doctor?.address ?? "",
+  description: doctor?.description ?? "",
   registrationNumber: doctor?.registrationNumber ?? "",
   experience: doctor?.experience?.toString() ?? "",
   gender: doctor?.gender === Gender.FEMALE ? Gender.FEMALE : Gender.MALE,
@@ -87,11 +91,36 @@ const EditDoctorFormModal = ({
 }: EditDoctorFormModalProps) => {
   const queryClient = useQueryClient()
   const router = useRouter()
+  const [profilePhotoFile, setProfilePhotoFile] = useState<File | null>(null)
 
   const { mutateAsync, isPending } = useMutation({
     mutationFn: ({ doctorId, payload }: { doctorId: string; payload: IUpdateDoctorPayload }) =>
       updateDoctorAction(doctorId, payload),
   })
+
+  const { mutateAsync: uploadProfilePhoto, isPending: isUploadingPhoto } = useMutation({
+    mutationFn: ({ doctorId, file }: { doctorId: string; file: File }) =>
+      updateDoctorProfilePhotoAction(doctorId, file),
+  })
+
+  const handleProfilePhotoUpload = async () => {
+    if (!doctor || !profilePhotoFile) return
+
+    const result = await uploadProfilePhoto({
+      doctorId: String(doctor.id),
+      file: profilePhotoFile,
+    })
+
+    if (!result.success) {
+      toast.error(result.message || "Failed to update profile photo")
+      return
+    }
+
+    toast.success("Profile photo updated successfully")
+    setProfilePhotoFile(null)
+    void queryClient.invalidateQueries({ queryKey: ["doctors"] })
+    router.refresh()
+  }
 
   const form = useForm({
     defaultValues: getInitialValues(doctor),
@@ -125,6 +154,7 @@ const EditDoctorFormModal = ({
           name: value.name,
           contactNumber: value.contactNumber,
           address: value.address,
+          description: value.description.trim() || null,
           registrationNumber: value.registrationNumber,
           experience: value.experience ? Number(value.experience) : undefined,
           gender: value.gender,
@@ -188,6 +218,41 @@ const EditDoctorFormModal = ({
               }}
               className="space-y-5"
             >
+              <div className="flex flex-col gap-4 rounded-md border p-4 sm:flex-row sm:items-center">
+                {doctor?.profilePhoto ? (
+                  <Image
+                    src={doctor.profilePhoto}
+                    alt={`${doctor.name} profile photo`}
+                    width={64}
+                    height={64}
+                    unoptimized
+                    className="h-16 w-16 rounded-full object-cover"
+                  />
+                ) : (
+                  <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-full bg-muted text-muted-foreground">
+                    <Camera aria-hidden="true" className="h-6 w-6" />
+                  </div>
+                )}
+                <div className="min-w-0 flex-1 space-y-1.5">
+                  <Label htmlFor="doctor-profile-photo">Profile photo</Label>
+                  <Input
+                    id="doctor-profile-photo"
+                    type="file"
+                    accept="image/*"
+                    onChange={(event) => setProfilePhotoFile(event.target.files?.[0] ?? null)}
+                  />
+                </div>
+                <Button
+                  type="button"
+                  variant="outline"
+                  disabled={!profilePhotoFile || isUploadingPhoto}
+                  onClick={handleProfilePhotoUpload}
+                >
+                  <Camera aria-hidden="true" className="mr-2 h-4 w-4" />
+                  {isUploadingPhoto ? "Uploading..." : "Update photo"}
+                </Button>
+              </div>
+
               <div className="grid gap-4 md:grid-cols-2">
                 <form.Field
                   name="name"
@@ -378,6 +443,38 @@ const EditDoctorFormModal = ({
                   }}
                 </form.Field>
               </div>
+
+              <form.Field
+                name="description"
+                validators={{ onChange: editDoctorFormZodSchema.shape.description }}
+              >
+                {(field) => {
+                  const firstError =
+                    field.state.meta.isTouched && field.state.meta.errors.length > 0
+                      ? field.state.meta.errors[0]
+                      : null
+
+                  return (
+                    <div className="space-y-1.5">
+                      <Label htmlFor={field.name} className={cn(firstError && "text-destructive")}>
+                        Description
+                      </Label>
+                      <Textarea
+                        id={field.name}
+                        name={field.name}
+                        value={field.state.value}
+                        placeholder="Describe the doctor's professional background and care focus"
+                        onBlur={field.handleBlur}
+                        onChange={(event) => field.handleChange(event.target.value)}
+                        aria-invalid={!!firstError}
+                        maxLength={1000}
+                        className={cn(firstError && "border-destructive")}
+                      />
+                      <FieldMessage error={firstError} />
+                    </div>
+                  )
+                }}
+              </form.Field>
 
               <form.Field
                 name="specialties"

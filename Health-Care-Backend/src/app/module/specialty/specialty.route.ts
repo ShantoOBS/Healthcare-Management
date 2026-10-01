@@ -10,7 +10,7 @@ import { SpecialtyValidation } from "./specialty.validation.js";
 const router = Router();
 
 router.post('/', 
-    //  checkAuth( Role.ADMIN, Role.SUPER_ADMIN), 
+   checkAuth( Role.ADMIN, Role.SUPER_ADMIN), 
     multerUpload.single("file"), 
     validateRequest(SpecialtyValidation.createSpecialtyZodSchema),
     SpecialtyController.createSpecialty);

@@ -25,9 +25,17 @@ export const getAllSpecialties = async () => {
     }
 }
 
-export const createDoctor = async (payload: ICreateDoctorPayload) => {
+export const createDoctor = async (payload: ICreateDoctorPayload, profilePhoto?: File) => {
     try {
-        const response = await httpClient.post<IDoctor>("/users/create-doctor", payload);
+        let requestBody: ICreateDoctorPayload | FormData = payload;
+        if (profilePhoto) {
+            const formData = new FormData();
+            formData.append("data", JSON.stringify(payload));
+            formData.append("file", profilePhoto);
+            requestBody = formData;
+        }
+
+        const response = await httpClient.post<IDoctor>("/users/create-doctor", requestBody);
         return response;
     } catch (error) {
         console.log("Error creating doctor:", error);
@@ -41,6 +49,17 @@ export const updateDoctor = async (id: string, payload: IUpdateDoctorPayload) =>
         return response;
     } catch (error) {
         console.log("Error updating doctor:", error);
+        throw error;
+    }
+}
+
+export const updateDoctorProfilePhoto = async (id: string, file: File) => {
+    try {
+        const formData = new FormData();
+        formData.append("file", file);
+        return await httpClient.patch<IDoctor>(`/doctors/${id}`, formData);
+    } catch (error) {
+        console.log("Error updating doctor profile photo:", error);
         throw error;
     }
 }

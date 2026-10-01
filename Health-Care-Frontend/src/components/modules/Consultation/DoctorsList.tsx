@@ -1,6 +1,5 @@
 "use client"
 
-import BookAppointmentModal from "@/components/modules/Patient/Appointments/BookAppointmentModal"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -455,7 +454,7 @@ const DoctorsList = ({
                     >
                       <div className="overflow-hidden rounded-[14px] bg-[#eef3ef] md:w-[260px]">
                         <Avatar className="h-[260px] w-full rounded-none md:h-[220px]">
-                          <AvatarImage src={doctor.profilePhoto} alt={doctor.name} className="h-full w-full object-cover" />
+                          <AvatarImage src={doctor.profilePhoto} alt={doctor.name} className="h-full w-full object-contain" />
                           <AvatarFallback className="h-full w-full rounded-none bg-[#e8efe9] text-3xl text-[#17382f]">
                             {getDoctorInitials(doctor.name)}
                           </AvatarFallback>
@@ -481,15 +480,16 @@ const DoctorsList = ({
                         </div>
 
                         <div className="mt-5 flex items-center gap-3">
-                          <BookAppointmentModal
-                            doctorId={String(doctor.id)}
-                            doctorName={doctor.name}
-                            isAuthenticated={isAuthenticated}
-                            viewerRole={viewerRole ?? null}
-                            triggerLabel="Get Appointment"
-                            showTriggerIcon={false}
-                            triggerClassName="h-12 cursor-pointer rounded-[12px] bg-[#4ca27a] px-6 text-sm font-semibold tracking-[0.02em] text-white hover:bg-[#3f8d68]"
-                          />
+                          <div>
+                            <Button
+                              asChild
+                              className="h-11 w-full rounded-md border-0 bg-[#4ca27a] text-sm font-semibold text-white transition hover:bg-[#3f8d68]"
+                            >
+                              <Link href={`/consultation/doctor/${doctor.id}/appointment`}>
+                                Get Appointment
+                              </Link>
+                            </Button>
+                          </div>
 
                           <Button
                             type="button"

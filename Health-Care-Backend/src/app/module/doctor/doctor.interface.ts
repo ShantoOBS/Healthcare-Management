@@ -10,6 +10,7 @@ export interface IUpdateDoctorPayload {
         profilePhoto?: string;
         contactNumber?: string;
         address?: string;
+        description?: string | null;
         experience?: number
         registrationNumber?: string;
         gender?: Gender;

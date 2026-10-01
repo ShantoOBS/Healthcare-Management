@@ -1,7 +1,9 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import ConsultationPageBanner from "@/components/modules/Consultation/ConsultationPageBanner";
 import { ArrowUpRight } from "lucide-react";
+import Link from "next/link";
 
 const services = [
   {
@@ -85,8 +87,10 @@ const DiagnosticsPage = () => {
         return;
       }
 
-      const scrollableDistance =
-        section.offsetHeight - window.innerHeight;
+      const scrollableDistance = Math.max(
+        section.offsetHeight - window.innerHeight,
+        1,
+      );
 
       const progress = Math.min(
         Math.max(currentScroll / scrollableDistance, 0),
@@ -146,8 +150,10 @@ const DiagnosticsPage = () => {
 
     if (!section) return;
 
-    const scrollableDistance =
-      section.offsetHeight - window.innerHeight;
+    const scrollableDistance = Math.max(
+      section.offsetHeight - window.innerHeight,
+      1,
+    );
 
     const progress = index / (services.length - 1);
 
@@ -185,6 +191,14 @@ const DiagnosticsPage = () => {
 
   return (
     <main className="bg-[#f3f6f4] text-[#172521]">
+      <ConsultationPageBanner
+        title="Diagnostics"
+        breadcrumbs={[
+          { label: "Home", href: "/" },
+          { label: "Diagnostics" },
+        ]}
+      />
+
       <section
         ref={sectionRef}
         className="relative"
@@ -224,6 +238,13 @@ const DiagnosticsPage = () => {
                     designed to give you clarity and confidence
                     at every step.
                   </p>
+                  <Link
+                    href="/consultation"
+                    className="mt-4 inline-flex min-h-11 items-center gap-2 text-sm font-semibold text-[#174c3b] underline-offset-4 hover:underline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#174c3b]"
+                  >
+                    Find a specialist
+                    <ArrowUpRight aria-hidden="true" size={16} />
+                  </Link>
                 </div>
               </div>
             </div>
@@ -335,12 +356,11 @@ const DiagnosticsPage = () => {
 
                         <div className="mt-7 flex items-center justify-between border-t border-white/50 pt-5">
                           <span className="text-[13px] font-semibold text-[#29473d]">
-                            Explore service
+                            Service overview
                           </span>
 
-                          <button
-                            type="button"
-                            aria-label={`Discover ${service.title}`}
+                          <span
+                            aria-hidden="true"
                             className="
                               flex
                               h-12
@@ -365,7 +385,7 @@ const DiagnosticsPage = () => {
                               size={18}
                               strokeWidth={1.8}
                             />
-                          </button>
+                          </span>
                         </div>
                       </div>
                     </div>
@@ -400,12 +420,13 @@ const DiagnosticsPage = () => {
                 </span>
               </div>
 
-              <div className="hidden items-center gap-2 sm:flex">
+              <div className="flex items-center gap-2">
                 {services.map((service, index) => (
                   <button
                     key={service.id}
                     type="button"
                     aria-label={`Go to ${service.title}`}
+                    aria-current={index === activeIndex ? "step" : undefined}
                     onClick={() => goToCard(index)}
                     className={`
                       h-1.5

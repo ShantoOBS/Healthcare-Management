@@ -6,8 +6,7 @@ import { SpecialtyService } from "./specialty.service.js";
 
 const createSpecialty = catchAsync(
     async (req: Request, res: Response) => {
-        console.log(req.body);
-        console.log(req.file);
+       
         const payload = {
             ...req.body,
             icon : req.file?.path

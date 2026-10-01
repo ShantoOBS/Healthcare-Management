@@ -8,7 +8,7 @@ import { getDefaultDashboardRoute, UserRole } from "@/lib/authUtils";
 const NAV_LINKS = [
   { label: "Consultation", href: "/consultation" },
   { label: "Diagnostics", href: "/diagnostics" },
-  { label: "Medicine", href: "/medicine" },
+  { label: "Department", href: "/departments" },
   { label: "Health Plans", href: "/health-plans" },
   { label: "NGOs", href: "/ngos" },
 ];
