@@ -1,0 +1,1 @@
+export const prescriptionSearchableFields = ["patient.name", "doctor.name"];

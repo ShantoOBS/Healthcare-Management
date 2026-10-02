@@ -39,3 +39,7 @@ export interface IUpdatePatientProfilePayload{
     patientHealthData ?: IUpdatePatientHealthDataPayload;
     medicalReports ?: IUpdatePatientMedicalReportPayload[];
 }
+
+export interface IUpdatePatientAdminPayload {
+    patientInfo: Pick<IUpdatePatientInfoPayload, "name" | "contactNumber" | "address">;
+}

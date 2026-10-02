@@ -66,6 +66,17 @@ const updatePatientProfileZodSchema = z.object({
     })
 })
 
+const updatePatientAdminZodSchema = z.object({
+    patientInfo: z.object({
+        name: z.string().min(1).max(100).optional(),
+        contactNumber: z.string().max(20).optional(),
+        address: z.string().max(200).optional(),
+    }).refine((patientInfo) => Object.values(patientInfo).some((value) => value !== undefined), {
+        message: "Provide at least one patient field to update",
+    }),
+})
+
 export const PatientValidation = {
-    updatePatientProfileZodSchema
+    updatePatientProfileZodSchema,
+    updatePatientAdminZodSchema,
 }

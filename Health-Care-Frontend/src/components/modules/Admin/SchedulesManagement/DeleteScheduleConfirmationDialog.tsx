@@ -9,9 +9,11 @@ import {
     AlertDialogDescription,
     AlertDialogFooter,
     AlertDialogHeader,
+    AlertDialogMedia,
     AlertDialogTitle,
 } from "@/components/ui/alert-dialog"
 import { type ISchedule } from "@/types/schedule.types"
+  import { Trash2 } from "lucide-react"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { format } from "date-fns"
 import { useRouter } from "next/navigation"
@@ -71,15 +73,18 @@ const DeleteScheduleConfirmationDialog = ({
 
   return (
     <AlertDialog open={open} onOpenChange={onOpenChange}>
-      <AlertDialogContent>
-        <AlertDialogHeader>
-          <AlertDialogTitle>Delete Schedule</AlertDialogTitle>
+      <AlertDialogContent className="doctor-delete-dialog">
+        <AlertDialogHeader className="doctor-delete-header">
+          <AlertDialogMedia className="doctor-delete-icon">
+            <Trash2 aria-hidden="true" />
+          </AlertDialogMedia>
+          <AlertDialogTitle>Delete schedule?</AlertDialogTitle>
           <AlertDialogDescription>
             Are you sure you want to delete {formatScheduleLabel(schedule)}? This action cannot be undone.
           </AlertDialogDescription>
         </AlertDialogHeader>
 
-        <AlertDialogFooter>
+        <AlertDialogFooter className="doctor-delete-footer">
           <AlertDialogCancel disabled={isPending}>Cancel</AlertDialogCancel>
           <AlertDialogAction
             variant="destructive"

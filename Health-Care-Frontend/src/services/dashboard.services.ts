@@ -2,11 +2,12 @@
 "use server";
 
 import { httpClient } from "@/lib/axios/httpClient";
+import { ApiErrorResponse, ApiResponse } from "@/types/api.types";
 import { IAdminDashboardData } from "@/types/dashboard.types";
 
-export async function getDashboardData() {
+export async function getDashboardData<TData = IAdminDashboardData>(): Promise<ApiResponse<TData> | ApiErrorResponse> {
     try {
-        const response = await httpClient.get<IAdminDashboardData>("/stats")
+        const response = await httpClient.get<TData>("/stats")
 
         return response;
     } catch (error : any) {
@@ -14,8 +15,6 @@ export async function getDashboardData() {
       return {
         success: false,
         message: error.message || "An error occurred while fetching dashboard data.",
-        data: null,
-        meta: null,
       }  
     }
 }

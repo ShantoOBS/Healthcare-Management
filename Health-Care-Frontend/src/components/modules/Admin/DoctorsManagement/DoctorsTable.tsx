@@ -19,6 +19,7 @@ import { useServerManagedDataTable } from "@/hooks/useServerManagedDataTable";
 import { useQuery } from "@tanstack/react-query";
 import { useSearchParams } from "next/navigation";
 import { useMemo } from "react";
+import { Stethoscope } from "lucide-react";
 import CreateDoctorFormModal from "./CreateDoctorFormModal";
 import DeleteDoctorConfirmationDialog from "./DeleteDoctorConfirmationDialog";
 import EditDoctorFormModal from "./EditDoctorFormModal";
@@ -141,41 +142,67 @@ const DoctorsTable = ({ initialQueryString }: { initialQueryString: string }) =>
     }, [filterValues]);
 
     return (
-      <>
-        <DataTable
-          data={doctors}
-          columns={doctorColumns}
-          isLoading={isLoading || isFetching || isRouteRefreshPending}
-          emptyMessage="No doctors found."
-          sorting={{
-            state: optimisticSortingState,
-            onSortingChange: handleSortingChange,
-          }}
-          pagination={{
-            state: optimisticPaginationState,
-            onPaginationChange: handlePaginationChange,
-          }}
-          search={{
-            initialValue: searchTermFromUrl,
-            placeholder: "Search doctor by name, email...",
-            debounceMs: 700,
-            onDebouncedChange: handleDebouncedSearchChange,
-          }}
-          filters={{
-            configs: filterConfigs,
-            values: filterValuesForTable,
-            onFilterChange: handleFilterChange,
-            onClearAll: clearAllFilters,
-          }}
-          toolbarAction={
-            <CreateDoctorFormModal
-              specialties={specialties}
-              isLoadingSpecialties={isLoadingSpecialties}
-            />
-          }
-          meta={meta}
-          actions={tableActions}
-        />
+      <div className="doctor-management">
+        <header className="doctor-management-heading">
+          <div className="doctor-management-mark" aria-hidden="true">
+            <Stethoscope />
+          </div>
+          <div>
+            <p className="doctor-management-eyebrow">Provider directory</p>
+            <h1>Doctors</h1>
+            <p className="doctor-management-description">
+              Manage doctor profiles, specialties, and patient-facing details.
+            </p>
+          </div>
+          <div className="doctor-management-count" aria-live="polite">
+            <strong>{meta?.total ?? doctors.length}</strong>
+            <span>registered providers</span>
+          </div>
+        </header>
+
+        <div className="doctor-management-table">
+          <DataTable
+            data={doctors}
+            columns={doctorColumns}
+            actionMenuClassName="doctor-actions-menu"
+            filterOptionMenuClassName="doctor-filter-options"
+            filterPanelClassName="doctor-filter-panel"
+            pageSizeMenuClassName="doctor-pagination-options"
+            isLoading={isLoading || isFetching || isRouteRefreshPending}
+            loadingMode="skeleton"
+            emptyMessage="No doctors found."
+            sorting={{
+              state: optimisticSortingState,
+              onSortingChange: handleSortingChange,
+            }}
+            pagination={{
+              state: optimisticPaginationState,
+              onPaginationChange: handlePaginationChange,
+            }}
+            search={{
+              initialValue: searchTermFromUrl,
+              placeholder: "Search doctor by name, email...",
+              debounceMs: 700,
+              onDebouncedChange: handleDebouncedSearchChange,
+            }}
+            filters={{
+              configs: filterConfigs,
+              values: filterValuesForTable,
+              onFilterChange: handleFilterChange,
+              onClearAll: clearAllFilters,
+            }}
+            toolbarAction={
+              <div className="doctor-management-create-action">
+                <CreateDoctorFormModal
+                  specialties={specialties}
+                  isLoadingSpecialties={isLoadingSpecialties}
+                />
+              </div>
+            }
+            meta={meta}
+            actions={tableActions}
+          />
+        </div>
 
         <EditDoctorFormModal
           open={isEditModalOpen}
@@ -196,7 +223,7 @@ const DoctorsTable = ({ initialQueryString }: { initialQueryString: string }) =>
           onOpenChange={onViewOpenChange}
           doctor={viewingItem}
         />
-      </>
+      </div>
     )
 
 }

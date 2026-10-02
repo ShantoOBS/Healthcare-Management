@@ -1,8 +1,40 @@
 
-const ReviewsManagementPage = () => {
-  return (
-    <div>ReviewsManagementPage</div>
-  )
-}
+import ReviewsTable from "@/components/modules/Admin/ReviewsManagement/ReviewsTable";
+import { getAllReviews } from "@/services/review.services";
+import { dehydrate, HydrationBoundary, QueryClient } from "@tanstack/react-query";
 
-export default ReviewsManagementPage
+const QUERY_STALE_TIME = 1000 * 60;
+const QUERY_GC_TIME = 1000 * 60 * 60 * 6;
+
+const ReviewsManagementPage = async ({
+  searchParams,
+}: {
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
+}) => {
+  const queryParams = await searchParams;
+  const queryString = Object.entries(queryParams)
+    .flatMap(([key, value]) => {
+      if (value === undefined) return [];
+      const values = Array.isArray(value) ? value : [value];
+      return values.map(
+        (item) => `${encodeURIComponent(key)}=${encodeURIComponent(item)}`,
+      );
+    })
+    .join("&");
+
+  const queryClient = new QueryClient();
+  await queryClient.prefetchQuery({
+    queryKey: ["admin-reviews", queryString],
+    queryFn: () => getAllReviews(queryString),
+    staleTime: QUERY_STALE_TIME,
+    gcTime: QUERY_GC_TIME,
+  });
+
+  return (
+    <HydrationBoundary state={dehydrate(queryClient)}>
+      <ReviewsTable initialQueryString={queryString} />
+    </HydrationBoundary>
+  );
+};
+
+export default ReviewsManagementPage;

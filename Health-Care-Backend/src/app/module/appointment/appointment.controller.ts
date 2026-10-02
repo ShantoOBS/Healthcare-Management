@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import status from "http-status";
+import { IQueryParams } from "../../interfaces/query.interface.js";
 import { catchAsync } from "../../shared/catchAsync.js";
 import { sendResponse } from "../../shared/sendResponse.js";
 import { AppointmentService } from "./appointment.service.js";
@@ -55,12 +56,13 @@ const getMySingleAppointment = catchAsync(async (req: Request, res: Response) =>
 });
 
 const getAllAppointments = catchAsync(async (req: Request, res: Response) => {
-    const appointments = await AppointmentService.getAllAppointments();
+    const result = await AppointmentService.getAllAppointments(req.query as IQueryParams);
     sendResponse(res, {
         success: true,
         httpStatusCode: status.OK,
         message: 'All appointments retrieved successfully',
-        data: appointments
+        data: result.data,
+        meta: result.meta,
     });
 });
 

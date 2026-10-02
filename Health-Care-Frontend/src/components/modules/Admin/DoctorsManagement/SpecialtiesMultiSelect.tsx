@@ -81,7 +81,7 @@ const SpecialtiesMultiSelect = ({
 
         <DropdownMenuContent
           align="start"
-          className="w-(--radix-dropdown-menu-trigger-width) max-h-72 overflow-y-auto"
+          className="doctor-specialty-menu w-(--radix-dropdown-menu-trigger-width) max-h-72 overflow-y-auto"
         >
           {isLoadingSpecialties ? (
             <p className="text-muted-foreground px-2 py-1.5 text-sm">Loading specialties...</p>
@@ -108,7 +108,7 @@ const SpecialtiesMultiSelect = ({
                 >
                   <Checkbox
                     checked={checked}
-                    className="pointer-events-none data-[state=checked]:bg-primary data-[state=checked]:border-primary data-[state=checked]:text-white"
+                    className="doctor-specialty-checkbox pointer-events-none data-[state=checked]:bg-primary data-[state=checked]:border-primary data-[state=checked]:text-white"
                   />
                   <span>{specialty.title}</span>
                 </DropdownMenuItem>

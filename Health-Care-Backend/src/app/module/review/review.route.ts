@@ -7,7 +7,7 @@ import { ReviewValidation } from './review.validation.js';
 
 const router = express.Router();
 
-router.get('/', ReviewController.getAllReviews);
+router.get('/', checkAuth(Role.ADMIN, Role.SUPER_ADMIN), ReviewController.getAllReviews);
 
 router.post(
     '/',

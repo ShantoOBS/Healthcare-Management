@@ -1,13 +1,17 @@
 import status from "http-status";
 // import { uuidv7 } from "zod/mini";
 import { v7 as uuidv7 } from "uuid";
+import { Appointment, Prisma } from "../../../generated/prisma/client.js";
 import { PaymentStatus, Role } from "../../../generated/prisma/enums.js";
 import { envVars } from "../../config/env.js";
 import { stripe } from "../../config/stripe.config.js";
 import AppError from "../../errorHelpers/AppError.js";
 import { IRequestUser } from "../../interfaces/requestUser.interface.js";
 import { prisma } from "../../lib/prisma.js";
+import { IQueryParams } from "../../interfaces/query.interface.js";
+import { QueryBuilder } from "../../utils/QueryBuilder.js";
 import { AppointmentStatus } from './../../../generated/prisma/enums.js';
+import { appointmentFilterableFields, appointmentSearchableFields } from "./appointment.constant.js";
 import { IBookAppointmentPayload } from "./appointment.interface.js";
 
 // Pay Now Book Appointment
@@ -245,15 +249,41 @@ const getMySingleAppointment = async (appointmentId: string, user: IRequestUser)
 }
 
 // integrate query builder
-const getAllAppointments = async () => {
-    const appointments = await prisma.appointment.findMany({
-        include: {
-            doctor: true,
-            patient: true,
-            schedule: true
+const getAllAppointments = async (query: IQueryParams) => {
+    const queryBuilder = new QueryBuilder<Appointment, Prisma.AppointmentWhereInput, Prisma.AppointmentInclude>(
+        prisma.appointment,
+        query,
+        {
+            searchableFields: appointmentSearchableFields,
+            filterableFields: appointmentFilterableFields,
         }
-    });
-    return appointments;
+    );
+
+    return queryBuilder
+        .search()
+        .filter()
+        .include({
+            doctor: {
+                select: {
+                    id: true,
+                    name: true,
+                    email: true,
+                    profilePhoto: true,
+                },
+            },
+            patient: {
+                select: {
+                    id: true,
+                    name: true,
+                    email: true,
+                    profilePhoto: true,
+                },
+            },
+            schedule: true,
+        })
+        .paginate()
+        .sort()
+        .execute();
 }
 
 const bookAppointmentWithPayLater = async (payload : IBookAppointmentPayload, user : IRequestUser) => {

@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogHeader,
   DialogTitle,
   DialogFooter,
@@ -87,20 +88,22 @@ export default function CreateSpecialtyModal({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-md rounded-2xl p-6 bg-white border-[#e5ebe7]">
-        <DialogHeader>
-          <div className="flex items-center gap-3 mb-1">
-            <div className="h-10 w-10 rounded-2xl bg-[#edf4f0] text-[#1f5c4b] flex items-center justify-center">
+      <DialogContent className="doctor-form-dialog specialty-create-dialog max-h-[90vh] w-[calc(100vw-1.5rem)] max-w-[calc(100vw-1.5rem)] gap-0 overflow-y-auto p-0 sm:w-[calc(100vw-3rem)] sm:max-w-[min(92vw,36rem)]">
+        <DialogHeader className="doctor-dialog-header border-b px-6 py-5 pr-14">
+          <div className="flex items-center gap-3">
+            <div className="specialty-dialog-mark" aria-hidden="true">
               <Stethoscope className="h-5 w-5" />
             </div>
             <div>
-              <DialogTitle className="text-lg font-bold text-[#1a2d29]">Add New Specialty</DialogTitle>
-              <p className="text-xs text-[#7a8c87]">Create a medical specialty category</p>
+              <DialogTitle className="doctor-dialog-title">Add Specialty</DialogTitle>
+              <DialogDescription className="doctor-dialog-description">
+                Add a specialty to the directory with an optional icon.
+              </DialogDescription>
             </div>
           </div>
         </DialogHeader>
 
-        <form onSubmit={handleSubmit} className="space-y-4 py-2">
+        <form onSubmit={handleSubmit} className="doctor-form space-y-5 p-6">
           {/* Title Input */}
           <div className="space-y-1.5">
             <Label htmlFor="specialty-title" className="text-xs font-semibold text-[#1a2d29]">
@@ -112,7 +115,7 @@ export default function CreateSpecialtyModal({
               placeholder="e.g. Cardiology, Neurology, Orthopedics"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              className="rounded-xl border-[#e5ebe7] focus:border-[#1f5c4b] focus:ring-[#1f5c4b]"
+              className="rounded-md border-[#e5ebe7] focus:border-[#1f5c4b] focus:ring-[#1f5c4b]"
               required
             />
           </div>
@@ -126,7 +129,7 @@ export default function CreateSpecialtyModal({
               placeholder="Describe the care provided by this specialty"
               value={description}
               onChange={(e) => setDescription(e.target.value)}
-              className="rounded-xl border-[#e5ebe7] focus:border-[#1f5c4b] focus:ring-[#1f5c4b]"
+              className="rounded-md border-[#e5ebe7] focus:border-[#1f5c4b] focus:ring-[#1f5c4b]"
               rows={3}
             />
           </div>
@@ -137,7 +140,7 @@ export default function CreateSpecialtyModal({
               Specialty Icon / Image
             </Label>
             
-            <div className="border-2 border-dashed border-[#d8e3dd] hover:border-[#1f5c4b] rounded-2xl p-4 text-center bg-[#f9fbfa] transition cursor-pointer relative">
+            <div className="specialty-upload-control relative cursor-pointer border border-dashed border-[#d8e3dd] bg-[#f9fbfa] p-5 text-center transition">
               <input
                 type="file"
                 accept="image/*"
@@ -147,7 +150,7 @@ export default function CreateSpecialtyModal({
               
               {previewUrl ? (
                 <div className="flex flex-col items-center gap-2">
-                  <div className="relative h-16 w-16 rounded-xl overflow-hidden border border-emerald-100 shadow-sm">
+                  <div className="relative h-16 w-16 overflow-hidden rounded-lg border border-emerald-100 shadow-sm">
                     <Image src={previewUrl} alt="Preview" fill className="object-cover" />
                   </div>
                   <span className="text-xs font-semibold text-[#1f5c4b]">Change Image</span>
@@ -167,19 +170,19 @@ export default function CreateSpecialtyModal({
           </div>
 
           <DialogFooter className="pt-2">
-            <Button
+              <Button
               type="button"
               variant="outline"
               onClick={() => onOpenChange(false)}
               disabled={isPending}
-              className="rounded-xl border-[#e5ebe7] text-[#5e716c]"
+              className="rounded-md border-[#e5ebe7] text-[#5e716c]"
             >
               Cancel
             </Button>
             <Button
               type="submit"
               disabled={isPending}
-              className="rounded-xl bg-[#1f5c4b] hover:bg-[#184b3d] text-white font-semibold shadow-md shadow-[#1f5c4b]/20"
+              className="rounded-md bg-[#1f5c4b] font-semibold text-white shadow-md shadow-[#1f5c4b]/20 hover:bg-[#184b3d]"
             >
               {isPending ? "Creating..." : "Create Specialty"}
             </Button>

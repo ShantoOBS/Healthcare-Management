@@ -25,9 +25,14 @@ interface DataTableProps<TData> {
     data : TData[];
     columns : ColumnDef<TData>[];
     actions ?: DataTableActions<TData>;
+    actionMenuClassName?: string;
+    filterOptionMenuClassName?: string;
+    filterPanelClassName?: string;
+    pageSizeMenuClassName?: string;
   toolbarAction?: React.ReactNode;
     emptyMessage ?: string;
     isLoading ?: boolean;
+    loadingMode?: "overlay" | "skeleton";
     sorting ?: {
       state : SortingState;
       onSortingChange : (state : SortingState) => void;
@@ -52,7 +57,7 @@ interface DataTableProps<TData> {
 }
 
 
-const DataTable = <TData,>({ data = [] as TData[], columns, actions, toolbarAction, emptyMessage, isLoading, sorting, pagination, search, filters, meta } : DataTableProps<TData>) => {
+const DataTable = <TData,>({ data = [] as TData[], columns, actions, actionMenuClassName, filterOptionMenuClassName, filterPanelClassName, pageSizeMenuClassName, toolbarAction, emptyMessage, isLoading, loadingMode = "overlay", sorting, pagination, search, filters, meta } : DataTableProps<TData>) => {
 
     const [hasHydrated, setHasHydrated] = useState(false);
 
@@ -61,7 +66,8 @@ const DataTable = <TData,>({ data = [] as TData[], columns, actions, toolbarActi
     }, []);
 
     const hydratedIsLoading = hasHydrated ? Boolean(isLoading) : false;
-    const showLoadingOverlay = hydratedIsLoading;
+    const showLoadingOverlay = hydratedIsLoading && loadingMode === "overlay";
+    const showSkeletonRows = hydratedIsLoading && loadingMode === "skeleton";
 
 
     const tableColumns : ColumnDef<TData>[] = actions ? [...columns,
@@ -83,7 +89,7 @@ const DataTable = <TData,>({ data = [] as TData[], columns, actions, toolbarActi
                             </Button>
                         </DropdownMenuTrigger>
 
-                        <DropdownMenuContent align="end">
+                        <DropdownMenuContent align="end" className={actionMenuClassName}>
                             {
                                 actions.onView && (
                                     <DropdownMenuItem onClick={() => actions.onView?.(rowData)}>
@@ -150,10 +156,14 @@ const DataTable = <TData,>({ data = [] as TData[], columns, actions, toolbarActi
           }
         : undefined,
     });
+    const skeletonRowCount = Math.min(
+      pagination?.state.pageSize ?? Math.max(data.length, 5),
+      10,
+    );
     return (
       <div className="relative">
         {showLoadingOverlay && (
-          <div className="absolute inset-0 bg-background/50 backdrop-blur-sm z-10 flex items-center justify-center">
+          <div className="absolute inset-0 z-10 flex items-center justify-center bg-background/50 backdrop-blur-sm">
             <div className="flex items-center gap-2">
               <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent" />
               <span className="text-sm text-muted-foreground">Loading...</span>
@@ -180,6 +190,8 @@ const DataTable = <TData,>({ data = [] as TData[], columns, actions, toolbarActi
                 values={filters.values}
                 onFilterChange={filters.onFilterChange}
                 onClearAll={filters.onClearAll}
+                optionMenuClassName={filterOptionMenuClassName}
+                panelClassName={filterPanelClassName}
                 isLoading={hydratedIsLoading}
               />
             )}
@@ -229,8 +241,37 @@ const DataTable = <TData,>({ data = [] as TData[], columns, actions, toolbarActi
                 </TableRow>
               ))}
             </TableHeader>
-            <TableBody>
-              {table.getRowModel()?.rows?.length ? (
+            <TableBody aria-busy={hydratedIsLoading}>
+              {showSkeletonRows ? (
+                Array.from({ length: skeletonRowCount }, (_, rowIndex) => (
+                  <TableRow className="data-table-skeleton-row" key={`loading-row-${rowIndex}`}>
+                    {table.getVisibleLeafColumns().map((column) => (
+                      <TableCell key={`${rowIndex}-${column.id}`}>
+                        {column.id === "name" || column.id.endsWith(".name") ? (
+                          <div className="data-table-skeleton-person" aria-hidden="true">
+                            <span className="data-table-skeleton-avatar" />
+                            <span className="data-table-skeleton-person-lines">
+                              <span className="data-table-skeleton-line data-table-skeleton-line-wide" />
+                              <span className="data-table-skeleton-line data-table-skeleton-line-short" />
+                            </span>
+                          </div>
+                        ) : column.id === "specialties" ? (
+                          <div className="data-table-skeleton-tags" aria-hidden="true">
+                            <span />
+                            <span />
+                          </div>
+                        ) : column.id === "status" || column.id === "user.status" ? (
+                          <span className="data-table-skeleton-status" aria-hidden="true" />
+                        ) : column.id === "actions" ? (
+                          <span className="data-table-skeleton-action" aria-hidden="true" />
+                        ) : (
+                          <span className="data-table-skeleton-line" aria-hidden="true" />
+                        )}
+                      </TableCell>
+                    ))}
+                  </TableRow>
+                ))
+              ) : table.getRowModel()?.rows?.length ? (
                 table.getRowModel().rows.map((row) => (
                   <TableRow key={row.id}>
                     {row.getVisibleCells().map((cell) => (
@@ -262,6 +303,7 @@ const DataTable = <TData,>({ data = [] as TData[], columns, actions, toolbarActi
               totalPages={meta?.totalPages}
               totalRows={meta?.total}
               isLoading={hydratedIsLoading}
+              pageSizeMenuClassName={pageSizeMenuClassName}
             />
           )}
         </div>

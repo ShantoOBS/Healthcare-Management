@@ -1,83 +1,108 @@
 "use client"
 
-import { useState } from "react"
 import AppointmentBarChart from "@/components/shared/AppointmentBarChart"
 import AppointmentPieChart from "@/components/shared/AppointmentPieChart"
-import StatsCard from "@/components/shared/StatsCard"
 import { getDashboardData } from "@/services/dashboard.services"
-import { ApiResponse } from "@/types/api.types"
+import { ApiErrorResponse, ApiResponse } from "@/types/api.types"
 import { IAdminDashboardData } from "@/types/dashboard.types"
 import { useQuery } from "@tanstack/react-query"
-import VideoCallDashboard from "./VideoCallDashboard"
-import { Video, BarChart2 } from "lucide-react"
+import { CalendarDays, Stethoscope, UsersRound, Wallet } from "lucide-react"
+
+const formatCurrency = (amount: number) => new Intl.NumberFormat("en-BD", {
+  style: "currency",
+  currency: "BDT",
+  maximumFractionDigits: 0,
+}).format(amount)
 
 const AdminDashboardContent = () => {
-  const [activeTab, setActiveTab] = useState<"calls" | "analytics">("calls")
-
-  const { data: adminDashboardData } = useQuery({
+  const { data: adminDashboardData, isLoading, isError } = useQuery<ApiResponse<IAdminDashboardData> | ApiErrorResponse>({
     queryKey: ["admin-dashboard-data"],
     queryFn: getDashboardData,
     refetchOnWindowFocus: "always",
   });
 
-  const { data } = (adminDashboardData || {}) as ApiResponse<IAdminDashboardData>;
+  const data = adminDashboardData?.success ? adminDashboardData.data : undefined;
+  const hasError = isError || adminDashboardData?.success === false;
+  const metrics = [
+    {
+      label: "Appointments",
+      value: data?.appointmentCount ?? 0,
+      detail: "All scheduled visits",
+      icon: CalendarDays,
+      tone: "appointments",
+    },
+    {
+      label: "Patients",
+      value: data?.patientCount ?? 0,
+      detail: "Registered patients",
+      icon: UsersRound,
+      tone: "patients",
+    },
+    {
+      label: "Doctors",
+      value: data?.doctorCount ?? 0,
+      detail: "Active care providers",
+      icon: Stethoscope,
+      tone: "doctors",
+    },
+    {
+      label: "Paid revenue",
+      value: formatCurrency(data?.totalRevenue ?? 0),
+      detail: `${data?.paymentCount ?? 0} payment records`,
+      icon: Wallet,
+      tone: "revenue",
+    },
+  ]
 
   return (
-    <div className="space-y-6">
-      {/* Top Tab Switcher */}
-      <div className="flex items-center justify-between border-b border-[#e5ebe7] pb-4">
-        <div className="flex items-center gap-3">
-          <button
-            onClick={() => setActiveTab("calls")}
-            className={`flex items-center gap-2 px-4 py-2 rounded-2xl text-xs font-bold transition-all ${
-              activeTab === "calls"
-                ? "bg-[#1f5c4b] text-white shadow-md shadow-[#1f5c4b]/20"
-                : "bg-white text-[#5e716c] hover:bg-[#edf4f0] border border-[#e5ebe7]"
-            }`}
-          >
-            <Video className="h-4 w-4" />
-            Live Consultation Calls
-          </button>
-          <button
-            onClick={() => setActiveTab("analytics")}
-            className={`flex items-center gap-2 px-4 py-2 rounded-2xl text-xs font-bold transition-all ${
-              activeTab === "analytics"
-                ? "bg-[#1f5c4b] text-white shadow-md shadow-[#1f5c4b]/20"
-                : "bg-white text-[#5e716c] hover:bg-[#edf4f0] border border-[#e5ebe7]"
-            }`}
-          >
-            <BarChart2 className="h-4 w-4" />
-            Analytics Overview
-          </button>
+    <main className="admin-analytics">
+      <header className="admin-analytics-heading">
+        <div>
+          <p className="admin-analytics-eyebrow">Administration</p>
+          <h1>Analytics Overview</h1>
+          <p>Healthcare activity and paid revenue across the platform.</p>
         </div>
-      </div>
+        <div className="admin-analytics-live-state">
+          <span aria-hidden="true" />
+          Updated live
+        </div>
+      </header>
 
-      {activeTab === "calls" ? (
-        <VideoCallDashboard />
-      ) : (
-        <div className="space-y-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <StatsCard
-              title="Total Appointments"
-              value={data?.appointmentCount || 0}
-              iconName="CalendarDays"
-              description="Number of appointments scheduled"
-            />
-            <StatsCard
-              title="Total Patients"
-              value={data?.patientCount || 0}
-              iconName="Users"
-              description="Number of patients registered"
-            />
-          </div>
-
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <AppointmentBarChart data={data?.barChartData || []} />
-            <AppointmentPieChart data={data?.pieChartData || []} />
-          </div>
+      {hasError && (
+        <div className="admin-analytics-error" role="alert">
+          Analytics could not be loaded. Refresh the page to try again.
         </div>
       )}
-    </div>
+
+      <section className="admin-analytics-metrics" aria-label="Key metrics">
+        {metrics.map((metric) => {
+          const MetricIcon = metric.icon
+          return (
+            <article className={`admin-analytics-metric ${metric.tone}`} key={metric.label}>
+              <div className="admin-analytics-metric-topline">
+                <span>{metric.label}</span>
+                <MetricIcon aria-hidden="true" />
+              </div>
+              {isLoading ? (
+                <span className="admin-analytics-value-skeleton" aria-label="Loading" />
+              ) : (
+                <strong>{metric.value}</strong>
+              )}
+              <p>{metric.detail}</p>
+            </article>
+          )
+        })}
+      </section>
+
+      <section className="admin-analytics-charts" aria-label="Appointment analytics">
+        <AppointmentBarChart data={data?.barChartData || []} />
+        <AppointmentPieChart
+          data={data?.pieChartData || []}
+          title="Appointment status"
+          description="Distribution by current status"
+        />
+      </section>
+    </main>
   );
 }
 

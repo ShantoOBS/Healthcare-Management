@@ -46,7 +46,7 @@ export const schedulesColumns: ColumnDef<ISchedule>[] = [
     header: "Duration",
     enableSorting: false,
     cell: ({ row }) => (
-      <span className="text-sm font-medium">{getDurationLabel(row.original)}</span>
+      <span className="schedule-duration-cell">{getDurationLabel(row.original)}</span>
     ),
   },
   {
@@ -56,7 +56,11 @@ export const schedulesColumns: ColumnDef<ISchedule>[] = [
     enableSorting: false,
     cell: ({ row }) => {
       const totalDoctorSchedules = row.original.doctorSchedules?.length ?? 0
-      return <Badge variant="secondary">{totalDoctorSchedules} linked</Badge>
+      return (
+        <Badge className="doctor-specialty-badge" variant="secondary">
+          {totalDoctorSchedules} linked
+        </Badge>
+      )
     },
   },
   {
@@ -64,7 +68,12 @@ export const schedulesColumns: ColumnDef<ISchedule>[] = [
     header: "Booked",
     enableSorting: false,
     cell: ({ row }) => {
-      return <span className="text-sm">{getBookedCount(row.original)}</span>
+      const bookedCount = getBookedCount(row.original)
+      return (
+        <span className={`schedule-booked-count${bookedCount > 0 ? " is-booked" : ""}`}>
+          {bookedCount}
+        </span>
+      )
     },
   },
   {
@@ -74,7 +83,7 @@ export const schedulesColumns: ColumnDef<ISchedule>[] = [
     enableSorting: false,
     cell: ({ row }) => {
       const totalAppointments = row.original.appointments?.length ?? 0
-      return <span className="text-sm">{totalAppointments}</span>
+      return <span className="schedule-appointment-count">{totalAppointments}</span>
     },
   },
   {

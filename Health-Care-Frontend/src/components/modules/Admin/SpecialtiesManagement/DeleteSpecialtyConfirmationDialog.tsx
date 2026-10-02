@@ -9,9 +9,11 @@ import {
   AlertDialogDescription,
   AlertDialogFooter,
   AlertDialogHeader,
+  AlertDialogMedia,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog"
 import { type ISpecialty } from "@/types/specialty.types"
+import { Trash2 } from "lucide-react"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { useRouter } from "next/navigation"
 import { toast } from "sonner"
@@ -56,16 +58,19 @@ const DeleteSpecialtyConfirmationDialog = ({
 
   return (
     <AlertDialog open={open} onOpenChange={onOpenChange}>
-      <AlertDialogContent className="rounded-2xl border-[#e5ebe7] p-6 bg-white">
-        <AlertDialogHeader>
-          <AlertDialogTitle className="text-lg font-bold text-[#1a2d29]">Delete Specialty</AlertDialogTitle>
-          <AlertDialogDescription className="text-sm text-[#657873]">
+      <AlertDialogContent className="doctor-delete-dialog">
+        <AlertDialogHeader className="doctor-delete-header">
+          <AlertDialogMedia className="doctor-delete-icon">
+            <Trash2 aria-hidden="true" />
+          </AlertDialogMedia>
+          <AlertDialogTitle>Delete specialty?</AlertDialogTitle>
+          <AlertDialogDescription>
             Are you sure you want to delete <span className="font-bold text-[#1a2d29]">{specialty?.title || "this specialty"}</span>? This action cannot be undone.
           </AlertDialogDescription>
         </AlertDialogHeader>
 
-        <AlertDialogFooter className="pt-2">
-          <AlertDialogCancel disabled={isPending} className="rounded-xl border-[#e5ebe7] text-[#5e716c]">
+        <AlertDialogFooter className="doctor-delete-footer">
+          <AlertDialogCancel disabled={isPending}>
             Cancel
           </AlertDialogCancel>
           <AlertDialogAction
@@ -74,7 +79,7 @@ const DeleteSpecialtyConfirmationDialog = ({
               void handleConfirmDelete()
             }}
             disabled={isPending}
-            className="rounded-xl bg-red-600 hover:bg-red-700 text-white font-semibold"
+            variant="destructive"
           >
             {isPending ? "Deleting..." : "Delete Specialty"}
           </AlertDialogAction>

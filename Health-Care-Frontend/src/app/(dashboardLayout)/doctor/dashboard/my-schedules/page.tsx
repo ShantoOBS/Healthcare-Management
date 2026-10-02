@@ -3,6 +3,9 @@ import DoctorSchedulesTable from "@/components/modules/Doctor/DoctorSchedules/Do
 import { getMyDoctorSchedules } from "@/services/doctorSchedule.services"
 import { HydrationBoundary, QueryClient, dehydrate } from "@tanstack/react-query"
 
+const QUERY_STALE_TIME = 1000 * 60
+const QUERY_GC_TIME = 1000 * 60 * 60 * 6
+
 const MySchedulesPage = async ({
   searchParams,
 }: {
@@ -34,8 +37,8 @@ const MySchedulesPage = async ({
   await queryClient.prefetchQuery({
     queryKey: ["my-doctor-schedules", queryString],
     queryFn: () => getMyDoctorSchedules(queryString),
-    staleTime: 1000 * 60 * 60,
-    gcTime: 1000 * 60 * 60 * 6,
+    staleTime: QUERY_STALE_TIME,
+    gcTime: QUERY_GC_TIME,
   })
 
   return (

@@ -13,12 +13,12 @@ const AppointmentBarChart = ({data}: AppointmentBarChartProps) => {
 
     if(!data || !Array.isArray(data)){
         return (
-            <Card className="col-span-4">
-                <CardHeader>
+            <Card className="admin-analytics-chart admin-analytics-bar-chart">
+              <CardHeader className="admin-analytics-chart-header">
                     <CardTitle>Appointment Trends</CardTitle>
                     <CardDescription>Monthly Appointment Statistics</CardDescription>
                 </CardHeader>
-                <CardContent className="flex items-center justify-center h-75">
+                <CardContent className="admin-analytics-chart-content flex items-center justify-center">
                     <p className="text-sm text-muted-foreground">
                         Invalid data provided for the chart.
                     </p>
@@ -37,12 +37,12 @@ const AppointmentBarChart = ({data}: AppointmentBarChartProps) => {
 
     if(!formattedData.length || formattedData.every(item => item.appointments === 0)){
         return (
-          <Card className="col-span-4">
-            <CardHeader>
+          <Card className="admin-analytics-chart admin-analytics-bar-chart">
+            <CardHeader className="admin-analytics-chart-header">
               <CardTitle>Appointment Trends</CardTitle>
               <CardDescription>Monthly Appointment Statistics</CardDescription>
             </CardHeader>
-            <CardContent className="flex items-center justify-center h-75">
+            <CardContent className="admin-analytics-chart-content flex items-center justify-center">
               <p className="text-sm text-muted-foreground">
                 No appointment data available.
               </p>
@@ -51,26 +51,27 @@ const AppointmentBarChart = ({data}: AppointmentBarChartProps) => {
         );
     }
   return (
-    <Card className="col-span-4">
-        <CardHeader>
+    <Card className="admin-analytics-chart admin-analytics-bar-chart">
+      <CardHeader className="admin-analytics-chart-header">
             <CardTitle>Appointment Trends</CardTitle>
             <CardDescription>Monthly Appointment Statistics</CardDescription>
         </CardHeader>
-        <CardContent>
+        <CardContent className="admin-analytics-chart-content">
           <ResponsiveContainer width="100%" height={350}>
             <BarChart data={formattedData}>
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis tickLine={false} axisLine={false} dataKey="month" />
+              <CartesianGrid stroke="#e8eee9" strokeDasharray="3 3" vertical={false} />
+              <XAxis tickLine={false} axisLine={false} tick={{ fill: "#718179", fontSize: 12 }} dataKey="month" />
               <YAxis
                 tickLine={false}
                 axisLine={false}
+                tick={{ fill: "#718179", fontSize: 12 }}
                 allowDecimals={false}
               />
-              <Tooltip />
-              <Legend />
+              <Tooltip contentStyle={{ borderRadius: 8, borderColor: "#dce7df" }} cursor={{ fill: "#f3f7f4" }} />
+              <Legend wrapperStyle={{ color: "#61736b", fontSize: 12 }} />
               <Bar
                 dataKey="appointments"
-                fill="oklch(0.646 0.222 41.116)"
+                fill="#174c3b"
                 radius={[4, 4, 0, 0]}
                 maxBarSize={60}
               />

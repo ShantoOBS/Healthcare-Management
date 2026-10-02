@@ -2,6 +2,7 @@
 
 import { getDoctorByIdAction } from "@/app/(dashboardLayout)/admin/dashboard/doctors-management/_action"
 import { Badge } from "@/components/ui/badge"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import {
   Dialog,
   DialogContent,
@@ -58,20 +59,26 @@ const ViewDoctorProfileDialog = ({
 
   const hasError = data && !data.success
   const doctorDetails = data && data.success ? data.data : null
+  const doctorInitials = doctor?.name
+    .split(/\s+/)
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((part) => part[0]?.toUpperCase())
+    .join("") || "DR"
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent
-        className="max-h-[90vh] w-[calc(100vw-1.5rem)] max-w-[calc(100vw-1.5rem)] gap-0 overflow-hidden p-0 sm:w-[calc(100vw-3rem)] sm:max-w-[calc(100vw-3rem)] md:w-[calc(100vw-4rem)] md:max-w-[calc(100vw-4rem)] lg:w-[min(92vw,78rem)] lg:max-w-[min(92vw,78rem)] xl:w-[min(88vw,88rem)] xl:max-w-[min(88vw,88rem)] 2xl:w-[min(84vw,96rem)] 2xl:max-w-[min(84vw,96rem)]"
+        className="doctor-profile-dialog max-h-[90vh] w-[calc(100vw-1.5rem)] max-w-[calc(100vw-1.5rem)] gap-0 overflow-hidden p-0 sm:w-[calc(100vw-3rem)] sm:max-w-[calc(100vw-3rem)] md:w-[calc(100vw-4rem)] md:max-w-[calc(100vw-4rem)] lg:w-[min(92vw,78rem)] lg:max-w-[min(92vw,78rem)] xl:w-[min(88vw,88rem)] xl:max-w-[min(88vw,88rem)] 2xl:w-[min(84vw,96rem)] 2xl:max-w-[min(84vw,96rem)]"
       >
-        <DialogHeader className="border-b px-6 py-5 pr-14">
-          <DialogTitle>Doctor Profile</DialogTitle>
-          <DialogDescription>
-            Comprehensive profile view with doctor info, user account, schedules, appointments, and reviews.
+        <DialogHeader className="doctor-dialog-header border-b px-6 py-5 pr-14">
+          <DialogTitle className="doctor-dialog-title">Doctor Profile</DialogTitle>
+          <DialogDescription className="doctor-dialog-description">
+            Professional details, account status, and care activity.
           </DialogDescription>
         </DialogHeader>
 
-        <ScrollArea className="max-h-[calc(90vh-5.5rem)]">
+        <ScrollArea className="doctor-dialog-scroll max-h-[calc(90vh-5.5rem)]">
           <div className="space-y-4 px-6 py-5">
             {(isLoading || isFetching) && (
               <div className="rounded-md border p-4 text-sm text-muted-foreground">
@@ -87,10 +94,25 @@ const ViewDoctorProfileDialog = ({
 
             {!isLoading && !isFetching && doctorDetails && (
               <>
+                <div className="doctor-profile-hero">
+                  <Avatar className="doctor-profile-avatar">
+                    <AvatarImage src={doctor?.profilePhoto || undefined} alt={doctor?.name ?? "Doctor"} />
+                    <AvatarFallback>{doctorInitials}</AvatarFallback>
+                  </Avatar>
+                  <div className="min-w-0 flex-1">
+                    <p className="doctor-profile-eyebrow">Medical provider</p>
+                    <h2 className="doctor-profile-name">{doctorDetails.name || "Doctor profile"}</h2>
+                    <p className="doctor-profile-email">{doctorDetails.email || "No email listed"}</p>
+                  </div>
+                  <Badge className="doctor-profile-status" variant="secondary">
+                    {doctorDetails.user?.status || "Status unavailable"}
+                  </Badge>
+                </div>
+
                 <div className="grid gap-4 md:grid-cols-2">
-                  <div className="rounded-lg border p-4">
+                  <div className="doctor-profile-section rounded-lg border p-4">
                     <h3 className="mb-3 text-sm font-semibold">Doctor Info</h3>
-                    <div className="space-y-2 text-sm">
+                    <div className="doctor-profile-details space-y-2 text-sm">
                       <p><span className="font-medium">Name:</span> {doctorDetails.name || "N/A"}</p>
                       <p><span className="font-medium">Email:</span> {doctorDetails.email || "N/A"}</p>
                       <p><span className="font-medium">Contact:</span> {doctorDetails.contactNumber || "N/A"}</p>
@@ -105,9 +127,9 @@ const ViewDoctorProfileDialog = ({
                     </div>
                   </div>
 
-                  <div className="rounded-lg border p-4">
+                  <div className="doctor-profile-section rounded-lg border p-4">
                     <h3 className="mb-3 text-sm font-semibold">User Account</h3>
-                    <div className="space-y-2 text-sm">
+                    <div className="doctor-profile-details space-y-2 text-sm">
                       <p><span className="font-medium">User Name:</span> {doctorDetails.user?.name || "N/A"}</p>
                       <p><span className="font-medium">User Email:</span> {doctorDetails.user?.email || "N/A"}</p>
                       <p><span className="font-medium">Role:</span> {doctorDetails.user?.role || "N/A"}</p>
@@ -119,7 +141,7 @@ const ViewDoctorProfileDialog = ({
                   </div>
                 </div>
 
-                <div className="rounded-lg border p-4">
+                <div className="doctor-profile-section rounded-lg border p-4">
                   <h3 className="mb-3 text-sm font-semibold">Specialties</h3>
                   <div className="flex flex-wrap gap-2">
                     {doctorDetails.specialties?.length ? (
@@ -135,14 +157,14 @@ const ViewDoctorProfileDialog = ({
                 </div>
 
                 <div className="grid gap-4 md:grid-cols-2">
-                  <div className="rounded-lg border p-4">
+                  <div className="doctor-profile-section rounded-lg border p-4">
                     <h3 className="mb-3 text-sm font-semibold">Reviews</h3>
                     <p className="mb-3 text-sm text-muted-foreground">
                       Total: {doctorDetails.reviews?.length ?? 0}, Average: {getAverageRating(doctorDetails.reviews).toFixed(1)}
                     </p>
                     <div className="space-y-2">
                       {(doctorDetails.reviews ?? []).slice(0, 5).map((review, index) => (
-                        <div key={review.id ?? `review-${index}`} className="rounded-md border p-2 text-sm">
+                        <div key={review.id ?? `review-${index}`} className="doctor-profile-record rounded-md border p-2 text-sm">
                           <p><span className="font-medium">Rating:</span> {review.rating ?? "N/A"}</p>
                           <p><span className="font-medium">Comment:</span> {review.comment || "N/A"}</p>
                           <p className="text-xs text-muted-foreground">{formatDateTime(review.createdAt)}</p>
@@ -154,11 +176,11 @@ const ViewDoctorProfileDialog = ({
                     </div>
                   </div>
 
-                  <div className="rounded-lg border p-4">
+                  <div className="doctor-profile-section rounded-lg border p-4">
                     <h3 className="mb-3 text-sm font-semibold">Doctor Schedules</h3>
                     <div className="space-y-2">
                       {(doctorDetails.doctorSchedules ?? []).slice(0, 8).map((item, index) => (
-                        <div key={item.id ?? item.schedule?.id ?? `schedule-${index}`} className="rounded-md border p-2 text-sm">
+                        <div key={item.id ?? item.schedule?.id ?? `schedule-${index}`} className="doctor-profile-record rounded-md border p-2 text-sm">
                           <p><span className="font-medium">Start:</span> {formatDateTime(item.schedule?.startDateTime)}</p>
                           <p><span className="font-medium">End:</span> {formatDateTime(item.schedule?.endDateTime)}</p>
                           <p><span className="font-medium">Booked:</span> {item.isBooked ? "Yes" : "No"}</p>
@@ -171,11 +193,11 @@ const ViewDoctorProfileDialog = ({
                   </div>
                 </div>
 
-                <div className="rounded-lg border p-4">
+                <div className="doctor-profile-section rounded-lg border p-4">
                   <h3 className="mb-3 text-sm font-semibold">Appointments</h3>
                   <div className="space-y-2">
                     {(doctorDetails.appointments ?? []).slice(0, 10).map((appointment, index) => (
-                      <div key={appointment.id ?? `appointment-${index}`} className="rounded-md border p-2 text-sm">
+                      <div key={appointment.id ?? `appointment-${index}`} className="doctor-profile-record rounded-md border p-2 text-sm">
                         <p><span className="font-medium">Patient:</span> {appointment.patient?.name || "N/A"}</p>
                         <p><span className="font-medium">Patient Email:</span> {appointment.patient?.email || "N/A"}</p>
                         <p><span className="font-medium">Status:</span> {appointment.status || "N/A"}</p>

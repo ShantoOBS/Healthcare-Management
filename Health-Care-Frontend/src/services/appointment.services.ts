@@ -58,3 +58,14 @@ export const getMySingleAppointment = async (appointmentId: string) => {
     throw error
   }
 }
+
+export const getAllAppointments = async (queryString: string) => {
+  try {
+    return await httpClient.get<IAppointment[]>(
+      queryString ? `/appointments/all-appointments?${queryString}` : "/appointments/all-appointments",
+    )
+  } catch (error) {
+    console.error("Error fetching appointments:", error)
+    throw error
+  }
+}

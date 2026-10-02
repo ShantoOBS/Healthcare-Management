@@ -1,8 +1,12 @@
 import status from "http-status";
+import { Prisma, Review } from "../../../generated/prisma/client.js";
 import { PaymentStatus, Role } from "../../../generated/prisma/enums.js";
 import AppError from "../../errorHelpers/AppError.js";
+import { IQueryParams } from "../../interfaces/query.interface.js";
 import { IRequestUser } from "../../interfaces/requestUser.interface.js";
 import { prisma } from "../../lib/prisma.js";
+import { QueryBuilder } from "../../utils/QueryBuilder.js";
+import { reviewFilterableFields, reviewSearchableFields } from "./review.constant.js";
 import { ICreateReviewPayload, IUpdateReviewPayload } from "./review.interface.js";
 
 const giveReview = async (user : IRequestUser, payload : ICreateReviewPayload) => {
@@ -68,17 +72,38 @@ const giveReview = async (user : IRequestUser, payload : ICreateReviewPayload) =
     return result;
 };
 
-const getAllReviews = async (
-) => {
-    const reviews = await prisma.review.findMany({
-        include: {
-            doctor: true,
-            patient: true,
-            appointment: true
+const getAllReviews = async (query: IQueryParams) => {
+    const queryBuilder = new QueryBuilder<Review, Prisma.ReviewWhereInput, Prisma.ReviewInclude>(
+        prisma.review,
+        query,
+        {
+            searchableFields: reviewSearchableFields,
+            filterableFields: reviewFilterableFields,
         }
-    });
+    );
 
-    return reviews;
+    return queryBuilder
+        .search()
+        .filter()
+        .include({
+            doctor: {
+                select: { id: true, name: true, email: true, profilePhoto: true },
+            },
+            patient: {
+                select: { id: true, name: true, email: true, profilePhoto: true },
+            },
+            appointment: {
+                select: {
+                    id: true,
+                    schedule: {
+                        select: { id: true, startDateTime: true },
+                    },
+                },
+            },
+        })
+        .paginate()
+        .sort()
+        .execute();
 };
 
 const myReviews = async (user: IRequestUser) => {

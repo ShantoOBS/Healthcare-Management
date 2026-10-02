@@ -1,11 +1,15 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import status from "http-status";
+import { Prescription, Prisma } from "../../../generated/prisma/client.js";
 import { Role } from "../../../generated/prisma/enums.js";
 import { deleteFileFromCloudinary, uploadFileToCloudinary } from "../../config/cloudinary.config.js";
 import AppError from "../../errorHelpers/AppError.js";
+import { IQueryParams } from "../../interfaces/query.interface.js";
 import { IRequestUser } from "../../interfaces/requestUser.interface.js";
 import { prisma } from "../../lib/prisma.js";
+import { QueryBuilder } from "../../utils/QueryBuilder.js";
 import { sendEmail } from "../../utils/email.js";
+import { prescriptionSearchableFields } from "./prescription.constant.js";
 import { ICreatePrescriptionPayload } from "./prescription.interface.js";
 import { generatePrescriptionPDF } from "./prescription.utils.js";
 
@@ -175,16 +179,34 @@ const myPrescriptions = async (user: IRequestUser) => {
 
 };
 
-const getAllPrescriptions = async () => {
-    const result = await prisma.prescription.findMany({
-        include: {
-            patient: true,
-            doctor: true,
-            appointment: true,
-        }
-    })
+const getAllPrescriptions = async (query: IQueryParams) => {
+    const queryBuilder = new QueryBuilder<Prescription, Prisma.PrescriptionWhereInput, Prisma.PrescriptionInclude>(
+        prisma.prescription,
+        query,
+        { searchableFields: prescriptionSearchableFields }
+    );
 
-    return result;
+    return queryBuilder
+        .search()
+        .include({
+            patient: {
+                select: { id: true, name: true, email: true, profilePhoto: true },
+            },
+            doctor: {
+                select: { id: true, name: true, email: true, profilePhoto: true },
+            },
+            appointment: {
+                select: {
+                    id: true,
+                    schedule: {
+                        select: { id: true, startDateTime: true, endDateTime: true },
+                    },
+                },
+            },
+        })
+        .paginate()
+        .sort()
+        .execute();
 };
 
 const updatePrescription = async (user: IRequestUser, prescriptionId: string, payload: any) => {

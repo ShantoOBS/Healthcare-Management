@@ -9,9 +9,11 @@ import {
   AlertDialogDescription,
   AlertDialogFooter,
   AlertDialogHeader,
+  AlertDialogMedia,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog"
 import { type IDoctor } from "@/types/doctor.types"
+import { Trash2 } from "lucide-react"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { useRouter } from "next/navigation"
 import { toast } from "sonner"
@@ -57,16 +59,19 @@ const DeleteDoctorConfirmationDialog = ({
 
   return (
     <AlertDialog open={open} onOpenChange={onOpenChange}>
-      <AlertDialogContent>
-        <AlertDialogHeader>
-          <AlertDialogTitle>Delete Doctor</AlertDialogTitle>
+      <AlertDialogContent className="doctor-delete-dialog">
+        <AlertDialogHeader className="doctor-delete-header">
+          <AlertDialogMedia className="doctor-delete-icon">
+            <Trash2 aria-hidden="true" />
+          </AlertDialogMedia>
+          <AlertDialogTitle>Delete doctor?</AlertDialogTitle>
           <AlertDialogDescription>
             Are you sure you want to delete {doctor?.name ?? "this doctor"}? This action will mark the doctor and
             linked user as deleted.
           </AlertDialogDescription>
         </AlertDialogHeader>
 
-        <AlertDialogFooter>
+        <AlertDialogFooter className="doctor-delete-footer">
           <AlertDialogCancel disabled={isPending}>Cancel</AlertDialogCancel>
           <AlertDialogAction
             variant="destructive"

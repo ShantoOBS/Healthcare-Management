@@ -3,7 +3,7 @@ import { Role } from "../../../generated/prisma/enums.js";
 import { checkAuth } from "../../middleware/checkAuth.js";
 import { validateRequest } from "../../middleware/validateRequest.js";
 import { UserController } from "./user.controller.js";
-import { createDoctorZodSchema } from "./user.validation.js";
+import { createAdminZodSchema, createDoctorZodSchema } from "./user.validation.js";
 import { multerUpload } from "../../config/multer.config.js";
 import { createDoctorProfilePhotoMiddleware } from "./user.middlewares.js";
 
@@ -38,7 +38,8 @@ router.post("/create-doctor",
 
 
 router.post("/create-admin",
-    checkAuth(Role.SUPER_ADMIN, Role.ADMIN),
+    checkAuth(Role.SUPER_ADMIN),
+    validateRequest(createAdminZodSchema),
     UserController.createAdmin);
 
 export const UserRoutes = router;

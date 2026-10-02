@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import httpStatus from "http-status";
+import { IQueryParams } from "../../interfaces/query.interface.js";
 import { catchAsync } from "../../shared/catchAsync.js";
 import { sendResponse } from "../../shared/sendResponse.js";
 import { ReviewService } from "./review.service.js";
@@ -17,13 +18,13 @@ const giveReview = catchAsync(async (req: Request, res: Response) => {
 });
 
 const getAllReviews = catchAsync(async (req: Request, res: Response) => {
-
-    const result = await ReviewService.getAllReviews();
+    const result = await ReviewService.getAllReviews(req.query as IQueryParams);
     sendResponse(res, {
         httpStatusCode: httpStatus.OK,
         success: true,
         message: 'Reviews retrieval successfully',
-        data: result
+        data: result.data,
+        meta: result.meta,
     });
 });
 

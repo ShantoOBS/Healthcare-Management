@@ -25,6 +25,8 @@ import ViewMyScheduleDialog from "./ViewMyScheduleDialog"
 
 const DEFAULT_PAGE = 1
 const DEFAULT_LIMIT = 10
+const QUERY_STALE_TIME = 1000 * 60
+const QUERY_GC_TIME = 1000 * 60 * 60 * 6
 
 const DOCTOR_SCHEDULE_FILTER_DEFINITIONS = [
 	serverManagedFilter.single("isBooked"),
@@ -79,6 +81,8 @@ const DoctorSchedulesTable = ({ initialQueryString }: { initialQueryString: stri
 	const { data: doctorSchedulesResponse, isLoading, isFetching } = useQuery({
 		queryKey: ["my-doctor-schedules", queryString],
 		queryFn: () => getMyDoctorSchedules(queryString),
+		staleTime: QUERY_STALE_TIME,
+		gcTime: QUERY_GC_TIME,
 	})
 
 	const doctorSchedules = doctorSchedulesResponse?.data ?? []

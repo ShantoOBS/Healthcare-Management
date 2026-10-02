@@ -194,19 +194,19 @@ const EditDoctorFormModal = ({
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent
-        className="max-h-[90vh] w-[calc(100vw-1.5rem)] max-w-[calc(100vw-1.5rem)] gap-0 overflow-hidden p-0 sm:w-[calc(100vw-3rem)] sm:max-w-[calc(100vw-3rem)] md:w-[calc(100vw-4rem)] md:max-w-[calc(100vw-4rem)] lg:w-[min(92vw,78rem)] lg:max-w-[min(92vw,78rem)] xl:w-[min(88vw,88rem)] xl:max-w-[min(88vw,88rem)] 2xl:w-[min(84vw,96rem)] 2xl:max-w-[min(84vw,96rem)]"
+        className="doctor-form-dialog doctor-edit-dialog max-h-[90vh] w-[calc(100vw-1.5rem)] max-w-[calc(100vw-1.5rem)] gap-0 overflow-hidden p-0 sm:w-[calc(100vw-3rem)] sm:max-w-[calc(100vw-3rem)] md:w-[calc(100vw-4rem)] md:max-w-[calc(100vw-4rem)] lg:w-[min(92vw,78rem)] lg:max-w-[min(92vw,78rem)] xl:w-[min(88vw,88rem)] xl:max-w-[min(88vw,88rem)] 2xl:w-[min(84vw,96rem)] 2xl:max-w-[min(84vw,96rem)]"
         onInteractOutside={(event) => event.preventDefault()}
         onEscapeKeyDown={(event) => event.preventDefault()}
       >
-        <DialogHeader className="border-b px-6 py-5 pr-14">
-          <DialogTitle>Edit Doctor</DialogTitle>
-          <DialogDescription>
+        <DialogHeader className="doctor-dialog-header border-b px-6 py-5 pr-14">
+          <DialogTitle className="doctor-dialog-title">Edit Doctor</DialogTitle>
+          <DialogDescription className="doctor-dialog-description">
             Update doctor profile information and specialties.
           </DialogDescription>
         </DialogHeader>
 
-        <ScrollArea className="max-h-[calc(90vh-5.5rem)]">
-          <div className="px-6 py-5">
+        <ScrollArea className="doctor-dialog-scroll max-h-[calc(90vh-5.5rem)]">
+          <div className="doctor-form-body px-6 py-5">
             <form
               method="POST"
               action="#"
@@ -216,9 +216,9 @@ const EditDoctorFormModal = ({
                 event.stopPropagation()
                 form.handleSubmit()
               }}
-              className="space-y-5"
+              className="doctor-form space-y-5"
             >
-              <div className="flex flex-col gap-4 rounded-md border p-4 sm:flex-row sm:items-center">
+              <div className="doctor-photo-upload flex flex-col gap-4 rounded-md border p-4 sm:flex-row sm:items-center">
                 {doctor?.profilePhoto ? (
                   <Image
                     src={doctor.profilePhoto}
@@ -253,7 +253,7 @@ const EditDoctorFormModal = ({
                 </Button>
               </div>
 
-              <div className="grid gap-4 md:grid-cols-2">
+              <div className="doctor-form-grid grid gap-4 md:grid-cols-2">
                 <form.Field
                   name="name"
                   validators={{ onChange: editDoctorFormZodSchema.shape.name }}
@@ -500,7 +500,7 @@ const EditDoctorFormModal = ({
                 }}
               </form.Field>
 
-              <div className="flex items-center justify-end gap-3 border-t pt-4">
+              <div className="doctor-form-footer flex items-center justify-end gap-3 border-t pt-4">
                 <DialogClose asChild>
                   <Button type="button" variant="outline" disabled={isPending}>
                     Cancel

@@ -63,6 +63,8 @@ interface DataTableFiltersProps {
   values: DataTableFilterValues;
   onFilterChange: (filterId: string, value: DataTableFilterValue | undefined) => void;
   onClearAll?: () => void;
+  optionMenuClassName?: string;
+  panelClassName?: string;
   isLoading?: boolean;
 }
 
@@ -174,11 +176,13 @@ const SingleSelectFilterControl = ({
   filter,
   value,
   isLoading,
+  optionMenuClassName,
   onFilterChange,
 }: {
   filter: SingleSelectFilterConfig;
   value: string;
   isLoading?: boolean;
+  optionMenuClassName?: string;
   onFilterChange: (filterId: string, value: DataTableFilterValue | undefined) => void;
 }) => {
   return (
@@ -192,7 +196,7 @@ const SingleSelectFilterControl = ({
         <SelectTrigger disabled={isLoading}>
           <SelectValue placeholder={filter.label} />
         </SelectTrigger>
-        <SelectContent>
+        <SelectContent className={optionMenuClassName}>
           <SelectItem value="all">All</SelectItem>
           {filter.options.map((option) => (
             <SelectItem key={option.value} value={option.value}>
@@ -290,6 +294,8 @@ const DataTableFilters = ({
   values,
   onFilterChange,
   onClearAll,
+  optionMenuClassName,
+  panelClassName,
   isLoading,
 }: DataTableFiltersProps) => {
   const totalActiveFilters = useMemo(() => {
@@ -369,14 +375,15 @@ const DataTableFilters = ({
               <Button variant="outline" className={triggerClass} disabled={isLoading}>
                 {filter.label}
                 {activeCount > 0 && (
-                  <Badge className="h-5 min-w-5 px-1.5" variant="secondary">
+                  <Badge className="data-table-filter-count h-5 
+                  min-w-5 px-1.5" variant="secondary">
                     {activeCount}
                   </Badge>
                 )}
               </Button>
             </PopoverTrigger>
 
-            <PopoverContent align="start" className="w-80">
+            <PopoverContent align="start" className={cn("w-80", panelClassName)}>
               <div className="mb-3 flex items-center justify-between">
                 <h3 className="text-sm font-semibold">{filter.label}</h3>
               </div>
@@ -386,6 +393,7 @@ const DataTableFilters = ({
                   filter={filter}
                   value={typeof filterValue === "string" ? filterValue : ""}
                   isLoading={isLoading}
+                  optionMenuClassName={optionMenuClassName}
                   onFilterChange={onFilterChange}
                 />
               )}
@@ -425,26 +433,26 @@ const DataTableFilters = ({
         </Button>
       )}
 
-        <div className="ml-auto flex items-center gap-2 text-xs text-muted-foreground">
+        <div className="data-table-filter-summary ml-auto flex items-center gap-2 text-xs text-muted-foreground">
           <Filter className="h-3.5 w-3.5" />
           <span>{totalActiveFilters} active</span>
         </div>
       </div>
 
       {activeBadges.length > 0 && (
-        <div className="flex flex-wrap gap-1.5">
+        <div className="data-table-active-filters flex flex-wrap gap-1.5">
           {activeBadges.map((badge) => (
             <Badge
               key={badge.key}
               variant="secondary"
-              className="flex items-center gap-1 pr-1 text-xs"
+              className="data-table-active-filter flex items-center gap-1 pr-1 text-xs"
             >
               {badge.label}
               <button
                 type="button"
                 onClick={badge.onRemove}
                 disabled={isLoading}
-                className="ml-0.5 rounded-full p-0.5 hover:bg-muted-foreground/20 disabled:pointer-events-none"
+                className="data-table-active-filter-remove ml-0.5 rounded-full p-0.5 hover:bg-muted-foreground/20 disabled:pointer-events-none"
                 aria-label={`Remove ${badge.label}`}
               >
                 <X className="h-3 w-3" />

@@ -68,6 +68,7 @@ interface DataTablePaginationProps<TData> {
   totalRows?: number;
   totalPages?: number;
   isLoading?: boolean;
+  pageSizeMenuClassName?: string;
 }
 
 const DataTablePagination = <TData,>({
@@ -75,6 +76,7 @@ const DataTablePagination = <TData,>({
   totalRows,
   totalPages,
   isLoading,
+  pageSizeMenuClassName,
 }: DataTablePaginationProps<TData>) => {
   const pagination = table.getState().pagination;
   const pageSize = pagination.pageSize;
@@ -211,7 +213,7 @@ const DataTablePagination = <TData,>({
             <SelectValue placeholder="Limit" />
           </SelectTrigger>
 
-          <SelectContent>
+          <SelectContent className={pageSizeMenuClassName}>
             {DEFAULT_PAGE_SIZES.map((size) => (
               <SelectItem key={size} value={String(size)}>
                 {size}

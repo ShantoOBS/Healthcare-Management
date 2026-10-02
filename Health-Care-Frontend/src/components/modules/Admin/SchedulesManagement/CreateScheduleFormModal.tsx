@@ -89,19 +89,19 @@ const CreateScheduleFormModal = () => {
       </DialogTrigger>
 
       <DialogContent
-        className="max-h-[90vh] w-[calc(100vw-1.5rem)] max-w-[calc(100vw-1.5rem)] gap-0 overflow-hidden p-0 sm:w-[calc(100vw-3rem)] sm:max-w-[calc(100vw-3rem)] md:w-[calc(100vw-4rem)] md:max-w-[calc(100vw-4rem)] lg:w-[min(88vw,44rem)] lg:max-w-[min(88vw,44rem)]"
+        className="doctor-form-dialog schedule-form-dialog max-h-[90vh] w-[calc(100vw-1.5rem)] max-w-[calc(100vw-1.5rem)] gap-0 overflow-hidden p-0 sm:w-[calc(100vw-3rem)] sm:max-w-[calc(100vw-3rem)] md:w-[calc(100vw-4rem)] md:max-w-[min(88vw,44rem)] lg:w-[min(88vw,44rem)] lg:max-w-[min(88vw,44rem)]"
         onInteractOutside={(event) => event.preventDefault()}
         onEscapeKeyDown={(event) => event.preventDefault()}
       >
-        <DialogHeader className="border-b px-6 py-5 pr-14">
-          <DialogTitle>Create Schedule</DialogTitle>
-          <DialogDescription>
+        <DialogHeader className="doctor-dialog-header border-b px-6 py-5 pr-14">
+          <DialogTitle className="doctor-dialog-title">Create Schedule</DialogTitle>
+          <DialogDescription className="doctor-dialog-description">
             Generate 30-minute schedule slots across a date range.
           </DialogDescription>
         </DialogHeader>
 
-        <ScrollArea className="max-h-[calc(90vh-5.5rem)]">
-          <div className="px-6 py-5">
+        <ScrollArea className="doctor-dialog-scroll max-h-[calc(90vh-5.5rem)]">
+          <div className="doctor-form-body px-6 py-5">
             <form
               method="POST"
               action="#"
@@ -111,7 +111,7 @@ const CreateScheduleFormModal = () => {
                 event.stopPropagation()
                 form.handleSubmit()
               }}
-              className="space-y-5"
+              className="doctor-form space-y-5"
             >
               <div className="grid gap-4 sm:grid-cols-2">
                 <form.Field
@@ -151,7 +151,7 @@ const CreateScheduleFormModal = () => {
                 </form.Field>
               </div>
 
-              <DialogFooter>
+              <DialogFooter className="doctor-form-footer">
                 <DialogClose asChild>
                   <Button type="button" variant="outline" disabled={isPending}>
                     Cancel

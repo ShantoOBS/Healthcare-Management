@@ -77,24 +77,24 @@ const ViewScheduleDialog = ({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-h-[90vh] w-[calc(100vw-1.5rem)] max-w-4xl gap-0 overflow-hidden p-0">
-        <DialogHeader className="border-b px-6 py-5 pr-14">
-          <DialogTitle>Schedule Details</DialogTitle>
-          <DialogDescription>
+      <DialogContent className="doctor-profile-dialog max-h-[90vh] w-[calc(100vw-1.5rem)] max-w-4xl gap-0 overflow-hidden p-0">
+        <DialogHeader className="doctor-dialog-header border-b px-6 py-5 pr-14">
+          <DialogTitle className="doctor-dialog-title">Schedule Details</DialogTitle>
+          <DialogDescription className="doctor-dialog-description">
             Review schedule timing, doctor assignments, and linked appointments.
           </DialogDescription>
         </DialogHeader>
 
-        <ScrollArea className="max-h-[calc(90vh-5.5rem)]">
+        <ScrollArea className="doctor-dialog-scroll max-h-[calc(90vh-5.5rem)]">
           <div className="space-y-4 px-6 py-5">
             {(isLoading || isFetching) && (
-              <div className="rounded-md border p-4 text-sm text-muted-foreground">
+              <div className="doctor-profile-section text-sm text-muted-foreground">
                 Loading schedule details...
               </div>
             )}
 
             {hasError && (
-              <div className="rounded-md border border-destructive/30 bg-destructive/5 p-4 text-sm text-destructive">
+              <div className="rounded-lg border border-destructive/30 bg-destructive/5 p-4 text-sm text-destructive">
                 {data.message || "Failed to load schedule details."}
               </div>
             )}
@@ -102,9 +102,9 @@ const ViewScheduleDialog = ({
             {!isLoading && !isFetching && scheduleDetails && (
               <>
                 <div className="grid gap-4 md:grid-cols-2">
-                  <div className="rounded-lg border p-4">
-                    <h3 className="mb-3 text-sm font-semibold">Timing</h3>
-                    <div className="space-y-2 text-sm">
+                  <div className="doctor-profile-section">
+                    <h3>Timing</h3>
+                    <div className="doctor-profile-details">
                       <p><span className="font-medium">Schedule ID:</span> {scheduleDetails.id}</p>
                       <p><span className="font-medium">Start:</span> {formatDateTime(scheduleDetails.startDateTime)}</p>
                       <p><span className="font-medium">End:</span> {formatDateTime(scheduleDetails.endDateTime)}</p>
@@ -114,14 +114,14 @@ const ViewScheduleDialog = ({
                     </div>
                   </div>
 
-                  <div className="rounded-lg border p-4">
-                    <h3 className="mb-3 text-sm font-semibold">Summary</h3>
+                  <div className="doctor-profile-section">
+                    <h3>Summary</h3>
                     <div className="flex flex-wrap gap-2">
-                      <Badge variant="secondary">
+                      <Badge className="doctor-specialty-badge" variant="secondary">
                         {(scheduleDetails.doctorSchedules?.length ?? 0)} doctor slots
                       </Badge>
-                      <Badge variant="secondary">{bookedCount} booked</Badge>
-                      <Badge variant="secondary">
+                      <Badge className="doctor-specialty-badge" variant="secondary">{bookedCount} booked</Badge>
+                      <Badge className="doctor-specialty-badge" variant="secondary">
                         {(scheduleDetails.appointments?.length ?? 0)} appointments
                       </Badge>
                     </div>
@@ -129,11 +129,11 @@ const ViewScheduleDialog = ({
                 </div>
 
                 <div className="grid gap-4 md:grid-cols-2">
-                  <div className="rounded-lg border p-4">
-                    <h3 className="mb-3 text-sm font-semibold">Doctor Assignments</h3>
+                  <div className="doctor-profile-section">
+                    <h3>Doctor Assignments</h3>
                     <div className="space-y-2">
                       {(scheduleDetails.doctorSchedules ?? []).slice(0, 10).map((item, index) => (
-                        <div key={`${item.doctorId}-${index}`} className="rounded-md border p-2 text-sm">
+                        <div key={`${item.doctorId}-${index}`} className="doctor-profile-record rounded-md border p-2 text-sm">
                           <p><span className="font-medium">Doctor ID:</span> {item.doctorId}</p>
                           <p><span className="font-medium">Booked:</span> {item.isBooked ? "Yes" : "No"}</p>
                         </div>
@@ -144,11 +144,11 @@ const ViewScheduleDialog = ({
                     </div>
                   </div>
 
-                  <div className="rounded-lg border p-4">
-                    <h3 className="mb-3 text-sm font-semibold">Appointments</h3>
+                  <div className="doctor-profile-section">
+                    <h3>Appointments</h3>
                     <div className="space-y-2">
                       {(scheduleDetails.appointments ?? []).slice(0, 10).map((item, index) => (
-                        <div key={item.id ?? `appointment-${index}`} className="rounded-md border p-2 text-sm">
+                        <div key={item.id ?? `appointment-${index}`} className="doctor-profile-record rounded-md border p-2 text-sm">
                           <p><span className="font-medium">Appointment ID:</span> {item.id ?? "N/A"}</p>
                           <p><span className="font-medium">Status:</span> {item.status ?? "N/A"}</p>
                           <p><span className="font-medium">Doctor:</span> {item.doctor?.name ?? item.doctor?.email ?? "N/A"}</p>

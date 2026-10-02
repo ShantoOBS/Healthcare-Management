@@ -13,11 +13,13 @@ export const doctorColumns: ColumnDef<IDoctor>[] = [
     accessorKey: "name",
     header: "Doctor",
     cell: ({ row }) => ( 
-        <UserInfoCell
+        <div className="doctor-identity-cell">
+          <UserInfoCell
             name={row.original.name}
             email={row.original.email}
             profilePhoto={row.original.profilePhoto}
-        />
+          />
+        </div>
     ),
   },
   {
@@ -36,12 +38,12 @@ export const doctorColumns: ColumnDef<IDoctor>[] = [
 
 
         return (
-            <div>
+            <div className="doctor-specialty-list">
                 {
                 specialties.map(({specialty}, id) => {
                     const title = specialty.title || "N/A";
                     return (
-                        <Badge variant={"secondary"} key={id}>
+                      <Badge className="doctor-specialty-badge" variant={"secondary"} key={id}>
                             {title}
                         </Badge>
                     )
@@ -79,7 +81,7 @@ export const doctorColumns: ColumnDef<IDoctor>[] = [
     header: "Fee",
     cell: ({ row }) => {
       return (
-        <span className="text-sm font-semibold text-green-600">
+        <span className="doctor-fee-cell text-sm font-semibold">
           ${row.original?.appointmentFee.toFixed(2) ?? "N/A"}
         </span>
       );
@@ -91,7 +93,7 @@ export const doctorColumns: ColumnDef<IDoctor>[] = [
     header: "Rating",
     cell: ({ row }) => {
       return (
-        <div className="flex items-center gap-1">
+        <div className="doctor-rating-cell">
           <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
           <span className="text-sm font-medium">
             {row.original.averageRating?.toFixed(1) || "0.0"}
@@ -106,7 +108,7 @@ export const doctorColumns: ColumnDef<IDoctor>[] = [
     header: "Gender",
     cell: ({ row }) => {
       return (
-        <span className="text-sm capitalize">
+        <span className="doctor-gender-cell text-sm capitalize">
           {row.original.gender.toLowerCase()}
         </span>
       );
@@ -118,7 +120,9 @@ export const doctorColumns: ColumnDef<IDoctor>[] = [
     header: "Status",
     cell: ({ row }) => {
       return (
-        <StatusBadgeCell status={row.original.user.status} />
+        <span className="doctor-status-cell">
+          <StatusBadgeCell status={row.original.user.status} />
+        </span>
       );
     },
   },

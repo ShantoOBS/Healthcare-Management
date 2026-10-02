@@ -1,18 +1,20 @@
 import { Request, Response } from "express";
 import status from "http-status";
+import { IQueryParams } from "../../interfaces/query.interface.js";
 import { catchAsync } from "../../shared/catchAsync.js";
 import { sendResponse } from "../../shared/sendResponse.js";
 import { AdminService } from "./admin.service.js";
 
 const getAllAdmins = catchAsync(
     async (req: Request, res: Response) => {
-        const result = await AdminService.getAllAdmins();
+        const result = await AdminService.getAllAdmins(req.query as IQueryParams);
 
         sendResponse(res, {
             httpStatusCode: status.OK,
             success: true,
             message: "Admins fetched successfully",
-            data: result,
+            data: result.data,
+            meta: result.meta,
         })
     }
 )

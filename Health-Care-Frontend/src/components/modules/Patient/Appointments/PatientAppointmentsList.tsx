@@ -2,22 +2,15 @@
 
 import { initiateAppointmentPaymentAction } from "@/app/_actions/appointment.actions"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card"
 import { type IAppointment } from "@/types/appointment.types"
 import { useMutation } from "@tanstack/react-query"
 import { format } from "date-fns"
-import { AlertCircle, CalendarClock, CircleDollarSign, CreditCard } from "lucide-react"
+import { AlertCircle, CalendarClock, CalendarDays, Check, CircleDollarSign, CreditCard, UsersRound } from "lucide-react"
 import Link from "next/link"
-import { useMemo } from "react"
+import { useMemo, useState } from "react"
 import { toast } from "sonner"
 
 interface PatientAppointmentsListProps {
@@ -44,6 +37,7 @@ const PatientAppointmentsList = ({
   feedbackType,
   feedbackMessage,
 }: PatientAppointmentsListProps) => {
+  const [activeFilter, setActiveFilter] = useState("ALL")
   const initiatePaymentMutation = useMutation({
     mutationFn: initiateAppointmentPaymentAction,
   })
@@ -57,7 +51,20 @@ const PatientAppointmentsList = ({
   }, [appointments])
 
   const paidCount = appointments.filter((item) => item.paymentStatus === "PAID").length
-  const unpaidCount = appointments.filter((item) => item.paymentStatus !== "PAID").length
+  const unpaidCount = appointments.filter((item) => item.paymentStatus !== "PAID" && item.status !== "CANCELED").length
+  const upcomingCount = appointments.filter((item) => item.status === "SCHEDULED" || item.status === "INPROGRESS").length
+  const completedCount = appointments.filter((item) => item.status === "COMPLETED").length
+  const canceledCount = appointments.filter((item) => item.status === "CANCELED").length
+
+  const visibleAppointments = useMemo(() => {
+    if (activeFilter === "UPCOMING") {
+      return sortedAppointments.filter((item) => item.status === "SCHEDULED" || item.status === "INPROGRESS")
+    }
+    if (activeFilter === "COMPLETED" || activeFilter === "CANCELED") {
+      return sortedAppointments.filter((item) => item.status === activeFilter)
+    }
+    return sortedAppointments
+  }, [activeFilter, sortedAppointments])
 
   const handlePayNow = async (appointmentId: string) => {
     const result = await initiatePaymentMutation.mutateAsync(appointmentId)
@@ -76,23 +83,26 @@ const PatientAppointmentsList = ({
   }
 
   return (
-    <div className="mx-auto max-w-7xl space-y-6 px-4 py-6 sm:px-6 lg:px-8">
-      <div className="rounded-2xl border bg-linear-to-r from-cyan-50 via-white to-blue-50 p-6">
-        <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-          <div className="space-y-2">
-            <h1 className="text-2xl font-semibold tracking-tight">My Appointments</h1>
-            <p className="text-sm text-muted-foreground">
-              Review upcoming and past appointments, and finish payment for unpaid bookings.
-            </p>
+    <main className="patient-appointments">
+      <header className="patient-appointments-header">
+        <div className="patient-appointments-heading">
+          <div className="patient-appointments-mark" aria-hidden="true">
+            <CalendarDays />
           </div>
-
-          <div className="flex flex-wrap gap-2 text-xs">
-            <Badge variant="secondary">Total: {appointments.length}</Badge>
-            <Badge variant="secondary">Paid: {paidCount}</Badge>
-            <Badge variant="secondary">Unpaid: {unpaidCount}</Badge>
+          <div>
+            <p className="patient-appointments-eyebrow">Your care</p>
+            <h1>My appointments</h1>
+            <p>Track visits, payment, and follow-up with your care team.</p>
           </div>
         </div>
-      </div>
+
+        <div className="patient-appointment-summary" aria-label="Appointment summary">
+          <div><strong>{appointments.length}</strong><span>Total</span></div>
+          <div><strong>{upcomingCount}</strong><span>Upcoming</span></div>
+          <div><strong>{paidCount}</strong><span>Paid</span></div>
+          <div><strong>{unpaidCount}</strong><span>Payment due</span></div>
+        </div>
+      </header>
 
       {feedbackType && feedbackMessage && (
         <Alert variant={feedbackType === "error" ? "destructive" : "default"}>
@@ -102,73 +112,104 @@ const PatientAppointmentsList = ({
         </Alert>
       )}
 
-      {sortedAppointments.length === 0 ? (
-        <Card>
-          <CardHeader>
-            <CardTitle>No appointments yet</CardTitle>
-            <CardDescription>
-              Start by choosing a doctor and selecting an available time slot.
-            </CardDescription>
-          </CardHeader>
-          <CardFooter>
-            <Button asChild>
-              <Link href="/consultation">Browse Doctors</Link>
-            </Button>
-          </CardFooter>
-        </Card>
-      ) : (
-        <div className="grid gap-4 lg:grid-cols-2">
-          {sortedAppointments.map((appointment) => {
+      <section className="patient-appointments-content" aria-label="Appointment list">
+        <div className="patient-appointment-toolbar">
+          <div className="patient-appointment-filters" role="group" aria-label="Filter appointments">
+            {[
+              { id: "ALL", label: "All", count: appointments.length },
+              { id: "UPCOMING", label: "Upcoming", count: upcomingCount },
+              { id: "COMPLETED", label: "Completed", count: completedCount },
+              { id: "CANCELED", label: "Canceled", count: canceledCount },
+            ].map((filter) => (
+              <button
+                aria-pressed={activeFilter === filter.id}
+                className={`patient-appointment-filter${activeFilter === filter.id ? " active" : ""}`}
+                key={filter.id}
+                onClick={() => setActiveFilter(filter.id)}
+                type="button"
+              >
+                {filter.label}<span>{filter.count}</span>
+              </button>
+            ))}
+          </div>
+          <p className="patient-appointment-results">
+            Showing {visibleAppointments.length} of {appointments.length}
+          </p>
+        </div>
+
+        {visibleAppointments.length === 0 ? (
+          <div className="patient-appointments-empty">
+            <div className="patient-appointments-mark" aria-hidden="true"><CalendarDays /></div>
+            <h2>{appointments.length === 0 ? "No appointments yet" : "No appointments in this view"}</h2>
+            <p>
+              {appointments.length === 0
+                ? "Choose a doctor and an available time to get started."
+                : "Try another filter to see more of your care history."}
+            </p>
+            {appointments.length === 0 && (
+              <Button asChild>
+                <Link href="/consultation"><UsersRound aria-hidden="true" />Browse doctors</Link>
+              </Button>
+            )}
+          </div>
+        ) : (
+        <div className="patient-appointment-list">
+          {visibleAppointments.map((appointment) => {
             const canPayNow =
               appointment.paymentStatus !== "PAID" && appointment.status !== "CANCELED"
+            const doctorInitials = appointment.doctor?.name
+              ?.split(/\s+/)
+              .filter(Boolean)
+              .slice(0, 2)
+              .map((part) => part[0]?.toUpperCase())
+              .join("") || "DR"
 
             return (
-              <Card key={appointment.id} className="gap-4">
-                <CardHeader>
-                  <div className="flex flex-wrap items-start justify-between gap-3">
-                    <div className="space-y-1">
-                      <CardTitle>{appointment.doctor?.name || "Doctor appointment"}</CardTitle>
-                      <CardDescription>
-                        {appointment.doctor?.designation || "Consultation"}
-                      </CardDescription>
-                    </div>
-
-                    <div className="flex flex-wrap gap-2 text-xs">
-                      <Badge variant="outline">{appointment.status || "SCHEDULED"}</Badge>
-                      <Badge variant={appointment.paymentStatus === "PAID" ? "secondary" : "outline"}>
-                        {appointment.paymentStatus || "UNPAID"}
-                      </Badge>
-                    </div>
-                  </div>
-                </CardHeader>
-
-                <CardContent className="space-y-4">
-                  <div className="grid gap-3 sm:grid-cols-2">
-                    <div className="rounded-2xl border bg-muted/20 p-4 text-sm">
-                      <div className="mb-2 flex items-center gap-2 text-muted-foreground">
-                        <CalendarClock className="size-4" />
-                        Schedule
-                      </div>
-                      <p className="font-medium">{formatDateTime(appointment.schedule?.startDateTime)}</p>
-                      <p className="text-muted-foreground">Ends {formatDateTime(appointment.schedule?.endDateTime)}</p>
-                    </div>
-
-                    <div className="rounded-2xl border bg-muted/20 p-4 text-sm">
-                      <div className="mb-2 flex items-center gap-2 text-muted-foreground">
-                        <CircleDollarSign className="size-4" />
-                        Payment
-                      </div>
-                      <p className="font-medium">৳{appointment.doctor?.appointmentFee?.toFixed(2) ?? appointment.payment?.amount?.toFixed(2) ?? "0.00"}</p>
-                      <p className="text-muted-foreground">Transaction {appointment.payment?.transactionId || "Pending"}</p>
+              <article className="patient-appointment" key={appointment.id}>
+                <header className="patient-appointment-card-header">
+                  <div className="patient-appointment-doctor">
+                    <Avatar className="patient-appointment-avatar">
+                      <AvatarImage src={appointment.doctor?.profilePhoto || undefined} alt={appointment.doctor?.name || "Doctor"} />
+                      <AvatarFallback>{doctorInitials}</AvatarFallback>
+                    </Avatar>
+                    <div className="patient-appointment-doctor-copy">
+                      <h2>{appointment.doctor?.name || "Doctor appointment"}</h2>
+                      <p>{appointment.doctor?.designation || "Consultation"}</p>
                     </div>
                   </div>
 
-                  <div className="text-sm text-muted-foreground">
-                    Appointment ID: <span className="font-medium text-foreground">{appointment.id}</span>
+                  <div className="patient-appointment-badges">
+                    <Badge className={`patient-appointment-status ${appointment.status?.toLowerCase() || "scheduled"}`} variant="outline">
+                      {appointment.status || "SCHEDULED"}
+                    </Badge>
+                    <Badge className={`patient-appointment-payment ${appointment.paymentStatus?.toLowerCase() || "unpaid"}`} variant="outline">
+                      {appointment.paymentStatus || "UNPAID"}
+                    </Badge>
                   </div>
-                </CardContent>
+                </header>
 
-                <CardFooter className="justify-between gap-3">
+                <div className="patient-appointment-details">
+                  <div className="patient-appointment-detail">
+                    <CalendarClock aria-hidden="true" />
+                    <div>
+                      <span>Appointment time</span>
+                      <strong>{formatDateTime(appointment.schedule?.startDateTime)}</strong>
+                      <small>Ends {formatDateTime(appointment.schedule?.endDateTime)}</small>
+                    </div>
+                  </div>
+                  <div className="patient-appointment-detail">
+                    <CircleDollarSign aria-hidden="true" />
+                    <div>
+                      <span>Payment</span>
+                      <strong>৳{appointment.doctor?.appointmentFee?.toFixed(2) ?? appointment.payment?.amount?.toFixed(2) ?? "0.00"}</strong>
+                      <small>Transaction {appointment.payment?.transactionId || "Pending"}</small>
+                    </div>
+                  </div>
+                </div>
+
+                <footer className="patient-appointment-footer">
+                  <span className="patient-appointment-id">ID · {appointment.id}</span>
+                  <div className="patient-appointment-actions">
                   <Button asChild variant="outline">
                     <Link href={`/consultation/doctor/${appointment.doctorId || appointment.doctor?.id || ""}`}>
                       View Doctor
@@ -189,13 +230,15 @@ const PatientAppointmentsList = ({
                       {appointment.paymentStatus === "PAID" ? "Paid" : "Unavailable"}
                     </Button>
                   )}
-                </CardFooter>
-              </Card>
+                  </div>
+                </footer>
+              </article>
             )
           })}
         </div>
-      )}
-    </div>
+        )}
+      </section>
+    </main>
   )
 }
 
