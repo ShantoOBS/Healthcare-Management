@@ -4,8 +4,8 @@ import { BloodGroup, Gender } from "../../../generated/prisma/enums.js";
 export interface IUpdatePatientInfoPayload{
     name ?: string;
     profilePhoto ?: string;
-    contactNumber ?: string;
-    address ?: string;
+    contactNumber ?: string | null;
+    address ?: string | null;
 }
 
 export interface IUpdatePatientHealthDataPayload{
@@ -17,7 +17,7 @@ export interface IUpdatePatientHealthDataPayload{
     height: string;
     weight: string;
     smokingStatus: boolean;
-    dietaryPreference?: string;
+    dietaryPreferences?: string | null;
     pregnancyStatus: boolean;
     mentalHealthHistory?: string;
     immunizationStatus?: string;
@@ -41,5 +41,9 @@ export interface IUpdatePatientProfilePayload{
 }
 
 export interface IUpdatePatientAdminPayload {
-    patientInfo: Pick<IUpdatePatientInfoPayload, "name" | "contactNumber" | "address">;
+    patientInfo: {
+        name?: string;
+        contactNumber?: string;
+        address?: string;
+    };
 }

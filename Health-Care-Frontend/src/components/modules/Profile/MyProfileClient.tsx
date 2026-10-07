@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
@@ -8,66 +8,108 @@ import { updatePatientProfileAction } from "@/app/(dashboardLayout)/(commonProte
 import {
   User,
   Mail,
-  Phone,
-  MapPin,
   Camera,
-  Calendar,
-  Heart,
   Save,
-  ShieldAlert,
   Activity,
-  FileText,
-  Upload,
+  X,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
-interface MyProfileClientProps {
-  userInfo: any;
+interface PatientHealthData {
+  gender?: string | null;
+  bloodGroup?: string | null;
+  dateOfBirth?: string | Date | null;
+  height?: string | null;
+  weight?: string | null;
+  dietaryPreferences?: string | null;
 }
+
+interface PatientProfile {
+  name?: string | null;
+  contactNumber?: string | null;
+  address?: string | null;
+  profilePhoto?: string | null;
+  patientHealthData?: PatientHealthData | null;
+}
+
+interface MyProfileUserInfo {
+  name?: string | null;
+  email?: string | null;
+  role?: string | null;
+  image?: string | null;
+  patient?: PatientProfile | null;
+}
+
+interface MyProfileClientProps {
+  userInfo: MyProfileUserInfo | null;
+}
+
+const toDateInputValue = (value: PatientHealthData["dateOfBirth"]) => {
+  if (!value) return "";
+
+  const date = value instanceof Date ? value : new Date(value);
+  return Number.isNaN(date.getTime()) ? "" : date.toISOString().slice(0, 10);
+};
 
 export default function MyProfileClient({ userInfo }: MyProfileClientProps) {
   const router = useRouter();
 
-  // Extract nested patient / doctor / admin info
-  const patientData = userInfo?.patient || {};
-  const patientHealthData = patientData?.patientHealthData || {};
-  const userDetails = userInfo || {};
+  const patientData = userInfo?.patient ?? {};
+  const patientHealthData = patientData.patientHealthData ?? {};
+  const userDetails = userInfo ?? {};
+  const photoInputRef = useRef<HTMLInputElement>(null);
 
-  // Form State
-  const [name, setName] = useState<string>(userDetails.name || patientData.name || "");
-  const [contactNumber, setContactNumber] = useState<string>(patientData.contactNumber || "");
-  const [address, setAddress] = useState<string>(patientData.address || "");
+  const [name, setName] = useState(userDetails.name || patientData.name || "");
+  const [contactNumber, setContactNumber] = useState(patientData.contactNumber || "");
+  const [address, setAddress] = useState(patientData.address || "");
 
-  // Health Data State
-  const [gender, setGender] = useState<string>(patientHealthData.gender || "MALE");
-  const [bloodGroup, setBloodGroup] = useState<string>(patientHealthData.bloodGroup || "O_POSITIVE");
-  const [dateOfBirth, setDateOfBirth] = useState<string>(
-    patientHealthData.dateOfBirth
-      ? new Date(patientHealthData.dateOfBirth).toISOString().split("T")[0]
-      : ""
-  );
-  const [height, setHeight] = useState<string>(patientHealthData.height || "");
-  const [weight, setWeight] = useState<string>(patientHealthData.weight || "");
-  const [dietaryPreferences, setDietaryPreferences] = useState<string>(
+  const [gender, setGender] = useState(patientHealthData.gender || "");
+  const [bloodGroup, setBloodGroup] = useState(patientHealthData.bloodGroup || "");
+  const [dateOfBirth, setDateOfBirth] = useState(toDateInputValue(patientHealthData.dateOfBirth));
+  const [height, setHeight] = useState(patientHealthData.height || "");
+  const [weight, setWeight] = useState(patientHealthData.weight || "");
+  const [dietaryPreferences, setDietaryPreferences] = useState(
     patientHealthData.dietaryPreferences || ""
   );
 
-  // Profile Photo File
   const [profilePhotoFile, setProfilePhotoFile] = useState<File | null>(null);
   const [photoPreview, setPhotoPreview] = useState<string | null>(
     userDetails.image || patientData.profilePhoto || null
   );
-
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  useEffect(() => {
+    if (!photoPreview?.startsWith("blob:")) return;
+    return () => URL.revokeObjectURL(photoPreview);
+  }, [photoPreview]);
 
   const handlePhotoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (file) {
-      setProfilePhotoFile(file);
-      setPhotoPreview(URL.createObjectURL(file));
+    if (!file) return;
+
+    const allowedTypes = ["image/jpeg", "image/png", "image/webp"];
+    if (!allowedTypes.includes(file.type)) {
+      toast.error("Choose a JPG, PNG, or WEBP image");
+      e.currentTarget.value = "";
+      return;
     }
+
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error("Profile photos must be 5 MB or smaller");
+      e.currentTarget.value = "";
+      return;
+    }
+
+    setProfilePhotoFile(file);
+    setPhotoPreview(URL.createObjectURL(file));
+  };
+
+  const clearSelectedPhoto = () => {
+    setProfilePhotoFile(null);
+    setPhotoPreview(userDetails.image || patientData.profilePhoto || null);
+    if (photoInputRef.current) photoInputRef.current.value = "";
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -76,33 +118,21 @@ export default function MyProfileClient({ userInfo }: MyProfileClientProps) {
 
     try {
       const formData = new FormData();
-
-      const patientInfoPayload: Record<string, string> = {};
-      if (name.trim()) patientInfoPayload.name = name.trim();
-      if (contactNumber.trim()) patientInfoPayload.contactNumber = contactNumber.trim();
-      if (address.trim()) patientInfoPayload.address = address.trim();
-
-      const healthDataPayload: Record<string, any> = {};
-      if (gender) healthDataPayload.gender = gender;
-      if (bloodGroup) healthDataPayload.bloodGroup = bloodGroup;
-      if (dateOfBirth) {
-        const parsedDate = new Date(dateOfBirth);
-        if (!isNaN(parsedDate.getTime())) {
-          healthDataPayload.dateOfBirth = parsedDate.toISOString();
-        }
-      }
-      if (height.trim()) healthDataPayload.height = height.trim();
-      if (weight.trim()) healthDataPayload.weight = weight.trim();
-      if (dietaryPreferences.trim()) healthDataPayload.dietaryPreferences = dietaryPreferences.trim();
-
-      const payload: Record<string, any> = {};
-      if (Object.keys(patientInfoPayload).length > 0) {
-        payload.patientInfo = patientInfoPayload;
-      }
-      if (Object.keys(healthDataPayload).length > 0) {
-        payload.patientHealthData = healthDataPayload;
-      }
-
+      const payload = {
+        patientInfo: {
+          name: name.trim(),
+          contactNumber: contactNumber.trim() || null,
+          address: address.trim() || null,
+        },
+        patientHealthData: {
+          gender,
+          bloodGroup,
+          dateOfBirth: new Date(dateOfBirth).toISOString(),
+          height: height.trim(),
+          weight: weight.trim(),
+          dietaryPreferences: dietaryPreferences.trim() || null,
+        },
+      };
       formData.append("data", JSON.stringify(payload));
 
       if (profilePhotoFile) {
@@ -113,15 +143,14 @@ export default function MyProfileClient({ userInfo }: MyProfileClientProps) {
 
       if (!result.success) {
         toast.error(result.message || "Failed to update profile");
-        setIsSubmitting(false);
         return;
       }
 
       toast.success("Profile updated successfully!");
-      setIsSubmitting(false);
       router.refresh();
     } catch (err: unknown) {
       toast.error(err instanceof Error ? err.message : "Failed to update profile");
+    } finally {
       setIsSubmitting(false);
     }
   };
@@ -137,7 +166,13 @@ export default function MyProfileClient({ userInfo }: MyProfileClientProps) {
         <div className="relative group">
           <div className="h-24 w-24 sm:h-28 sm:w-28 rounded-full overflow-hidden border-4 border-[#edf4f0] bg-[#1f5c4b] text-white flex items-center justify-center font-bold text-3xl shadow-md relative">
             {photoPreview ? (
-              <Image src={photoPreview} alt={name || "User"} fill className="object-cover" />
+              <Image
+                src={photoPreview}
+                alt={name || "User"}
+                fill
+                unoptimized
+                className="object-cover"
+              />
             ) : (
               (name || userDetails.name || "U").charAt(0).toUpperCase()
             )}
@@ -146,17 +181,28 @@ export default function MyProfileClient({ userInfo }: MyProfileClientProps) {
           <label
             htmlFor="profile-photo-upload"
             className="absolute bottom-0 right-0 h-9 w-9 rounded-full bg-[#1f5c4b] text-white flex items-center justify-center cursor-pointer shadow-md hover:bg-[#184b3d] transition"
-            title="Change Profile Photo"
+            title="Choose a profile photo"
           >
             <Camera className="h-4.5 w-4.5" />
             <input
+              ref={photoInputRef}
               id="profile-photo-upload"
               type="file"
-              accept="image/*"
+              accept="image/jpeg,image/png,image/webp"
               onChange={handlePhotoChange}
               className="hidden"
             />
           </label>
+          {profilePhotoFile && (
+            <button
+              type="button"
+              onClick={clearSelectedPhoto}
+              className="absolute -top-1 -right-1 h-7 w-7 rounded-full bg-white text-[#1a2d29] flex items-center justify-center shadow-md hover:bg-[#f4f7f5]"
+              aria-label="Discard selected profile photo"
+            >
+              <X className="h-4 w-4" />
+            </button>
+          )}
         </div>
 
         {/* User Details */}
@@ -177,6 +223,9 @@ export default function MyProfileClient({ userInfo }: MyProfileClientProps) {
 
           <p className="text-xs text-[#8fa09b] pt-1">
             Manage your personal contact info, medical preferences, and health data
+          </p>
+          <p className="text-xs text-[#8fa09b]">
+            Choose a JPG, PNG, or WEBP profile photo up to 5 MB.
           </p>
         </div>
       </div>
@@ -256,7 +305,9 @@ export default function MyProfileClient({ userInfo }: MyProfileClientProps) {
                 value={gender}
                 onChange={(e) => setGender(e.target.value)}
                 className="w-full h-10 px-3 rounded-xl border border-[#e5ebe7] bg-white text-xs font-medium text-[#1a2d29] outline-none focus:border-[#1f5c4b]"
+                required
               >
+                <option value="" disabled>Select gender</option>
                 <option value="MALE">Male</option>
                 <option value="FEMALE">Female</option>
                 <option value="OTHER">Other</option>
@@ -270,7 +321,9 @@ export default function MyProfileClient({ userInfo }: MyProfileClientProps) {
                 value={bloodGroup}
                 onChange={(e) => setBloodGroup(e.target.value)}
                 className="w-full h-10 px-3 rounded-xl border border-[#e5ebe7] bg-white text-xs font-medium text-[#1a2d29] outline-none focus:border-[#1f5c4b]"
+                required
               >
+                <option value="" disabled>Select blood group</option>
                 <option value="A_POSITIVE">A+</option>
                 <option value="B_POSITIVE">B+</option>
                 <option value="O_POSITIVE">O+</option>
@@ -290,6 +343,7 @@ export default function MyProfileClient({ userInfo }: MyProfileClientProps) {
                 value={dateOfBirth}
                 onChange={(e) => setDateOfBirth(e.target.value)}
                 className="rounded-xl border-[#e5ebe7] focus:border-[#1f5c4b]"
+                required
               />
             </div>
 
@@ -302,6 +356,7 @@ export default function MyProfileClient({ userInfo }: MyProfileClientProps) {
                 value={height}
                 onChange={(e) => setHeight(e.target.value)}
                 className="rounded-xl border-[#e5ebe7] focus:border-[#1f5c4b]"
+                required
               />
             </div>
 
@@ -314,6 +369,7 @@ export default function MyProfileClient({ userInfo }: MyProfileClientProps) {
                 value={weight}
                 onChange={(e) => setWeight(e.target.value)}
                 className="rounded-xl border-[#e5ebe7] focus:border-[#1f5c4b]"
+                required
               />
             </div>
 

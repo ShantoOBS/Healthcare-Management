@@ -9,14 +9,14 @@ import { UserInfo } from "@/types/user.types";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
-interface DashboardMobileSidebarProps{
-    userInfo : UserInfo;
-    navItems : NavSection[];
-    dashboardHome : string;
+interface DashboardMobileSidebarProps {
+  userInfo: UserInfo;
+  navItems: NavSection[];
+  dashboardHome: string;
 }
 
-const DashboardMobileSidebar = ({dashboardHome, navItems, userInfo} : DashboardMobileSidebarProps ) => {
-    const pathname = usePathname()
+const DashboardMobileSidebar = ({ dashboardHome, navItems, userInfo }: DashboardMobileSidebarProps) => {
+  const pathname = usePathname()
   return (
     <div className="flex h-full max-h-screen flex-col bg-white text-[#1a2d29] overflow-hidden">
       {/* Logo Header */}
@@ -49,7 +49,7 @@ const DashboardMobileSidebar = ({dashboardHome, navItems, userInfo} : DashboardM
                       href={item.href}
                       key={id}
                       className={cn(
-                        "flex items-center gap-3.5 rounded-2xl px-4 py-3 text-sm font-semibold transition-all duration-200",
+                        "flex items-center gap-3.5 rounded-md px-4 py-3 text-sm font-semibold transition-all duration-200",
                         isActive
                           ? "bg-[#1f5c4b] text-white shadow-md shadow-[#1f5c4b]/20"
                           : "text-[#5e716c] hover:bg-[#edf4f0] hover:text-[#1f5c4b]",
@@ -86,4 +86,4 @@ const DashboardMobileSidebar = ({dashboardHome, navItems, userInfo} : DashboardM
 }
 
 export default DashboardMobileSidebar
-
+

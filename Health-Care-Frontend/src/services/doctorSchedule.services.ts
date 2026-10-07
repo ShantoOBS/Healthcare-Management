@@ -20,6 +20,17 @@ export const getMyDoctorSchedules = async (queryString: string) => {
   }
 }
 
+export const getDoctorSchedules = async (queryString: string) => {
+  try {
+    return await httpClient.get<IDoctorSchedule[]>(
+      queryString ? `/doctor-schedules?${queryString}` : "/doctor-schedules",
+    )
+  } catch (error) {
+    console.error("Error fetching doctor schedules:", error)
+    throw error
+  }
+}
+
 export const createMyDoctorSchedule = async (payload: ICreateDoctorSchedulePayload) => {
   try {
     return await httpClient.post<IDoctorSchedule[]>(
