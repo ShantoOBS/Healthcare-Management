@@ -31,7 +31,12 @@ const updateScheduleZodSchema = z.object({
     }).optional(),
 });
 
+const bulkDeleteScheduleZodSchema = z.object({
+    ids: z.array(z.string().min(1, "Schedule ID cannot be empty")).min(1, "Please provide at least one schedule ID to delete"),
+});
+
 export const ScheduleValidation = {
     createScheduleZodSchema,
-    updateScheduleZodSchema
+    updateScheduleZodSchema,
+    bulkDeleteScheduleZodSchema,
 }

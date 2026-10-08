@@ -10,7 +10,7 @@ import { NavSection } from "@/types/dashboard.types"
 import { UserInfo } from "@/types/user.types"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { ChevronLeft, ChevronRight } from "lucide-react"
+import { ChevronLeft, ChevronRight, PanelLeftClose, PanelLeftOpen } from "lucide-react"
 
 interface DashboardSidebarContentProps {
   userInfo: UserInfo,
@@ -23,9 +23,9 @@ const DashboardSidebarContent = ({ dashboardHome, navItems, userInfo }: Dashboar
   const [isCollapsed, setIsCollapsed] = useState(false)
 
   return (
-    <div className={cn("hidden md:flex h-full flex-col border-r bg-card overflow-y-auto transition-all duration-300", isCollapsed ? "w-20" : "w-64")}>
-      {/* Logo / Brand */}
-      <div className={cn("flex h-16 items-center border-b px-4", isCollapsed ? "justify-center" : "justify-between")}>
+    <div className={cn("hidden md:flex h-full flex-col border-r bg-card overflow-hidden transition-all duration-300", isCollapsed ? "w-20" : "w-64")}>
+      {/* Logo / Brand Header */}
+      <div className={cn("flex h-16 shrink-0 items-center border-b px-4", isCollapsed ? "justify-center" : "justify-between")}>
         {!isCollapsed && (
           <Link href={dashboardHome}>
             <Logo />
@@ -34,15 +34,20 @@ const DashboardSidebarContent = ({ dashboardHome, navItems, userInfo }: Dashboar
         <button
           type="button"
           onClick={() => setIsCollapsed((prev) => !prev)}
-          className="h-8 w-8 rounded-full hover:bg-accent flex items-center justify-center text-muted-foreground transition"
+          className="group relative flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-[#e2eae5] bg-white text-[#526b62] shadow-[0_1px_2px_rgba(0,0,0,0.04)] transition-all duration-200 hover:border-[#b5d5c6] hover:bg-[#edf5f1] hover:text-[#174c3b] hover:shadow-xs active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#1f5c4b]/30"
+          aria-label={isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
           title={isCollapsed ? "Expand Sidebar" : "Collapse Sidebar"}
         >
-          {isCollapsed ? <ChevronRight className="h-4 w-4" /> : <ChevronLeft className="h-4 w-4" />}
+          {isCollapsed ? (
+            <PanelLeftOpen className="h-4 w-4 transition-transform duration-200 group-hover:scale-110" />
+          ) : (
+            <PanelLeftClose className="h-4 w-4 transition-transform duration-200 group-hover:scale-110" />
+          )}
         </button>
       </div>
 
       {/* Navigation Area */}
-      <ScrollArea className="flex-1 px-3 py-4">
+      <ScrollArea className="flex-1 min-h-0 px-3 py-4">
         <nav className="space-y-6">
           {navItems.map((section, sectionId) => (
             <div key={sectionId}>
@@ -87,7 +92,7 @@ const DashboardSidebarContent = ({ dashboardHome, navItems, userInfo }: Dashboar
       </ScrollArea>
 
       {/* User Info At Bottom */}
-      <div className="border-t px-3 py-4">
+      <div className="border-t px-3 py-4 shrink-0">
         <div className={cn("flex items-center gap-3", isCollapsed && "justify-center")}>
           <div className="h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
             <span className="text-sm font-semibold text-primary">

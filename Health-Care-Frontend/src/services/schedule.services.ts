@@ -53,3 +53,22 @@ export const getScheduleById = async (id: string) => {
     throw error
   }
 }
+
+export const clearAllSchedules = async () => {
+  try {
+    return await httpClient.delete<{ count: number }>("/schedules/clear-all")
+  } catch (error) {
+    console.log("Error clearing all schedules:", error)
+    throw error
+  }
+}
+
+export const bulkDeleteSchedules = async (ids: string[]) => {
+  try {
+    return await httpClient.post<{ count: number }>("/schedules/bulk-delete", { ids })
+  } catch (error) {
+    console.log("Error bulk deleting schedules:", error)
+    throw error
+  }
+}
+

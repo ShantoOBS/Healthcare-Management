@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { PaginationMeta } from "@/types/api.types";
-import { ColumnDef, flexRender, getCoreRowModel, getPaginationRowModel, getSortedRowModel, PaginationState, SortingState, useReactTable } from "@tanstack/react-table";
+import { ColumnDef, flexRender, getCoreRowModel, getPaginationRowModel, getSortedRowModel, PaginationState, RowSelectionState, SortingState, useReactTable } from "@tanstack/react-table";
 import { ArrowDown, ArrowUp, ArrowUpDown, MoreHorizontal } from "lucide-react";
 import { useEffect, useState } from "react";
 import DataTableFilters, {
@@ -41,6 +41,11 @@ interface DataTableProps<TData> {
       state: PaginationState;
       onPaginationChange: (state: PaginationState) => void;
     };
+    rowSelection?: {
+      state: RowSelectionState;
+      onRowSelectionChange: (state: RowSelectionState) => void;
+    };
+    getRowId?: (originalRow: TData, index: number) => string;
     search?: {
       initialValue?: string;
       placeholder?: string;
@@ -57,7 +62,7 @@ interface DataTableProps<TData> {
 }
 
 
-const DataTable = <TData,>({ data = [] as TData[], columns, actions, actionMenuClassName, filterOptionMenuClassName, filterPanelClassName, pageSizeMenuClassName, toolbarAction, emptyMessage, isLoading, loadingMode = "overlay", sorting, pagination, search, filters, meta } : DataTableProps<TData>) => {
+const DataTable = <TData,>({ data = [] as TData[], columns, actions, actionMenuClassName, filterOptionMenuClassName, filterPanelClassName, pageSizeMenuClassName, toolbarAction, emptyMessage, isLoading, loadingMode = "overlay", sorting, pagination, rowSelection, getRowId, search, filters, meta } : DataTableProps<TData>) => {
 
     const [hasHydrated, setHasHydrated] = useState(false);
 
@@ -130,10 +135,13 @@ const DataTable = <TData,>({ data = [] as TData[], columns, actions, actionMenuC
       getPaginationRowModel: getPaginationRowModel(),
       manualSorting: !!sorting,
       manualPagination: !!pagination,
+      enableRowSelection: !!rowSelection,
+      getRowId: getRowId,
       pageCount: pagination ? Math.max(meta?.totalPages ?? 0, 0) : undefined,
       state : {
         ...(sorting ? { sorting : sorting.state } : {}),
         ...(pagination ? { pagination: pagination.state } : {}),
+        ...(rowSelection ? { rowSelection: rowSelection.state } : {}),
       },
       onSortingChange : sorting ? 
         (updater) => {
@@ -153,6 +161,17 @@ const DataTable = <TData,>({ data = [] as TData[], columns, actions, actionMenuC
                 : updater;
 
             pagination.onPaginationChange(nextPaginationState);
+          }
+        : undefined,
+      onRowSelectionChange: rowSelection
+        ? (updater) => {
+            const currentSelection = rowSelection.state;
+            const nextSelection =
+              typeof updater === "function"
+                ? updater(currentSelection)
+                : updater;
+
+            rowSelection.onRowSelectionChange(nextSelection);
           }
         : undefined,
     });
@@ -260,6 +279,8 @@ const DataTable = <TData,>({ data = [] as TData[], columns, actions, actionMenuC
                             <span />
                             <span />
                           </div>
+                        ) : column.id === "select" ? (
+                          <span className="data-table-skeleton-line h-4 w-4 rounded" aria-hidden="true" />
                         ) : column.id === "status" || column.id === "user.status" ? (
                           <span className="data-table-skeleton-status" aria-hidden="true" />
                         ) : column.id === "actions" ? (
@@ -273,7 +294,7 @@ const DataTable = <TData,>({ data = [] as TData[], columns, actions, actionMenuC
                 ))
               ) : table.getRowModel()?.rows?.length ? (
                 table.getRowModel().rows.map((row) => (
-                  <TableRow key={row.id}>
+                  <TableRow key={row.id} data-state={row.getIsSelected() && "selected"}>
                     {row.getVisibleCells().map((cell) => (
                       <TableCell key={cell.id}>
                         {flexRender(

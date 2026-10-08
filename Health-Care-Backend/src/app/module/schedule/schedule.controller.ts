@@ -62,10 +62,33 @@ const deleteSchedule = catchAsync( async (req : Request, res : Response) => {
 }
 );
 
+const clearAllSchedules = catchAsync( async (req : Request, res : Response) => {
+    const result = await ScheduleService.clearAllSchedules();
+    sendResponse(res, {
+        success: true,
+        httpStatusCode: status.OK,
+        message: 'All schedules cleared successfully',
+        data: result,
+    });
+});
+
+const bulkDeleteSchedules = catchAsync( async (req : Request, res : Response) => {
+    const { ids } = req.body;
+    const result = await ScheduleService.bulkDeleteSchedules(ids);
+    sendResponse(res, {
+        success: true,
+        httpStatusCode: status.OK,
+        message: 'Selected schedules deleted successfully',
+        data: result,
+    });
+});
+
 export const ScheduleController = {
     createSchedule,
     getAllSchedules,
     getScheduleById,
     updateSchedule,
-    deleteSchedule
+    deleteSchedule,
+    clearAllSchedules,
+    bulkDeleteSchedules,
 }

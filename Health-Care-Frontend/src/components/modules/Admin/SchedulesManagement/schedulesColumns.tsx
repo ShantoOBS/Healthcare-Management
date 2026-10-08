@@ -1,5 +1,6 @@
 import DateCell from "@/components/shared/cell/DateCell"
 import { Badge } from "@/components/ui/badge"
+import { Checkbox } from "@/components/ui/checkbox"
 import { type ISchedule } from "@/types/schedule.types"
 import { ColumnDef } from "@tanstack/react-table"
 import { differenceInMinutes } from "date-fns"
@@ -25,6 +26,28 @@ const getBookedCount = (schedule: ISchedule) => {
 }
 
 export const schedulesColumns: ColumnDef<ISchedule>[] = [
+  {
+    id: "select",
+    header: ({ table }) => (
+      <Checkbox
+        checked={
+          table.getIsAllPageRowsSelected() ||
+          (table.getIsSomePageRowsSelected() && "indeterminate")
+        }
+        onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
+        aria-label="Select all schedules on page"
+      />
+    ),
+    cell: ({ row }) => (
+      <Checkbox
+        checked={row.getIsSelected()}
+        onCheckedChange={(value) => row.toggleSelected(!!value)}
+        aria-label="Select schedule row"
+      />
+    ),
+    enableSorting: false,
+    enableHiding: false,
+  },
   {
     id: "startDateTime",
     accessorKey: "startDateTime",

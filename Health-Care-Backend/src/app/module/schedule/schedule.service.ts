@@ -147,10 +147,28 @@ const deleteSchedule = async (id: string) => {
     return true;
 }
 
+const clearAllSchedules = async () => {
+    const result = await prisma.schedule.deleteMany({});
+    return result;
+}
+
+const bulkDeleteSchedules = async (ids: string[]) => {
+    const result = await prisma.schedule.deleteMany({
+        where: {
+            id: {
+                in: ids,
+            },
+        },
+    });
+    return result;
+}
+
 export const ScheduleService = {
     createSchedule,
     getAllSchedules,
     getScheduleById,
     updateSchedule,
-    deleteSchedule
+    deleteSchedule,
+    clearAllSchedules,
+    bulkDeleteSchedules,
 }

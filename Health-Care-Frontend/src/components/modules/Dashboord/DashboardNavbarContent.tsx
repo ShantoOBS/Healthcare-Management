@@ -35,7 +35,8 @@ const DashboardNavbarContent = ({ dashboardHome, navItems, userInfo }: Dashboard
   }, []);
 
   return (
-    <header className="flex items-center justify-between gap-4 w-full px-6 py-4 border-b border-[#e5ebe7] bg-white text-[#1a2d29] flex-shrink-0">
+    <header className="flex items-center justify-between
+    gap-4 w-full px-6 py-2.5 border-b border-[#e5ebe7] bg-white text-[#1a2d29] flex-shrink-0">
       {/* Mobile Menu Toggle Button And Menu */}
       <Sheet open={isOpen && isMobile} onOpenChange={setIsOpen}>
         <SheetTrigger asChild className="md:hidden">

@@ -1,6 +1,8 @@
 "use server"
 
 import {
+    bulkDeleteSchedules,
+    clearAllSchedules,
     createSchedule,
     deleteSchedule,
     getScheduleById,
@@ -131,3 +133,37 @@ export const getScheduleByIdAction = async (
     }
   }
 }
+
+export const clearAllSchedulesAction = async (): Promise<
+  ApiResponse<{ count: number }> | ApiErrorResponse
+> => {
+  try {
+    return await clearAllSchedules()
+  } catch (error: unknown) {
+    return {
+      success: false,
+      message: getActionErrorMessage(error, "Failed to clear all schedules"),
+    }
+  }
+}
+
+export const bulkDeleteSchedulesAction = async (
+  ids: string[],
+): Promise<ApiResponse<{ count: number }> | ApiErrorResponse> => {
+  if (!ids || !Array.isArray(ids) || ids.length === 0) {
+    return {
+      success: false,
+      message: "Please select at least one schedule to delete",
+    }
+  }
+
+  try {
+    return await bulkDeleteSchedules(ids)
+  } catch (error: unknown) {
+    return {
+      success: false,
+      message: getActionErrorMessage(error, "Failed to delete selected schedules"),
+    }
+  }
+}
+

@@ -9,6 +9,9 @@ const router = Router();
 
 router.post('/', checkAuth(Role.ADMIN, Role.SUPER_ADMIN), validateRequest(ScheduleValidation.createScheduleZodSchema) , ScheduleController.createSchedule);
 router.get('/', checkAuth(Role.ADMIN, Role.SUPER_ADMIN, Role.DOCTOR), ScheduleController.getAllSchedules);
+router.delete('/clear-all', checkAuth(Role.ADMIN, Role.SUPER_ADMIN), ScheduleController.clearAllSchedules);
+router.post('/bulk-delete', checkAuth(Role.ADMIN, Role.SUPER_ADMIN), validateRequest(ScheduleValidation.bulkDeleteScheduleZodSchema), ScheduleController.bulkDeleteSchedules);
+router.delete('/bulk-delete', checkAuth(Role.ADMIN, Role.SUPER_ADMIN), validateRequest(ScheduleValidation.bulkDeleteScheduleZodSchema), ScheduleController.bulkDeleteSchedules);
 router.get('/:id', checkAuth(Role.ADMIN, Role.SUPER_ADMIN, Role.DOCTOR), ScheduleController.getScheduleById);
 router.patch('/:id', checkAuth(Role.ADMIN, Role.SUPER_ADMIN),validateRequest(ScheduleValidation.updateScheduleZodSchema), ScheduleController.updateSchedule);
 router.delete('/:id', checkAuth(Role.ADMIN, Role.SUPER_ADMIN), ScheduleController.deleteSchedule);

@@ -1,12 +1,12 @@
 
-import DoctorProfileActions from "@/components/modules/Consultation/DoctorProfileActions"
-import ConsultationPageBanner from "@/components/modules/Consultation/ConsultationPageBanner"
+import BookAppointmentModal from "@/components/modules/Patient/Appointments/BookAppointmentModal"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
+import { getUserInfo } from "@/services/auth.services"
 import { getDoctorById } from "@/services/doctor.services"
 import { type IDoctorDetails } from "@/types/doctor.types"
 import { format } from "date-fns"
-import Image from "next/image"
 import Link from "next/link"
 
 const formatDateTime = (value?: string | Date | null) => {
@@ -41,20 +41,14 @@ const getTodayStart = () => {
   return today
 }
 
-const getSpecialtyNames = (doctorDetails: IDoctorDetails) => {
-  const specialtyTitles = (doctorDetails.specialties ?? [])
-    .map((item) => item.specialty.title)
-    .filter(Boolean)
-
-  return specialtyTitles.length > 0 ? specialtyTitles.join(", ") : "N/A"
-}
-
 const ConsultationDoctorByIdPage = async ({
   params,
 }: {
   params: Promise<{ id: string }>
 }) => {
   const { id } = await params
+  const currentUser = await getUserInfo()
+
   let doctorDetails: IDoctorDetails | null = null
   let errorMessage = ""
 
@@ -82,21 +76,14 @@ const ConsultationDoctorByIdPage = async ({
 
   if (!doctorDetails) {
     return (
-      <>
-        <ConsultationPageBanner
-          title="Find a Doctor"
-          breadcrumbs={[
-            { label: "Home", href: "/" },
-            { label: "Find a Doctor", href: "/consultation" },
-            { label: "Doctor Details" },
-          ]}
-        />
-        <section className="mx-auto max-w-7xl space-y-4 px-4 py-6 sm:px-6 lg:px-8">
-          <div className="rounded-md border border-destructive/30 bg-destructive/5 p-4 text-sm text-destructive">
-            {errorMessage || "Doctor details not available."}
-          </div>
-        </section>
-      </>
+      <section className="space-y-4">
+        <Button asChild variant="outline">
+          <Link href="/consultation">Back to Consultation</Link>
+        </Button>
+        <div className="rounded-md border border-destructive/30 bg-destructive/5 p-4 text-sm text-destructive">
+          {errorMessage || "Doctor details not available."}
+        </div>
+      </section>
     )
   }
 
@@ -126,72 +113,78 @@ const ConsultationDoctorByIdPage = async ({
     })
 
   return (
-    <>
-      <ConsultationPageBanner
-        title="Find a Doctor"
-        breadcrumbs={[
-          { label: "Home", href: "/" },
-          { label: "Find a Doctor", href: "/consultation" },
-          { label: doctorDetails.name },
-        ]}
-      />
+    <section className="mx-auto max-w-7xl space-y-6 px-4 py-6 sm:px-6 lg:px-8">
+      <Button asChild variant="outline">
+        <Link href="/consultation">Back to Consultation</Link>
+      </Button>
 
-      <section className="mx-auto max-w-7xl space-y-8 bg-white px-4 py-8 sm:px-6 lg:px-8">
-        <div className="grid gap-8 md:grid-cols-[280px_1fr] lg:grid-cols-[300px_1fr] lg:gap-10">
-          <div className="space-y-4">
-            <div className="relative aspect-3/4 w-full overflow-hidden bg-[#edf4f0]">
-              {doctorDetails.profilePhoto ? (
-                <Image
-                  src={doctorDetails.profilePhoto}
-                  alt={doctorDetails.name}
-                  fill
-                  unoptimized
-                  className="object-cover object-top"
-                />
-              ) : (
-                <div className="flex h-full w-full items-center justify-center bg-[#edf4f0] text-4xl font-bold text-[#1f5c4b]">
-                  {getInitials(doctorDetails.name)}
-                </div>
+      <div className="relative overflow-hidden rounded-2xl border bg-linear-to-r from-sky-50 via-white to-cyan-50 p-6">
+        <div className="absolute -right-12 -top-12 h-44 w-44 rounded-full bg-sky-300/20 blur-3xl" />
+        <div className="absolute -bottom-12 left-8 h-36 w-36 rounded-full bg-cyan-200/25 blur-3xl" />
+        <div className="flex flex-col gap-4 md:flex-row md:items-start">
+          <Avatar className="size-24 ring-4 ring-white shadow-sm">
+            <AvatarImage src={doctorDetails.profilePhoto} alt={doctorDetails.name} />
+            <AvatarFallback>{getInitials(doctorDetails.name)}</AvatarFallback>
+          </Avatar>
+
+          <div className="relative space-y-2">
+            <h1 className="text-2xl font-semibold tracking-tight sm:text-3xl">{doctorDetails.name}</h1>
+            <p className="text-muted-foreground">{doctorDetails.designation || "N/A"}</p>
+            <p className="text-sm text-muted-foreground">{doctorDetails.currentWorkingPlace || "N/A"}</p>
+
+            <div className="flex flex-wrap gap-2">
+              {(doctorDetails.specialties ?? []).map((item) => (
+                <Badge key={item.specialty.id} variant="secondary">
+                  {item.specialty.title}
+                </Badge>
+              ))}
+              {(!doctorDetails.specialties || doctorDetails.specialties.length === 0) && (
+                <Badge variant="secondary">No specialties listed</Badge>
               )}
             </div>
 
-            <Button
-              asChild
-              className="h-11 w-full rounded-md border-0 bg-[#4ca27a] text-sm font-semibold text-white transition hover:bg-[#3f8d68]"
-            >
-              <Link href={`/consultation/doctor/${doctorDetails.id}/appointment`}>
-                Get Appointment
-              </Link>
-            </Button>
-          </div>
+            <div className="flex flex-wrap gap-2 pt-1 text-xs">
+              <Badge variant="outline">Experience: {doctorDetails.experience ?? 0} yrs</Badge>
+              <Badge variant="outline">Fee: ${doctorDetails.appointmentFee?.toFixed(2) ?? "N/A"}</Badge>
+              <Badge variant="outline">Rating: {doctorDetails.averageRating?.toFixed(1) ?? "0.0"}</Badge>
+            </div>
 
-          <div className="space-y-5">
-            <div className="flex items-start justify-between gap-4">
-              <h2 className="text-2xl font-bold text-[#b91c1c] sm:text-3xl">{doctorDetails.name}</h2>
-              <DoctorProfileActions
+            <div className="pt-3">
+              <BookAppointmentModal
+                doctorId={String(doctorDetails.id)}
                 doctorName={doctorDetails.name}
-                email={doctorDetails.email}
+                isAuthenticated={Boolean(currentUser)}
+                viewerRole={currentUser?.role ?? null}
               />
-            </div>
-
-            <div className="space-y-1 text-sm sm:text-[15px]">
-              <p>
-                <span className="font-semibold text-[#333333]">Specialty -</span>{" "}
-                <span className="text-[#555555]">{getSpecialtyNames(doctorDetails)}</span>
-              </p>
-              <p>
-                <span className="font-semibold text-[#333333]">Degree -</span>{" "}
-                <span className="text-[#555555]">{doctorDetails.qualification || "N/A"}</span>
-              </p>
-            </div>
-
-            <div className="whitespace-pre-line text-sm leading-7 text-[#555555] sm:text-[15px] sm:leading-8">
-              {doctorDetails.description?.trim() || "No description available."}
             </div>
           </div>
         </div>
+      </div>
 
-      <div className="rounded-md border border-[#e5ebe7] bg-white p-5 shadow-sm">
+      <div className="grid gap-4 md:grid-cols-2">
+        <div className="rounded-2xl border bg-card p-5 shadow-sm">
+          <h2 className="mb-3 text-base font-semibold">Professional Information</h2>
+          <div className="space-y-2 text-sm">
+            <p><span className="font-medium">Qualification:</span> {doctorDetails.qualification || "N/A"}</p>
+            <p><span className="font-medium">Experience:</span> {doctorDetails.experience ?? 0} years</p>
+            <p><span className="font-medium">Registration Number:</span> {doctorDetails.registrationNumber || "N/A"}</p>
+            <p><span className="font-medium">Appointment Fee:</span> ${doctorDetails.appointmentFee?.toFixed(2) ?? "N/A"}</p>
+            <p><span className="font-medium">Average Rating:</span> {doctorDetails.averageRating?.toFixed(1) ?? "0.0"}</p>
+          </div>
+        </div>
+
+        <div className="rounded-2xl border bg-card p-5 shadow-sm">
+          <h2 className="mb-3 text-base font-semibold">Contact Information</h2>
+          <div className="space-y-2 text-sm">
+            <p><span className="font-medium">Email:</span> {doctorDetails.email || "N/A"}</p>
+            <p><span className="font-medium">Contact Number:</span> {doctorDetails.contactNumber || "N/A"}</p>
+            <p><span className="font-medium">Gender:</span> {doctorDetails.gender || "N/A"}</p>
+            <p><span className="font-medium">Address:</span> {doctorDetails.address || "N/A"}</p>
+          </div>
+        </div>
+      </div>
+
+      <div className="rounded-2xl border bg-card p-5 shadow-sm">
         <div className="mb-4 flex flex-wrap items-center gap-2">
           <h2 className="text-base font-semibold">Available Doctor Schedules</h2>
           <Badge variant="secondary">Today onward</Badge>
@@ -213,11 +206,11 @@ const ConsultationDoctorByIdPage = async ({
         </div>
       </div>
 
-      <div className="rounded-md border border-[#e5ebe7] bg-white p-5 shadow-sm">
-        <h2 className="mb-3 text-base font-semibold text-[#333333]">Patient Reviews</h2>
+      <div className="rounded-2xl border bg-card p-5 shadow-sm">
+        <h2 className="mb-3 text-base font-semibold">Patient Reviews</h2>
         <div className="space-y-3">
           {(doctorDetails.reviews ?? []).map((review, index) => (
-            <div key={review.id ?? `review-${index}`} className="rounded-md border border-[#e5ebe7] p-3 text-sm text-[#555555]">
+            <div key={review.id ?? `review-${index}`} className="rounded-md border p-3 text-sm">
               <p><span className="font-medium">Rating:</span> {review.rating ?? "N/A"} / 5</p>
               <p><span className="font-medium">Comment:</span> {review.comment || "N/A"}</p>
               <p><span className="font-medium">Patient ID:</span> {review.patientId || "N/A"}</p>
@@ -229,9 +222,7 @@ const ConsultationDoctorByIdPage = async ({
           )}
         </div>
       </div>
-
-      </section>
-    </>
+    </section>
   )
 }
 
