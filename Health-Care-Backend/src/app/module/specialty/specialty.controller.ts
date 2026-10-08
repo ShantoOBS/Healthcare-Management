@@ -1,5 +1,6 @@
 
 import { Request, Response } from "express";
+import { IQueryParams } from "../../interfaces/query.interface.js";
 import { catchAsync } from "../../shared/catchAsync.js";
 import { sendResponse } from "../../shared/sendResponse.js";
 import { SpecialtyService } from "./specialty.service.js";
@@ -21,15 +22,16 @@ const createSpecialty = catchAsync(
     }
 )
 
-
 const getAllSpecialties = catchAsync(
     async (req: Request, res: Response) => {
-        const result = await SpecialtyService.getAllSpecialties();
+        const query = req.query;
+        const result = await SpecialtyService.getAllSpecialties(query as IQueryParams);
         sendResponse(res, {
             httpStatusCode: 200,
             success: true,
             message: 'Specialties fetched successfully',
-            data: result
+            data: result.data,
+            meta: result.meta,
         });
     }
 )

@@ -6,7 +6,7 @@ import Image from "next/image"
 import Link from "next/link"
 
 const DepartmentPage = async () => {
-  let specialties = await getAllSpecialties()
+  let specialties = await getAllSpecialties("limit=100")
     .then((response) => response.data)
     .catch(() => null)
 

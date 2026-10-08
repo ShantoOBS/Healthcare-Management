@@ -15,9 +15,9 @@ export const getDoctors = async (queryString : string) => {
     }
 }
 
-export const getAllSpecialties = async () => {
+export const getAllSpecialties = async (queryString?: string) => {
     try {
-        const specialties = await httpClient.get<ISpecialty[]>("/specialties");
+        const specialties = await httpClient.get<ISpecialty[]>(queryString ? `/specialties?${queryString}` : "/specialties?limit=1000");
         return specialties;
     } catch (error) {
         console.log("Error fetching specialties:", error);

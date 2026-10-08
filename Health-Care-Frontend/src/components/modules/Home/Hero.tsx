@@ -145,10 +145,12 @@ export function Hero() {
                 {/* Main Heading */}
                 <h1 className="mt-5 text-[40px] 
                 font-extrabold leading-[1.05] tracking-[-0.03em]
-                 text-[#0d2a20] sm:text-[56px] md:text-[64px] xl:text-[75px]">
+                 text-[#0d2a20] sm:text-[56px] md:text-[64px] 
+                 xl:text-[75px]">
                   Find The Right
                   <br />
-                  <span className="text-[#329a6e]">Doctor</span> For You.
+                  <span className="text-[#329a6e]
+                 xl:text-[65px] ">DOCTOR</span> For You Health Journey
                 </h1>
               </div>
 

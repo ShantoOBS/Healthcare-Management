@@ -3,9 +3,9 @@
 import { httpClient } from "@/lib/axios/httpClient";
 import { ISpecialty } from "@/types/specialty.types";
 
-export const getAllSpecialties = async () => {
+export const getAllSpecialties = async (queryString?: string) => {
     try {
-        const specialties = await httpClient.get<ISpecialty[]>("/specialties");
+        const specialties = await httpClient.get<ISpecialty[]>(queryString ? `/specialties?${queryString}` : "/specialties");
         return specialties;
     } catch (error) {
         console.error("Error fetching specialties:", error);

@@ -1,41 +1,73 @@
 "use client";
 
-import { useState } from "react";
-import { useQuery } from "@tanstack/react-query";
+import DataTable from "@/components/shared/table/DataTable";
+import { useRowActionModalState } from "@/hooks/useRowActionModalState";
+import { useServerManagedDataTable } from "@/hooks/useServerManagedDataTable";
+import { useServerManagedDataTableSearch } from "@/hooks/useServerManagedDataTableSearch";
 import { getAllSpecialties } from "@/services/specialty.services";
+import { PaginationMeta } from "@/types/api.types";
 import { ISpecialty } from "@/types/specialty.types";
-import { Plus, Search, Trash2, Stethoscope } from "lucide-react";
-import Image from "next/image";
+import { useQuery } from "@tanstack/react-query";
+import { Plus, Stethoscope } from "lucide-react";
+import { useSearchParams } from "next/navigation";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import CreateSpecialtyModal from "./CreateSpecialtyModal";
 import DeleteSpecialtyConfirmationDialog from "./DeleteSpecialtyConfirmationDialog";
-import { ApiResponse } from "@/types/api.types";
+import { specialtiesColumns } from "./specialtiesColumns";
 
-export default function SpecialtiesTable() {
-  const [searchTerm, setSearchTerm] = useState("");
+const DEFAULT_PAGE = 1;
+const DEFAULT_LIMIT = 10;
+const QUERY_STALE_TIME = 1000 * 60;
+const QUERY_GC_TIME = 1000 * 60 * 60 * 6;
+
+interface SpecialtiesTableProps {
+  initialQueryString: string;
+}
+
+export default function SpecialtiesTable({ initialQueryString }: SpecialtiesTableProps) {
   const [isCreateOpen, setIsCreateOpen] = useState(false);
-  const [specialtyToDelete, setSpecialtyToDelete] = useState<ISpecialty | null>(null);
-  const [isDeleteOpen, setIsDeleteOpen] = useState(false);
+  const searchParams = useSearchParams();
 
-  const { data: specialtiesResponse, isLoading, isError } = useQuery({
-    queryKey: ["specialties"],
-    queryFn: () => getAllSpecialties(),
+  const {
+    deletingItem,
+    isDeleteDialogOpen,
+    onDeleteOpenChange,
+    tableActions,
+  } = useRowActionModalState<ISpecialty>({
+    enableView: false,
+    enableEdit: false,
+    enableDelete: true,
   });
 
-  const responseData = (specialtiesResponse || {}) as ApiResponse<ISpecialty[]> | ISpecialty[];
-  const specialties: ISpecialty[] = Array.isArray(responseData)
-    ? responseData
-    : (responseData as ApiResponse<ISpecialty[]>)?.data || [];
+  const {
+    queryStringFromUrl,
+    optimisticSortingState,
+    optimisticPaginationState,
+    isRouteRefreshPending,
+    updateParams,
+    handleSortingChange,
+    handlePaginationChange,
+  } = useServerManagedDataTable({
+    searchParams,
+    defaultPage: DEFAULT_PAGE,
+    defaultLimit: DEFAULT_LIMIT,
+  });
 
-  const filteredSpecialties = specialties.filter((specialty) =>
-    specialty.title.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const queryString = queryStringFromUrl || initialQueryString;
 
-  const handleDeleteClick = (specialty: ISpecialty) => {
-    setSpecialtyToDelete(specialty);
-    setIsDeleteOpen(true);
-  };
+  const { searchTermFromUrl, handleDebouncedSearchChange } =
+    useServerManagedDataTableSearch({ searchParams, updateParams });
+
+  const { data: specialtiesResponse, isLoading, isFetching } = useQuery({
+    queryKey: ["specialties", queryString],
+    queryFn: () => getAllSpecialties(queryString),
+    staleTime: QUERY_STALE_TIME,
+    gcTime: QUERY_GC_TIME,
+  });
+
+  const specialties = specialtiesResponse?.data ?? [];
+  const meta: PaginationMeta | undefined = specialtiesResponse?.meta;
 
   return (
     <div className="doctor-management">
@@ -51,124 +83,43 @@ export default function SpecialtiesTable() {
           </p>
         </div>
         <div className="doctor-management-count" aria-live="polite">
-          <strong>{specialties.length}</strong>
+          <strong>{meta?.total ?? specialties.length}</strong>
           <span>specialties</span>
         </div>
       </header>
 
-      <div className="doctor-management-table specialties-management-table">
-        <div className="specialties-toolbar">
-          <div className="relative w-full max-w-sm">
-            <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-            <Input
-              type="search"
-              placeholder="Search specialties..."
-              value={searchTerm}
-              onChange={(event) => setSearchTerm(event.target.value)}
-              className="h-9 pl-9"
-              aria-label="Search specialties"
-            />
-          </div>
-          <div className="doctor-management-create-action">
-            <Button onClick={() => setIsCreateOpen(true)}>
+      <div className="doctor-management-table">
+        <DataTable
+          data={specialties}
+          columns={specialtiesColumns}
+          actions={tableActions}
+          actionMenuClassName="doctor-actions-menu"
+          pageSizeMenuClassName="doctor-pagination-options"
+          isLoading={isLoading || isFetching || isRouteRefreshPending}
+          loadingMode="skeleton"
+          emptyMessage="No specialties found."
+          sorting={{
+            state: optimisticSortingState,
+            onSortingChange: handleSortingChange,
+          }}
+          pagination={{
+            state: optimisticPaginationState,
+            onPaginationChange: handlePaginationChange,
+          }}
+          search={{
+            initialValue: searchTermFromUrl,
+            placeholder: "Search specialties by title or description...",
+            debounceMs: 700,
+            onDebouncedChange: handleDebouncedSearchChange,
+          }}
+          toolbarAction={
+            <Button onClick={() => setIsCreateOpen(true)} className="gap-2">
               <Plus className="h-4 w-4" />
               Add specialty
             </Button>
-          </div>
-        </div>
-
-        {isLoading && (
-          <div className="specialties-loading-rows" aria-label="Loading specialties">
-            {Array.from({ length: 6 }, (_, index) => (
-              <div className="specialties-loading-row" key={index}>
-                <span className="specialties-loading-icon" />
-                <span className="specialties-loading-title" />
-                <span className="specialties-loading-date" />
-                <span className="specialties-loading-action" />
-              </div>
-            ))}
-          </div>
-        )}
-
-        {isError && (
-          <div className="specialties-error-state">
-            Failed to load specialties. Please try refreshing.
-          </div>
-        )}
-
-        {!isLoading && !isError && (
-          <div className="overflow-x-auto">
-            {filteredSpecialties.length === 0 ? (
-              <div className="specialties-empty-state">
-                <div className="doctor-management-mark" aria-hidden="true">
-                  <Stethoscope />
-                </div>
-                <h2>No specialties found</h2>
-                <p>
-                  {searchTerm ? "No matching specialty found for your search." : "Get started by adding a new medical specialty."}
-                </p>
-              </div>
-            ) : (
-              <table className="specialties-native-table">
-                <thead>
-                  <tr>
-                    <th>Icon</th>
-                    <th>Specialty</th>
-                    <th>Created</th>
-                    <th className="text-right">Actions</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-[#f5f8f6]">
-                  {filteredSpecialties.map((specialty) => (
-                    <tr key={specialty.id}>
-                      <td>
-                        <div className="specialty-icon-frame">
-                          {specialty.icon ? (
-                            <Image
-                              src={specialty.icon}
-                              alt={specialty.title}
-                              fill
-                              className="object-cover"
-                              unoptimized
-                            />
-                          ) : (
-                            <Stethoscope className="h-5 w-5" />
-                          )}
-                        </div>
-                      </td>
-
-                      <td className="specialty-title-cell">
-                        {specialty.title}
-                      </td>
-
-                      <td className="specialty-date-cell">
-                        {specialty.createdAt
-                          ? new Date(specialty.createdAt).toLocaleDateString(undefined, {
-                              year: "numeric",
-                              month: "short",
-                              day: "numeric",
-                            })
-                          : "N/A"}
-                      </td>
-
-                      <td className="text-right">
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          onClick={() => handleDeleteClick(specialty)}
-                          className="specialty-delete-button h-9 w-9"
-                          title="Delete Specialty"
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            )}
-          </div>
-        )}
+          }
+          meta={meta}
+        />
       </div>
 
       <CreateSpecialtyModal
@@ -177,9 +128,9 @@ export default function SpecialtiesTable() {
       />
 
       <DeleteSpecialtyConfirmationDialog
-        open={isDeleteOpen}
-        onOpenChange={setIsDeleteOpen}
-        specialty={specialtyToDelete}
+        open={isDeleteDialogOpen}
+        onOpenChange={onDeleteOpenChange}
+        specialty={deletingItem}
       />
     </div>
   );

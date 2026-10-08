@@ -18,6 +18,7 @@ import { createSpecialtyAction } from "@/app/(dashboardLayout)/admin/dashboard/s
 import { toast } from "sonner";
 import { Upload, Stethoscope, Image as ImageIcon } from "lucide-react";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 
 interface CreateSpecialtyModalProps {
   open: boolean;
@@ -34,6 +35,7 @@ export default function CreateSpecialtyModal({
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
 
   const queryClient = useQueryClient();
+  const router = useRouter();
 
   const { mutateAsync, isPending } = useMutation({
     mutationFn: createSpecialtyAction,
@@ -74,6 +76,7 @@ export default function CreateSpecialtyModal({
 
       toast.success("Specialty created successfully");
       queryClient.invalidateQueries({ queryKey: ["specialties"] });
+      router.refresh();
       
       // Reset Form State
       setTitle("");
