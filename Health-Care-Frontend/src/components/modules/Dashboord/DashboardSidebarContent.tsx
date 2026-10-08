@@ -10,7 +10,7 @@ import { NavSection } from "@/types/dashboard.types"
 import { UserInfo } from "@/types/user.types"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { ChevronLeft, ChevronRight, PanelLeftClose, PanelLeftOpen } from "lucide-react"
+import { PanelLeftClose, PanelLeftOpen } from "lucide-react"
 
 interface DashboardSidebarContentProps {
   userInfo: UserInfo,
@@ -27,14 +27,14 @@ const DashboardSidebarContent = ({ dashboardHome, navItems, userInfo }: Dashboar
       {/* Logo / Brand Header */}
       <div className={cn("flex h-16 shrink-0 items-center border-b px-4", isCollapsed ? "justify-center" : "justify-between")}>
         {!isCollapsed && (
-          <Link href={dashboardHome}>
-            <Logo />
-          </Link>
+          <Logo href={"/"} />
         )}
         <button
           type="button"
           onClick={() => setIsCollapsed((prev) => !prev)}
-          className="group relative flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-[#e2eae5] bg-white text-[#526b62] shadow-[0_1px_2px_rgba(0,0,0,0.04)] transition-all duration-200 hover:border-[#b5d5c6] hover:bg-[#edf5f1] hover:text-[#174c3b] hover:shadow-xs active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#1f5c4b]/30"
+          className="group relative flex h-8 w-8 shrink-0
+           items-center justify-center cursor-pointer
+            bg-white text-[#526b62] shadow-[0_1px_2px_rgba(0,0,0,0.04)] transition-all duration-200 hover:border-[#b5d5c6] hover:bg-[#edf5f1] hover:text-[#174c3b] hover:shadow-xs active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#1f5c4b]/30"
           aria-label={isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
           title={isCollapsed ? "Expand Sidebar" : "Collapse Sidebar"}
         >

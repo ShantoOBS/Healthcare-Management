@@ -1,5 +1,6 @@
 "use server";
 
+import { revalidatePath } from "next/cache";
 import { updateMyPatientProfile } from "@/services/patient.services";
 import { type ApiErrorResponse, type ApiResponse } from "@/types/api.types";
 
@@ -27,10 +28,13 @@ const getActionErrorMessage = (error: unknown, fallbackMessage: string) => {
 };
 
 export const updatePatientProfileAction = async (
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   formData: FormData
 ): Promise<ApiResponse<any> | ApiErrorResponse> => {
   try {
-    return await updateMyPatientProfile(formData);
+    const res = await updateMyPatientProfile(formData);
+    revalidatePath("/my-profile");
+    return res;
   } catch (error: unknown) {
     return {
       success: false,
@@ -38,3 +42,6 @@ export const updatePatientProfileAction = async (
     };
   }
 };
+
+export const updateMyProfileAction = updatePatientProfileAction;
+

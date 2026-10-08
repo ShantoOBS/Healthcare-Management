@@ -20,10 +20,8 @@ const DashboardMobileSidebar = ({ dashboardHome, navItems, userInfo }: Dashboard
   return (
     <div className="flex h-full max-h-screen flex-col bg-white text-[#1a2d29] overflow-hidden">
       {/* Logo Header */}
-      <div className="flex h-20 items-center border-b border-[#f0f4f2] px-6 flex-shrink-0">
-        <Link href={dashboardHome} className="flex items-center gap-2">
-          <Logo />
-        </Link>
+      <div className="flex h-16 items-center border-b border-[#f0f4f2] px-6 flex-shrink-0">
+        <Logo href={dashboardHome} />
       </div>
 
       <SheetTitle className="sr-only">Navigation Menu</SheetTitle>

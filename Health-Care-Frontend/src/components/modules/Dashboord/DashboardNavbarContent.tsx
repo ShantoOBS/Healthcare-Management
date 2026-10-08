@@ -40,12 +40,14 @@ const DashboardNavbarContent = ({ dashboardHome, navItems, userInfo }: Dashboard
       {/* Mobile Menu Toggle Button And Menu */}
       <Sheet open={isOpen && isMobile} onOpenChange={setIsOpen}>
         <SheetTrigger asChild className="md:hidden">
-          <Button variant={"outline"} size={"icon"} className="rounded-xl border-[#e5ebe7]">
+          <Button variant={"outline"} size={"icon"} className="">
             <Menu className="h-5 w-5 text-[#1a2d29]" />
           </Button>
         </SheetTrigger>
 
-        <SheetContent side="left" className="w-72 p-0 border-r border-[#e5ebe7] bg-white flex flex-col h-full max-h-screen overflow-hidden">
+        <SheetContent side="left" className="w-72 p-0
+         border-r border-[#e5ebe7] bg-white 
+         flex flex-col h-full max-h-screen overflow-hidden">
           <DashboardMobileSidebar userInfo={userInfo} dashboardHome={dashboardHome} navItems={navItems} />
         </SheetContent>
       </Sheet>

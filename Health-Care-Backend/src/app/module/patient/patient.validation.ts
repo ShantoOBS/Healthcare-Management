@@ -1,68 +1,89 @@
 import z from "zod";
 import { BloodGroup, Gender } from "../../../generated/prisma/enums.js";
 
+const emptyStringToUndefined = (val: unknown) => (typeof val === "string" && val.trim() === "" ? undefined : val);
+
 const updatePatientProfileZodSchema = z.object({
-    patientInfo : z.object({
-        name : z.string("Name must be a string").min(1, "Name cannot be empty").max(100, "Name must be less than 100 characters").optional(),
-        profilePhoto : z.url("Profile photo must be a valid URL").optional(),
-        contactNumber : z.string("Contact number must be a string").min(1, "Contact number cannot be empty").max(20, "Contact number must be less than 20 characters").nullable().optional(),
-        address : z.string("Address must be a string").min(1, "Address cannot be empty").max(200, "Address must be less than 200 characters").nullable().optional(),
+    name: z.string().min(1, "Name cannot be empty").max(100, "Name must be less than 100 characters").optional(),
+    profilePhoto: z.string().optional(),
+    patientInfo: z.object({
+        name: z.string().min(1, "Name cannot be empty").max(100, "Name must be less than 100 characters").optional(),
+        profilePhoto: z.string().optional(),
+        contactNumber: z.preprocess(emptyStringToUndefined, z.string().max(20, "Contact number must be less than 20 characters").nullable().optional()),
+        address: z.preprocess(emptyStringToUndefined, z.string().max(200, "Address must be less than 200 characters").nullable().optional()),
     }).optional(),
-    patientHealthData : z.object({
-        gender: z.enum([Gender.FEMALE, Gender.MALE, Gender.OTHER]).optional(),
-        dateOfBirth: z.string().refine((date) => !isNaN(Date.parse(date)), {
+    patientHealthData: z.object({
+        gender: z.preprocess(emptyStringToUndefined, z.enum([Gender.FEMALE, Gender.MALE, Gender.OTHER]).optional()),
+        dateOfBirth: z.preprocess(emptyStringToUndefined, z.string().refine((date) => !date || !isNaN(Date.parse(date)), {
             message: "Invalid date format",
-        }).optional(),
-        bloodGroup: z.enum([BloodGroup.A_POSITIVE, BloodGroup.A_NEGATIVE, BloodGroup.B_POSITIVE, BloodGroup.B_NEGATIVE, BloodGroup.AB_POSITIVE, BloodGroup.AB_NEGATIVE, BloodGroup.O_POSITIVE, BloodGroup.O_NEGATIVE]).optional(),
+        }).optional()),
+        bloodGroup: z.preprocess(emptyStringToUndefined, z.enum([
+            BloodGroup.A_POSITIVE,
+            BloodGroup.A_NEGATIVE,
+            BloodGroup.B_POSITIVE,
+            BloodGroup.B_NEGATIVE,
+            BloodGroup.AB_POSITIVE,
+            BloodGroup.AB_NEGATIVE,
+            BloodGroup.O_POSITIVE,
+            BloodGroup.O_NEGATIVE
+        ]).optional()),
         hasAllergies: z.boolean().optional(),
         hasDiabetes: z.boolean().optional(),
-        height: z.string().optional(),
-        weight: z.string().optional(),
+        height: z.preprocess(emptyStringToUndefined, z.string().nullable().optional()),
+        weight: z.preprocess(emptyStringToUndefined, z.string().nullable().optional()),
         smokingStatus: z.boolean().optional(),
-        dietaryPreferences: z.string().nullable().optional(),
+        dietaryPreferences: z.preprocess(emptyStringToUndefined, z.string().nullable().optional()),
         pregnancyStatus: z.boolean().optional(),
-        mentalHealthHistory: z.string().optional(),
-        immunizationStatus: z.string().optional(),
+        mentalHealthHistory: z.preprocess(emptyStringToUndefined, z.string().nullable().optional()),
+        immunizationStatus: z.preprocess(emptyStringToUndefined, z.string().nullable().optional()),
         hasPastSurgeries: z.boolean().optional(),
         recentAnxiety: z.boolean().optional(),
         recentDepression: z.boolean().optional(),
-        maritalStatus: z.string().optional(),
+        maritalStatus: z.preprocess(emptyStringToUndefined, z.string().nullable().optional()),
     }).optional(),
-    medicalReports : z.array(z.object({
-        shouldDelete : z.boolean().optional(),
-        reportId : z.uuid().optional(),
-        reportName : z.string().optional(),
-        reportLink : z.url().optional(),
+    doctorInfo: z.object({
+        name: z.string().min(1).max(100).optional(),
+        profilePhoto: z.string().optional(),
+        contactNumber: z.preprocess(emptyStringToUndefined, z.string().max(20).nullable().optional()),
+        address: z.preprocess(emptyStringToUndefined, z.string().max(200).nullable().optional()),
+        gender: z.preprocess(emptyStringToUndefined, z.enum([Gender.FEMALE, Gender.MALE, Gender.OTHER]).optional()),
+        qualification: z.preprocess(emptyStringToUndefined, z.string().nullable().optional()),
+        designation: z.preprocess(emptyStringToUndefined, z.string().nullable().optional()),
+        currentWorkingPlace: z.preprocess(emptyStringToUndefined, z.string().nullable().optional()),
+        experience: z.union([z.number(), z.string()]).optional(),
+        appointmentFee: z.union([z.number(), z.string()]).optional(),
+        description: z.preprocess(emptyStringToUndefined, z.string().nullable().optional()),
+    }).optional(),
+    adminInfo: z.object({
+        name: z.string().min(1).max(100).optional(),
+        profilePhoto: z.string().optional(),
+        contactNumber: z.preprocess(emptyStringToUndefined, z.string().max(20).nullable().optional()),
+    }).optional(),
+    medicalReports: z.array(z.object({
+        shouldDelete: z.boolean().optional(),
+        reportId: z.string().uuid().optional(),
+        reportName: z.string().optional(),
+        reportLink: z.string().optional(),
     })).optional().refine((reports) => {
-        if(!reports || reports.length === 0) return true; // If no reports, it's valid
+        if (!reports || reports.length === 0) return true;
 
-        
         for (const report of reports) {
-
-            // case-1
-            if(report.shouldDelete === true && !report.reportId) {
-                return false; // If shouldDelete is true, reportId must be provided
+            if (report.shouldDelete === true && !report.reportId) {
+                return false;
             }
-
-            // case-2
-            if(report.reportId && !report.shouldDelete) {
-                return false; // If reportId is provided, shouldDelete must be true
+            if (report.reportId && !report.shouldDelete) {
+                return false;
             }
-
-            //case-3
-            if(report.reportName && !report.reportLink) {
-                return false; // If reportName is provided, reportLink must also be provided
+            if (report.reportName && !report.reportLink) {
+                return false;
             }
-
-            //case-4
-            if(report.reportLink && !report.reportName) {
-                return false; // If reportLink is provided, reportName must also be provided
+            if (report.reportLink && !report.reportName) {
+                return false;
             }
-
-            return true; // If none of the above conditions are violated, it's valid
         }
+        return true;
     }, {
-        message : "Invalid medical report data. If shouldDelete is true, reportId must be provided. If reportId is provided, shouldDelete must be true. If reportName is provided, reportLink must also be provided and vice versa."
+        message: "Invalid medical report data. If shouldDelete is true, reportId must be provided. If reportName is provided, reportLink must also be provided."
     })
 })
 
