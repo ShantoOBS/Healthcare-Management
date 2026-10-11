@@ -3482,7 +3482,7 @@
 
 .doctor-appointment-item {
   display: grid;
-  grid-template-columns: minmax(13rem, 1fr) minmax(12rem, 0.85fr) auto 4.5rem;
+  grid-template-columns: minmax(13rem, 1fr) minmax(12rem, 0.85fr) auto 4.5rem auto;
   align-items: center;
   gap: 1rem;
   border-bottom: 1px solid #edf2ee;
@@ -3610,6 +3610,18 @@
   font-family: var(--font-geist-mono), monospace;
   font-size: 0.65rem;
   text-align: right;
+}
+
+.doctor-appointment-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 0.4rem;
+}
+
+.doctor-appointment-actions svg {
+  width: 0.9rem;
+  height: 0.9rem;
 }
 
 .doctor-prescription-list,
@@ -3884,7 +3896,7 @@
 
 @media (max-width: 900px) {
   .doctor-appointment-item {
-    grid-template-columns: minmax(0, 1fr) minmax(10rem, 0.8fr) auto;
+    grid-template-columns: minmax(0, 1fr) minmax(10rem, 0.8fr) auto auto;
   }
 
   .doctor-appointment-id {
@@ -3903,8 +3915,13 @@
   }
 
   .doctor-appointment-time,
-  .doctor-appointment-badges {
+  .doctor-appointment-badges,
+  .doctor-appointment-actions {
     grid-column: 1 / -1;
+  }
+
+  .doctor-appointment-actions {
+    justify-content: flex-start;
   }
 
   .doctor-prescription-header,

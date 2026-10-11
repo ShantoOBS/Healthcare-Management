@@ -42,7 +42,7 @@ export interface IAppointment {
   doctorId?: string
   patientId?: string
   scheduleId?: string
-  videoCallingId?: string
+  videoCallingId?: string | null
   status?: AppointmentStatus
   paymentStatus?: PaymentStatus
   createdAt?: string | Date

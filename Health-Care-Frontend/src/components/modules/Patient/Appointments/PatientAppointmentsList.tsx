@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button"
 import { type IAppointment } from "@/types/appointment.types"
 import { useMutation } from "@tanstack/react-query"
 import { format } from "date-fns"
-import { AlertCircle, CalendarClock, CalendarDays, Check, CircleDollarSign, CreditCard, UsersRound } from "lucide-react"
+import { AlertCircle, CalendarClock, CalendarDays, Check, CircleDollarSign, CreditCard, ExternalLink, UsersRound } from "lucide-react"
 import Link from "next/link"
 import { useMemo, useState } from "react"
 import { toast } from "sonner"
@@ -210,6 +210,13 @@ const PatientAppointmentsList = ({
                 <footer className="patient-appointment-footer">
                   <span className="patient-appointment-id">ID · {appointment.id}</span>
                   <div className="patient-appointment-actions">
+                  {appointment.videoCallingId?.trim() && (
+                    <Button asChild variant="default">
+                      <a href={appointment.videoCallingId} target="_blank" rel="noopener noreferrer">
+                        <ExternalLink className="size-4" />Join now
+                      </a>
+                    </Button>
+                  )}
                   <Button asChild variant="outline">
                     <Link href={`/consultation/doctor/${appointment.doctorId || appointment.doctor?.id || ""}`}>
                       View Doctor

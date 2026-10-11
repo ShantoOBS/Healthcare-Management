@@ -2,12 +2,13 @@
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { getMyAppointments } from "@/services/appointment.services";
-import { IAppointment } from "@/types/appointment.types";
-import { useQuery } from "@tanstack/react-query";
+import { getMyAppointments, updateAppointmentStatus } from "@/services/appointment.services";
+import { IAppointment, AppointmentStatus } from "@/types/appointment.types";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { format } from "date-fns";
-import { CalendarClock, CalendarDays, UsersRound } from "lucide-react";
+import { CalendarClock, CalendarDays, Check, ExternalLink, Play, UsersRound, X } from "lucide-react";
 import { useMemo, useState } from "react";
+import { toast } from "sonner";
 
 const formatDateTime = (value?: string | Date | null) => {
   if (!value) return "Not scheduled";
@@ -17,11 +18,25 @@ const formatDateTime = (value?: string | Date | null) => {
 
 const DoctorAppointmentsList = () => {
   const [filter, setFilter] = useState("ALL");
+  const queryClient = useQueryClient();
   const { data: response, isLoading, isError } = useQuery({
     queryKey: ["doctor-my-appointments"],
     queryFn: getMyAppointments,
     staleTime: 1000 * 60,
     gcTime: 1000 * 60 * 60 * 6,
+  });
+  const statusMutation = useMutation({
+    mutationFn: ({ appointmentId, status }: { appointmentId: string; status: AppointmentStatus }) =>
+      updateAppointmentStatus(appointmentId, status),
+    onSuccess: async (result) => {
+      if (!result.success) {
+        toast.error(result.message || "Could not update appointment status");
+        return;
+      }
+      toast.success(result.message || "Appointment status updated");
+      await queryClient.invalidateQueries({ queryKey: ["doctor-my-appointments"] });
+    },
+    onError: () => toast.error("Could not update appointment status"),
   });
   const appointments = response?.data ?? [];
   const sortedAppointments = useMemo(() => [...appointments].sort((left, right) => (
@@ -120,6 +135,43 @@ const DoctorAppointmentsList = () => {
                   </Badge>
                 </div>
                 <div className="doctor-appointment-id">{appointment.id.slice(0, 8)}</div>
+                <div className="doctor-appointment-actions">
+                  {appointment.videoCallingId?.trim() && (
+                    <Button asChild size="sm">
+                      <a href={appointment.videoCallingId} target="_blank" rel="noopener noreferrer">
+                        <ExternalLink aria-hidden="true" />Join now
+                      </a>
+                    </Button>
+                  )}
+                  {appointment.status === "SCHEDULED" && (
+                    <>
+                      <Button
+                        size="sm"
+                        onClick={() => statusMutation.mutate({ appointmentId: appointment.id, status: "INPROGRESS" })}
+                        disabled={statusMutation.isPending}
+                      >
+                        <Play aria-hidden="true" />Start
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => statusMutation.mutate({ appointmentId: appointment.id, status: "CANCELED" })}
+                        disabled={statusMutation.isPending}
+                      >
+                        <X aria-hidden="true" />Cancel
+                      </Button>
+                    </>
+                  )}
+                  {appointment.status === "INPROGRESS" && (
+                    <Button
+                      size="sm"
+                      onClick={() => statusMutation.mutate({ appointmentId: appointment.id, status: "COMPLETED" })}
+                      disabled={statusMutation.isPending}
+                    >
+                      <Check aria-hidden="true" />Complete
+                    </Button>
+                  )}
+                </div>
               </article>
             ))}
           </div>

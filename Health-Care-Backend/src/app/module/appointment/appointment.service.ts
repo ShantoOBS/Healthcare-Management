@@ -171,20 +171,38 @@ const changeAppointmentStatus = async (appointmentId: string, appointmentStatus:
     const appointmentData = await prisma.appointment.findUniqueOrThrow({
         where: {
             id: appointmentId,
-            // status: AppointmentStatus.SCHEDULED
         },
         include: {
-            doctor: true
+            doctor: true,
+            patient: true,
         }
     });
 
-    // if (!appointmentData) {
-    //     throw new AppError(status.NOT_FOUND, "Appointment not found or already completed/cancelled");
-    // }
+    if (!Object.values(AppointmentStatus).includes(appointmentStatus)) {
+        throw new AppError(status.BAD_REQUEST, "Invalid appointment status");
+    }
 
     if (user?.role === Role.DOCTOR) {
-        if (!(user?.email === appointmentData.doctor.email))
-            throw new AppError(status.BAD_REQUEST, "This is not your appointment")
+        if (user.email !== appointmentData.doctor.email) {
+            throw new AppError(status.FORBIDDEN, "You can only update your own appointments");
+        }
+
+        const allowedTransitions: Partial<Record<AppointmentStatus, AppointmentStatus[]>> = {
+            [AppointmentStatus.SCHEDULED]: [AppointmentStatus.INPROGRESS, AppointmentStatus.CANCELED],
+            [AppointmentStatus.INPROGRESS]: [AppointmentStatus.COMPLETED],
+        };
+
+        if (!allowedTransitions[appointmentData.status]?.includes(appointmentStatus)) {
+            throw new AppError(status.BAD_REQUEST, "This appointment status transition is not allowed");
+        }
+    } else if (user?.role === Role.PATIENT) {
+        if (user.email !== appointmentData.patient.email) {
+            throw new AppError(status.FORBIDDEN, "You can only update your own appointments");
+        }
+
+        if (appointmentData.status !== AppointmentStatus.SCHEDULED || appointmentStatus !== AppointmentStatus.CANCELED) {
+            throw new AppError(status.BAD_REQUEST, "Patients can only cancel scheduled appointments");
+        }
     }
 
     return await prisma.appointment.update({
