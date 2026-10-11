@@ -5,6 +5,7 @@ import { uploadFileToCloudinary } from "../../config/cloudinary.config.js";
 import { prisma } from "../../lib/prisma.js";
 import { sendEmail } from "../../utils/email.js";
 import { generateInvoicePdf } from "./payment.utils.js";
+import { createGoogleMeet } from "../google-meet/google-meet.service.js";
 
 
 const handlerStripeWebhookEvent = async (event : Stripe.Event) =>{
@@ -47,6 +48,16 @@ const handlerStripeWebhookEvent = async (event : Stripe.Event) =>{
                 console.error(`⚠️ Appointment ${appointmentId} not found. Payment may be for expired appointment.`);
                 return { message: "Appointment not found" };
             }
+
+            let meetUrl = appointment.videoCallingId;
+            if (session.payment_status === "paid" && !meetUrl?.startsWith("https://meet.google.com/")) {
+                const meeting = await createGoogleMeet(appointment.schedule.startDateTime.toISOString(), 30);
+                if (!meeting.meetUrl) {
+                    throw new Error("Google Meet URL is not available for the paid appointment");
+                }
+                meetUrl = meeting.meetUrl;
+            }
+
             let pdfBuffer: Buffer | null = null;
 
             // Update both appointment and payment in a transaction
@@ -56,7 +67,8 @@ const handlerStripeWebhookEvent = async (event : Stripe.Event) =>{
                         id: appointmentId
                     },
                     data: {
-                        paymentStatus: session.payment_status === "paid" ? PaymentStatus.PAID : PaymentStatus.UNPAID
+                        paymentStatus: session.payment_status === "paid" ? PaymentStatus.PAID : PaymentStatus.UNPAID,
+                        ...(meetUrl ? { videoCallingId: meetUrl } : {})
                     }
                 });
 

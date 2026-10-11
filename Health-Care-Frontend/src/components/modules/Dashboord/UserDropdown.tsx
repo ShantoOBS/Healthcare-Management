@@ -18,7 +18,7 @@ const UserDropdown = ({ userInfo }: UserDropdownProps) => {
         <DropdownMenu>
             <DropdownMenuTrigger asChild>
                 <button className="flex cursor-pointer items-center
-                 gap-2.5 p-1 pr-3 rounded-full hover:bg-[#f4f7f5] transition">
+                 gap-2.5 p-1 pr-3 rounded-full hover:bg-[#1f5c4b]/10 transition-colors duration-200">
                     <div className="relative h-9 w-9 overflow-hidden rounded-full border border-[#e0eae5] bg-[#1f5c4b] text-white flex items-center justify-center font-bold text-sm shadow-sm">
                         {userInfo.image ? (
                             <Image src={userInfo.image} alt={userInfo.name} fill className="object-cover" />
@@ -58,16 +58,17 @@ const UserDropdown = ({ userInfo }: UserDropdownProps) => {
 
                 <DropdownMenuSeparator className="bg-[#f0f4f2]" />
 
-                <DropdownMenuItem asChild className="rounded-md cursor-pointer">
-                    <Link href={"/my-profile"} className="flex items-center w-full px-2 py-2 text-xs font-semibold text-[#1a2d29]">
-                        <User className="mr-2 h-4 w-4 text-[#5e716c]" />
+                <DropdownMenuItem asChild className="group rounded-sm cursor-pointer hover:bg-[#1f5c4b] focus:bg-[#1f5c4b]">
+                    <Link href={"/my-profile"} className="flex items-center w-full px-2 py-2 
+                    text-xs font-semibold text-[#1a2d29] group-hover:text-white group-focus:text-white">
+                        <User className="mr-2 h-4 w-4 text-[#5e716c] group-hover:text-white group-focus:text-white" />
                         My Profile
                     </Link>
                 </DropdownMenuItem>
 
-                <DropdownMenuItem asChild className="rounded-md cursor-pointer">
-                    <Link href={"/change-password"} className="flex items-center w-full px-2 py-2 text-xs font-semibold text-[#1a2d29]">
-                        <Key className="mr-2 h-4 w-4 text-[#5e716c]" />
+                <DropdownMenuItem asChild className="group rounded-sm cursor-pointer hover:bg-[#1f5c4b] focus:bg-[#1f5c4b]">
+                    <Link href={"/change-password"} className="flex items-center w-full px-2 py-2 text-xs font-semibold text-[#1a2d29] group-hover:text-white group-focus:text-white">
+                        <Key className="mr-2 h-4 w-4 text-[#5e716c] group-hover:text-white group-focus:text-white" />
                         Change Password
                     </Link>
                 </DropdownMenuItem>
@@ -77,7 +78,8 @@ const UserDropdown = ({ userInfo }: UserDropdownProps) => {
                 <DropdownMenuItem
                     disabled={isPending}
                     onClick={() => handleLogout()}
-                    className="rounded-xl cursor-pointer text-red-600 focus:text-red-600 focus:bg-red-50 px-2 py-2 text-xs font-semibold"
+                    className="rounded-sm cursor-pointer text-red-600 focus:text-red-600 
+                    focus:bg-red-50 px-2 py-2 text-xs font-semibold"
                 >
                     <LogOut className="mr-2 h-4 w-4 text-red-500" />
                     {isPending ? "Logging out..." : "Logout"}

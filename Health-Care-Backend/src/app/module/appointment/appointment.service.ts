@@ -44,15 +44,13 @@ const bookAppointment = async (payload : IBookAppointmentPayload, user : IReques
     }
    });
    
-    const videoCallingId = String(uuidv7());
-
     const result = await prisma.$transaction(async (tx) => {
         const appointmentData = await tx.appointment.create({
             data : {
                 doctorId : payload.doctorId,
                 patientId : patientData.id,
                 scheduleId : doctorSchedule.scheduleId,
-                videoCallingId,
+                videoCallingId: "",
             }
         });
 
@@ -315,15 +313,13 @@ const bookAppointmentWithPayLater = async (payload : IBookAppointmentPayload, us
         }
     });
 
-    const videoCallingId = String(uuidv7());
-
     const result = await prisma.$transaction(async (tx) => {
         const appointmentData = await tx.appointment.create({
             data: {
                 doctorId: payload.doctorId,
                 patientId: patientData.id,
                 scheduleId: doctorSchedule.scheduleId,
-                videoCallingId,
+                videoCallingId: "",
             }
         });
 

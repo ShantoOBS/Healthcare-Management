@@ -13,6 +13,8 @@ import { SpecialtyRoutes } from "../module/specialty/specialty.route.js";
 import { StatsRoutes } from "../module/stats/stats.route.js";
 import { UserRoutes } from "../module/user/user.route.js";
 import { RagRoutes } from "../module/rag/rag.route.js";
+import { GoogleMeetRoutes } from "../module/google-meet/google-meet.route.js";
+import { GoogleCalendarRoutes } from "../module/google-calendar/google-calendar.route.js";
 
 const router = Router();
 
@@ -30,6 +32,6 @@ router.use("/reviews", ReviewRoutes)
 router.use("/stats", StatsRoutes)
 router.use("/payments", PaymentRoutes)
 router.use("/rag", RagRoutes);
-
-
+router.use("/meetings", GoogleMeetRoutes);
+router.use("/google-calendar", GoogleCalendarRoutes);
 export const IndexRoutes = router;
