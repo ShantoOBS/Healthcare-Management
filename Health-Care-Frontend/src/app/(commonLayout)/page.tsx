@@ -6,6 +6,7 @@ import TopRatedDoctors from "@/components/modules/Home/TopRatedDoctors";
 import WhyChooseUs from "@/components/modules/Home/WhyChooseUs";
 import Fqa from "@/components/modules/Home/Fqa";
 import Head from "next/head";
+import FloatingChatbot from "@/components/modules/Chatbot/FloatingChatbot";
 
 export default function Home() {
   return (
@@ -28,6 +29,7 @@ export default function Home() {
         <Testimonials />
         <Fqa/>
       </main>
+      <FloatingChatbot />
     </>
   );
 }

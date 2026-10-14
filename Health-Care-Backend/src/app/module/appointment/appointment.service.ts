@@ -50,7 +50,6 @@ const bookAppointment = async (payload : IBookAppointmentPayload, user : IReques
                 doctorId : payload.doctorId,
                 patientId : patientData.id,
                 scheduleId : doctorSchedule.scheduleId,
-                videoCallingId: "",
             }
         });
 
@@ -98,10 +97,9 @@ const bookAppointment = async (payload : IBookAppointmentPayload, user : IReques
                 paymentId : paymentData.id,
             },
 
-            success_url: `${envVars.FRONTEND_URL}/dashboard/payment/payment-success`,
+            success_url: `${envVars.FRONTEND_URL}/consultation/payment-success?appointment_id=${appointmentData.id}&payment_id=${paymentData.id}`,
 
-            // cancel_url: `${envVars.FRONTEND_URL}/dashboard/payment/payment-failed`,
-            cancel_url: `${envVars.FRONTEND_URL}/dashboard/appointments`,
+            cancel_url: `${envVars.FRONTEND_URL}/consultation/payment-failed?error=payment_cancelled&appointment_id=${appointmentData.id}`,
         })
 
         return {
@@ -337,7 +335,6 @@ const bookAppointmentWithPayLater = async (payload : IBookAppointmentPayload, us
                 doctorId: payload.doctorId,
                 patientId: patientData.id,
                 scheduleId: doctorSchedule.scheduleId,
-                videoCallingId: "",
             }
         });
 
@@ -427,10 +424,9 @@ const initiatePayment = async (appointmentId: string, user : IRequestUser) => {
             paymentId: appointmentData.payment.id,
         },
 
-        success_url: `${envVars.FRONTEND_URL}/dashboard/payment/payment-success?appointment_id=${appointmentData.id}&payment_id=${appointmentData.payment.id}`,
+        success_url: `${envVars.FRONTEND_URL}/consultation/payment-success?appointment_id=${appointmentData.id}&payment_id=${appointmentData.payment.id}`,
 
-        // cancel_url: `${envVars.FRONTEND_URL}/dashboard/payment/payment-failed`,
-        cancel_url: `${envVars.FRONTEND_URL}/dashboard/appointments?error=payment_cancelled`,
+        cancel_url: `${envVars.FRONTEND_URL}/consultation/payment-failed?error=payment_cancelled&appointment_id=${appointmentData.id}`,
     })
 
     return {

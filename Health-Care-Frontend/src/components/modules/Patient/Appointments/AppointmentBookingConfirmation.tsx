@@ -9,9 +9,9 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
 import { useMutation } from "@tanstack/react-query"
 import { differenceInMinutes, format } from "date-fns"
-import { AlertCircle, ArrowLeft, CalendarClock, Check, CreditCard, MapPin, ShieldCheck, Wallet } from "lucide-react"
+import { AlertCircle, ArrowLeft, CalendarClock, Check, CheckCircle2, CreditCard, MapPin, ShieldCheck, Wallet } from "lucide-react"
 import Link from "next/link"
-import { useRouter } from "next/navigation"
+import { useState } from "react"
 import { toast } from "sonner"
 
 interface AppointmentBookingConfirmationProps {
@@ -67,7 +67,7 @@ const AppointmentBookingConfirmation = ({
   scheduleEnd,
   isScheduleAvailable,
 }: AppointmentBookingConfirmationProps) => {
-  const router = useRouter()
+  const [bookingConfirmed, setBookingConfirmed] = useState(false)
 
   const payNowMutation = useMutation({
     mutationFn: bookAppointmentAction,
@@ -101,8 +101,35 @@ const AppointmentBookingConfirmation = ({
       return
     }
 
-    router.push("/dashboard/my-appointments?status=pay_later_booked")
-    router.refresh()
+    setBookingConfirmed(true)
+  }
+
+  if (bookingConfirmed) {
+    return (
+      <main className="mx-auto max-w-2xl px-4 py-12 sm:px-6">
+        <section className="space-y-5 rounded-lg border bg-background p-6 text-center shadow-sm sm:p-10">
+          <div className="mx-auto flex size-14 items-center justify-center rounded-full bg-emerald-100 text-emerald-700">
+            <CheckCircle2 className="size-8" aria-hidden="true" />
+          </div>
+          <div className="space-y-2">
+            <p className="text-sm font-semibold uppercase tracking-wide text-emerald-700">
+              Appointment confirmed
+            </p>
+            <h1 className="text-2xl font-semibold">Your appointment is booked</h1>
+            <p className="text-muted-foreground">
+              You chose to pay later. Your appointment with {doctorName} is reserved.
+            </p>
+          </div>
+          <div className="rounded-md bg-muted/50 p-4 text-left text-sm">
+            <p><span className="font-medium">Appointment:</span> {formatDateTime(scheduleStart)}</p>
+            <p className="mt-2"><span className="font-medium">Consultation fee:</span> ৳{appointmentFee?.toFixed(2) ?? "0.00"}</p>
+          </div>
+          <Button asChild>
+            <Link href="/consultation">Back to consultation</Link>
+          </Button>
+        </section>
+      </main>
+    )
   }
 
   if (!isScheduleAvailable) {

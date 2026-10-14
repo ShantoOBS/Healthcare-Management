@@ -4,27 +4,7 @@ import React from 'react';
 
 import logo from '../../assets/Home/logo.png';
 
-export function LogoMark() {
-  return (
-    <svg
-      width="20"
-      height="20"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="#f3fa9b"
-      strokeWidth="1.6"
-      strokeLinecap="round"
-      aria-hidden="true"
-    >
-      <path d="M12 6v12M6 12h12" />
-      <circle cx="12" cy="12" r="3.2" />
-      <circle cx="12" cy="4.4" r="1.2" fill="#f3fa9b" stroke="none" />
-      <circle cx="12" cy="19.6" r="1.2" fill="#f3fa9b" stroke="none" />
-      <circle cx="4.4" cy="12" r="1.2" fill="#f3fa9b" stroke="none" />
-      <circle cx="19.6" cy="12" r="1.2" fill="#f3fa9b" stroke="none" />
-    </svg>
-  );
-}
+
 
 interface LogoProps {
   href?: string;

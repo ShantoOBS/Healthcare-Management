@@ -2,7 +2,6 @@ import { Toaster } from "@/components/ui/sonner";
 import QueryProviders from "@/providers/QueryProvider";
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
-import FloatingChatbot from "@/components/modules/Chatbot/FloatingChatbot";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -32,7 +31,6 @@ export default function RootLayout({
       >
         <QueryProviders>
           {children}
-          <FloatingChatbot />
           <Toaster position="top-right" richColors />
         </QueryProviders>
       </body>

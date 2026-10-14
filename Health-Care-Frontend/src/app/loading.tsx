@@ -1,7 +1,5 @@
 "use client";
 
-import { LogoMark } from '../components/shared/Logo';
-
 const loadingDots = [0, 1, 2];
 
 export default function GlobalLoading() {
@@ -34,15 +32,15 @@ export default function GlobalLoading() {
             style={{ animation: 'spin 4.8s linear infinite reverse' }}
           />
 
-          <span className="relative flex h-14 w-14 items-center justify-center rounded-[18px] bg-[#1f5c4b] shadow-[inset_0_1px_0_rgba(255,255,255,0.15)]">
-            <LogoMark />
+           <span className="text-2xl font-semibold tracking-[-0.06em] text-[#0e1e19]">
+            DocLink
           </span>
+
+          
         </div>
 
         <div className="mt-8 flex items-center gap-3">
-          <span className="text-2xl font-semibold tracking-[-0.06em] text-[#0e1e19]">
-            DocLink
-          </span>
+         
         </div>
 
         <div className="mt-5 flex items-center gap-2" aria-hidden="true">

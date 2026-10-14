@@ -101,7 +101,7 @@ const BookAppointmentModal = ({
             return
         }
 
-        const targetPath = `/dashboard/book-appointments?doctorId=${encodeURIComponent(doctorId)}&scheduleId=${encodeURIComponent(selectedScheduleId)}`
+        const targetPath = `/consultation/doctor/${encodeURIComponent(doctorId)}/appointment/confirmation?scheduleId=${encodeURIComponent(selectedScheduleId)}`
 
         if (!isAuthenticated) {
             setOpen(false)

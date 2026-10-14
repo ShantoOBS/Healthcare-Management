@@ -77,7 +77,7 @@ const DoctorAppointmentSelection = ({
       return
     }
 
-    const confirmationPath = `/dashboard/book-appointments?doctorId=${encodeURIComponent(String(doctor.id))}&scheduleId=${encodeURIComponent(selectedScheduleId)}`
+    const confirmationPath = `/consultation/doctor/${encodeURIComponent(String(doctor.id))}/appointment/confirmation?scheduleId=${encodeURIComponent(selectedScheduleId)}`
 
     if (!isAuthenticated) {
       router.push(`/login?redirect=${encodeURIComponent(confirmationPath)}`)
