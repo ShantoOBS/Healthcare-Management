@@ -5,16 +5,25 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog"
+import DoctorReviewForm from "@/components/modules/Consultation/DoctorReviewForm"
 import { type IAppointment } from "@/types/appointment.types"
 import { useMutation } from "@tanstack/react-query"
 import { format } from "date-fns"
-import { AlertCircle, CalendarClock, CalendarDays, Check, CircleDollarSign, CreditCard, ExternalLink, UsersRound } from "lucide-react"
+import { AlertCircle, CalendarClock, CalendarDays, CircleDollarSign, CreditCard, ExternalLink, Pencil, Star, UsersRound } from "lucide-react"
 import Link from "next/link"
 import { useMemo, useState } from "react"
 import { toast } from "sonner"
 
 interface PatientAppointmentsListProps {
   appointments: IAppointment[]
+  initialFilter?: "ALL" | "COMPLETED"
   feedbackType?: "success" | "error"
   feedbackMessage?: string
 }
@@ -34,10 +43,12 @@ const formatDateTime = (value?: string | Date | null) => {
 
 const PatientAppointmentsList = ({
   appointments,
+  initialFilter = "ALL",
   feedbackType,
   feedbackMessage,
 }: PatientAppointmentsListProps) => {
-  const [activeFilter, setActiveFilter] = useState("ALL")
+  const [activeFilter, setActiveFilter] = useState<string>(initialFilter)
+  const [reviewingAppointment, setReviewingAppointment] = useState<IAppointment | null>(null)
   const initiatePaymentMutation = useMutation({
     mutationFn: initiateAppointmentPaymentAction,
   })
@@ -59,6 +70,9 @@ const PatientAppointmentsList = ({
   const visibleAppointments = useMemo(() => {
     if (activeFilter === "UPCOMING") {
       return sortedAppointments.filter((item) => item.status === "SCHEDULED" || item.status === "INPROGRESS")
+    }
+    if (activeFilter === "UNPAID") {
+      return sortedAppointments.filter((item) => item.paymentStatus !== "PAID" && item.status !== "CANCELED")
     }
     if (activeFilter === "COMPLETED" || activeFilter === "CANCELED") {
       return sortedAppointments.filter((item) => item.status === activeFilter)
@@ -118,6 +132,7 @@ const PatientAppointmentsList = ({
             {[
               { id: "ALL", label: "All", count: appointments.length },
               { id: "UPCOMING", label: "Upcoming", count: upcomingCount },
+              { id: "UNPAID", label: "Unpaid", count: unpaidCount },
               { id: "COMPLETED", label: "Completed", count: completedCount },
               { id: "CANCELED", label: "Canceled", count: canceledCount },
             ].map((filter) => (
@@ -157,6 +172,8 @@ const PatientAppointmentsList = ({
           {visibleAppointments.map((appointment) => {
             const canPayNow =
               appointment.paymentStatus !== "PAID" && appointment.status !== "CANCELED"
+            const canGiveReview =
+              appointment.status === "COMPLETED" && appointment.paymentStatus === "PAID"
             const doctorInitials = appointment.doctor?.name
               ?.split(/\s+/)
               .filter(Boolean)
@@ -210,7 +227,7 @@ const PatientAppointmentsList = ({
                 <footer className="patient-appointment-footer">
                   <span className="patient-appointment-id">ID · {appointment.id}</span>
                   <div className="patient-appointment-actions">
-                  {appointment.videoCallingId?.trim() && (
+                  {appointment.status !== "COMPLETED" && appointment.videoCallingId?.trim() && (
                     <Button asChild variant="default">
                       <a href={appointment.videoCallingId} target="_blank" rel="noopener noreferrer">
                         <ExternalLink className="size-4" />Join now
@@ -222,6 +239,26 @@ const PatientAppointmentsList = ({
                       View Doctor
                     </Link>
                   </Button>
+
+                  {canGiveReview && (
+                    appointment.review ? (
+                      <Button
+                        type="button"
+                        variant="outline"
+                        onClick={() => setReviewingAppointment(appointment)}
+                      >
+                        <Pencil className="size-4" />Edit Review
+                      </Button>
+                    ) : (
+                      <Button
+                        type="button"
+                        variant="outline"
+                        onClick={() => setReviewingAppointment(appointment)}
+                      >
+                        <Star className="size-4" />Give Review
+                      </Button>
+                    )
+                  )}
 
                   {canPayNow ? (
                     <Button
@@ -245,6 +282,48 @@ const PatientAppointmentsList = ({
         </div>
         )}
       </section>
+
+      <Dialog
+        open={Boolean(reviewingAppointment)}
+        onOpenChange={(open) => {
+          if (!open) setReviewingAppointment(null)
+        }}
+      >
+        <DialogContent className="max-h-[90dvh] gap-0 overflow-y-auto rounded-lg border-[#dce8e2] bg-white p-0 shadow-2xl shadow-[#173a31]/15 sm:max-w-lg">
+          <DialogHeader className="border-b border-[#e5ebe7] bg-[#f7faf8] px-6 py-5 pr-14 text-left">
+            <div className="mb-3 flex size-10 items-center justify-center rounded-md bg-[#e6f3eb] text-[#26734e]">
+              <Star className="size-5" aria-hidden="true" />
+            </div>
+            <p className="text-xs font-semibold uppercase tracking-wide text-[#26734e]">
+              {reviewingAppointment?.review ? "Edit feedback" : "Patient feedback"}
+            </p>
+            <DialogTitle className="text-xl text-[#173a31]">
+              {reviewingAppointment?.review ? "Update your review" : "Review your consultation"}
+            </DialogTitle>
+            <DialogDescription className="text-sm leading-5 text-[#60736b]">
+              {reviewingAppointment?.doctor?.name || "Your doctor"}
+              {reviewingAppointment?.schedule?.startDateTime && (
+                <> · {formatDateTime(reviewingAppointment.schedule.startDateTime)}</>
+              )}
+            </DialogDescription>
+          </DialogHeader>
+          {reviewingAppointment && (
+            <div className="px-6 py-5">
+              <DoctorReviewForm
+                key={reviewingAppointment.id}
+                initialAppointmentId={reviewingAppointment.id}
+                showAppointmentId={false}
+                reviewId={reviewingAppointment.review?.id}
+                initialRating={reviewingAppointment.review?.rating}
+                initialComment={reviewingAppointment.review?.comment}
+                compact
+                onCancel={() => setReviewingAppointment(null)}
+                onSubmitted={() => setReviewingAppointment(null)}
+              />
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
     </main>
   )
 }

@@ -2199,6 +2199,7 @@
   border-radius: 0.4rem;
   font-size: 0.72rem;
   cursor: pointer;
+  transition: color 160ms ease, background-color 160ms ease, border-color 160ms ease, transform 160ms ease;
 }
 
 .patient-appointment-actions [data-slot="button"][data-variant="default"] {
@@ -2214,7 +2215,21 @@
 
 .patient-appointment-actions [data-slot="button"][data-variant="outline"] {
   border-color: var(--patient-line);
+  background: #fff;
   color: var(--patient-brand);
+}
+
+.patient-appointment-actions [data-slot="button"][data-variant="outline"]:hover:not(:disabled) {
+  border-color: #b8d4c2;
+  background: #eaf4ee;
+  color: #174c3b;
+  transform: translateY(-1px);
+}
+
+.patient-appointment-actions [data-slot="button"][data-variant="secondary"] {
+  border-color: #e5e9e6;
+  background: #f1f3f2;
+  color: #68756e;
 }
 
 .patient-appointment-actions [data-slot="button"]:disabled {

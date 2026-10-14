@@ -22,15 +22,18 @@ const getFeedbackState = (status?: string, error?: string) => {
 const MyAppointmentsPage = async ({
   searchParams,
 }: {
-  searchParams: Promise<{ status?: string; error?: string }>
+  searchParams: Promise<{ status?: string; error?: string; filter?: string }>
 }) => {
   const params = await searchParams
   const response = await getMyAppointments()
   const feedback = getFeedbackState(params.status, params.error)
+  const initialFilter = params.filter === "COMPLETED" ? "COMPLETED" : "ALL"
 
   return (
     <PatientAppointmentsList
+      key={initialFilter}
       appointments={response.data}
+      initialFilter={initialFilter}
       feedbackType={feedback?.type}
       feedbackMessage={feedback?.message}
     />

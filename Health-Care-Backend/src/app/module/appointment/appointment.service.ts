@@ -139,7 +139,8 @@ const getMyAppointments = async (user: IRequestUser) => {
             },
             include: {
                 doctor: true,
-                schedule: true
+                schedule: true,
+                review: true
             }
         });
     } else if (doctorData) {

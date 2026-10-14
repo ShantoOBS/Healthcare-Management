@@ -191,27 +191,7 @@ const ConsultationDoctorByIdPage = async ({
           </div>
         </div>
 
-        <div className="rounded-md border border-[#e5ebe7] bg-white p-5 shadow-sm">
-          <div className="mb-4 flex flex-wrap items-center gap-2">
-            <h2 className="text-base font-semibold">Available Doctor Schedules</h2>
-            <Badge variant="secondary">Today onward</Badge>
-          </div>
-          <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
-            {availableUpcomingSchedules.slice(0, 18).map((item, index) => (
-              <div
-                key={item.id ?? item.schedule?.id ?? `schedule-${index}`}
-                className="rounded-xl border bg-muted/20 p-4 text-sm"
-              >
-                <p><span className="font-medium">Start:</span> {formatDateTime(item.schedule?.startDateTime)}</p>
-                <p><span className="font-medium">End:</span> {formatDateTime(item.schedule?.endDateTime)}</p>
-                <p className="pt-1 text-xs text-emerald-700">Available</p>
-              </div>
-            ))}
-            {availableUpcomingSchedules.length === 0 && (
-              <p className="text-sm text-muted-foreground">No available schedules from today onward.</p>
-            )}
-          </div>
-        </div>
+     
 
         <div className="rounded-md border border-[#e5ebe7] bg-white p-5 shadow-sm">
           <h2 className="mb-3 text-base font-semibold text-[#333333]">Patient Reviews</h2>
@@ -228,6 +208,7 @@ const ConsultationDoctorByIdPage = async ({
               <p className="text-sm text-muted-foreground">No reviews yet.</p>
             )}
           </div>
+          
         </div>
 
       </section>

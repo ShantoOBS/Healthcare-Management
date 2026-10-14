@@ -51,6 +51,11 @@ export interface IAppointment {
   patient?: IAppointmentPatient | null
   schedule?: IAppointmentSchedule | null
   payment?: IAppointmentPayment | null
+  review?: {
+    id?: string
+    rating?: number
+    comment?: string | null
+  } | null
 }
 
 export interface IBookAppointmentPayload {
