@@ -55,22 +55,24 @@ const ViewMyScheduleDialog = ({
 }: ViewMyScheduleDialogProps) => {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-h-[90vh] w-[calc(100vw-1.5rem)] max-w-xl gap-0 overflow-hidden p-0">
-        <DialogHeader className="border-b px-6 py-5 pr-14">
-          <DialogTitle>My Schedule Details</DialogTitle>
-          <DialogDescription>
+      <DialogContent className="doctor-profile-dialog max-h-[90vh] w-[calc(100vw-1.5rem)] max-w-xl gap-0 overflow-hidden p-0">
+        <DialogHeader className="doctor-dialog-header border-b px-6 py-5 pr-14">
+          <DialogTitle className="doctor-dialog-title">My Schedule Details</DialogTitle>
+          <DialogDescription className="doctor-dialog-description">
             Review your assigned schedule slot information.
           </DialogDescription>
         </DialogHeader>
 
-        <div className="space-y-3 px-6 py-5 text-sm">
-          <p><span className="font-medium">Schedule ID:</span> {doctorSchedule?.scheduleId ?? "N/A"}</p>
-          <p><span className="font-medium">Start:</span> {formatDateTime(doctorSchedule?.schedule?.startDateTime)}</p>
-          <p><span className="font-medium">End:</span> {formatDateTime(doctorSchedule?.schedule?.endDateTime)}</p>
-          <p><span className="font-medium">Duration:</span> {getDurationLabel(doctorSchedule)}</p>
-          <p><span className="font-medium">Booked by Patient:</span> {doctorSchedule?.isBooked ? "Yes" : "No"}</p>
-          <p><span className="font-medium">Assigned On:</span> {formatDateTime(doctorSchedule?.createdAt)}</p>
-          <p><span className="font-medium">Updated On:</span> {formatDateTime(doctorSchedule?.updatedAt)}</p>
+        <div className="doctor-dialog-scroll space-y-3 px-6 py-5 text-sm">
+          <div className="doctor-profile-section rounded-md border border-dashed border-muted-foreground/20 bg-muted/20 p-4">
+            <p><span className="font-medium">Schedule ID:</span> {doctorSchedule?.scheduleId ?? "N/A"}</p>
+            <p><span className="font-medium">Start:</span> {formatDateTime(doctorSchedule?.schedule?.startDateTime)}</p>
+            <p><span className="font-medium">End:</span> {formatDateTime(doctorSchedule?.schedule?.endDateTime)}</p>
+            <p><span className="font-medium">Duration:</span> {getDurationLabel(doctorSchedule)}</p>
+            <p><span className="font-medium">Booked by Patient:</span> {doctorSchedule?.isBooked ? "Yes" : "No"}</p>
+            <p><span className="font-medium">Assigned On:</span> {formatDateTime(doctorSchedule?.createdAt)}</p>
+            <p><span className="font-medium">Updated On:</span> {formatDateTime(doctorSchedule?.updatedAt)}</p>
+          </div>
         </div>
       </DialogContent>
     </Dialog>

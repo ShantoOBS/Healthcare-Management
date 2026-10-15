@@ -136,14 +136,16 @@ const BookScheduleModal = () => {
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>
-        <Button type="button" className="ml-auto shrink-0">
-          <CalendarPlus className="size-4" />
-          Book Schedule
-        </Button>
+        <div className="doctor-management-create-action">
+          <Button type="button" className="ml-auto shrink-0">
+            <CalendarPlus className="size-4" />
+            Book Schedule
+          </Button>
+        </div>
       </DialogTrigger>
 
       <DialogContent
-        className="max-h-[90vh] w-[calc(100vw-1.5rem)] max-w-[calc(100vw-1.5rem)] gap-0 overflow-hidden p-0 sm:w-[calc(100vw-3rem)] sm:max-w-[calc(100vw-3rem)] md:w-[calc(100vw-4rem)] md:max-w-[calc(100vw-4rem)] lg:w-[min(88vw,56rem)] lg:max-w-[min(88vw,56rem)]"
+        className="doctor-form-dialog max-h-[90vh] w-[calc(100vw-1.5rem)] max-w-[calc(100vw-1.5rem)] gap-0 overflow-hidden p-0 sm:w-[calc(100vw-3rem)] sm:max-w-[calc(100vw-3rem)] md:w-[calc(100vw-4rem)] md:max-w-[calc(100vw-4rem)] lg:w-[min(88vw,56rem)] lg:max-w-[min(88vw,56rem)]"
         onInteractOutside={(event) => event.preventDefault()}
         onEscapeKeyDown={(event) => event.preventDefault()}
       >

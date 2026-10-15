@@ -106,7 +106,7 @@ const AppointmentBookingConfirmation = ({
 
   if (bookingConfirmed) {
     return (
-      <main className="mx-auto max-w-2xl px-4 py-12 sm:px-6">
+      <main className="mx-auto max-w-7xl space-y-4 px-4 py-6 sm:px-6 lg:px-8">
         <section className="space-y-5 rounded-lg border bg-background p-6 text-center shadow-sm sm:p-10">
           <div className="mx-auto flex size-14 items-center justify-center rounded-full bg-emerald-100 text-emerald-700">
             <CheckCircle2 className="size-8" aria-hidden="true" />
@@ -124,7 +124,10 @@ const AppointmentBookingConfirmation = ({
             <p><span className="font-medium">Appointment:</span> {formatDateTime(scheduleStart)}</p>
             <p className="mt-2"><span className="font-medium">Consultation fee:</span> ৳{appointmentFee?.toFixed(2) ?? "0.00"}</p>
           </div>
-          <Button asChild>
+          <Button
+            asChild
+            className="appointment-pay-now w-full bg-[#2f6b5a] text-white hover:bg-[#254e42]"
+          >
             <Link href="/consultation">Back to consultation</Link>
           </Button>
         </section>
@@ -134,20 +137,15 @@ const AppointmentBookingConfirmation = ({
 
   if (!isScheduleAvailable) {
     return (
-      <main className="appointment-checkout">
-        <header className="appointment-checkout-heading">
-          <p className="appointment-checkout-eyebrow">Appointment booking</p>
-          <h1>Confirm your appointment</h1>
-          <p>Review your visit details and choose a payment option.</p>
-        </header>
-        <section className="appointment-unavailable">
+      <main className="mx-auto max-w-7xl space-y-4 px-4 py-6 sm:px-6 lg:px-8">
+        <section className="appointment-unavailable mx-auto w-full ">
           <div className="appointment-unavailable-mark" aria-hidden="true">
             <AlertCircle />
           </div>
           <div>
             <h2>Selected slot is no longer available</h2>
             <p>
-            This schedule may already be booked or may have moved out of the available range.
+              This schedule may already be booked or may have moved out of the available range.
             </p>
           </div>
           <Alert variant="destructive">
@@ -172,7 +170,7 @@ const AppointmentBookingConfirmation = ({
 
   return (
     <main className="appointment-checkout">
-      <header className="appointment-checkout-heading">
+      <header className="appointment-checkout-heading px-4 md:px-0">
         <div>
           <p className="appointment-checkout-eyebrow">Appointment booking</p>
           <h1>Confirm your appointment</h1>
@@ -277,7 +275,7 @@ const AppointmentBookingConfirmation = ({
               {payLaterMutation.isPending ? "Booking..." : "Book & Pay Later"}
             </Button>
 
-            <Button asChild variant="ghost" className="appointment-back-link w-full">
+            <Button asChild  variant="outline" className="appointment-pay-later w-full">
               <Link href={`/consultation/doctor/${doctorId}`}><ArrowLeft aria-hidden="true" />Back to doctor details</Link>
             </Button>
           </div>
