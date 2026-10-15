@@ -1,6 +1,14 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
+import { DatePicker } from "@/components/ui/date-picker";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { getMyAppointments } from "@/services/appointment.services";
 import {
   createPrescription,
@@ -268,23 +276,30 @@ const DoctorPrescriptionsList = () => {
             <form onSubmit={handleSubmit} className="space-y-5">
               <div className="space-y-2">
                 <label className="text-sm font-medium text-[#1a2d29]">Appointment</label>
-                <select
-                  value={formState.appointmentId}
-                  onChange={(event) =>
-                    setFormState((current) => ({ ...current, appointmentId: event.target.value }))
+                <Select
+                  value={formState.appointmentId || undefined}
+                  onValueChange={(value) =>
+                    setFormState((current) => ({ ...current, appointmentId: value }))
                   }
-                  className="w-full rounded-md border border-[#dfeae6] bg-white px-3 py-2 text-sm text-[#1a2d29] outline-none ring-0 transition focus:border-[#1f5c4b]"
                   disabled={formMode === "update"}
                 >
-                  <option value="">Select a completed appointment</option>
-                  {(formMode === "create" ? availableAppointments : appointments)
-                    .filter((appointment) => appointment.id === formState.appointmentId || appointment.status === "COMPLETED")
-                    .map((appointment) => (
-                      <option key={appointment.id} value={appointment.id}>
+                  <SelectTrigger className="h-10 w-full cursor-pointer rounded-md border-[#dfeae6] bg-white text-sm text-[#1a2d29] transition hover:border-[#1f5c4b] hover:bg-[#edf4f0]/20 focus:border-[#1f5c4b] focus:ring-1 focus:ring-[#1f5c4b]">
+                    <SelectValue placeholder="Select a completed appointment" />
+                  </SelectTrigger>
+                  <SelectContent className="rounded-md border-[#e5ebe7] bg-white shadow-lg">
+                    {(formMode === "create" ? availableAppointments : appointments)
+                      .filter((appointment) => appointment.id === formState.appointmentId || appointment.status === "COMPLETED")
+                      .map((appointment) => (
+                      <SelectItem
+                        key={appointment.id}
+                        value={appointment.id}
+                        className="cursor-pointer rounded-sm text-sm focus:bg-[#edf4f0] focus:text-[#1f5c4b] data-[state=checked]:bg-[#edf4f0] data-[state=checked]:text-[#1f5c4b]"
+                      >
                         {appointment.patient?.name || "Patient"} · {formatAppointmentDate(appointment.schedule?.startDateTime)}
-                      </option>
-                    ))}
-                </select>
+                      </SelectItem>
+                      ))}
+                  </SelectContent>
+                </Select>
               </div>
 
               <div className="space-y-2">
@@ -302,13 +317,12 @@ const DoctorPrescriptionsList = () => {
 
               <div className="space-y-2">
                 <label className="text-sm font-medium text-[#1a2d29]">Follow-up date</label>
-                <input
-                  type="date"
+                <DatePicker
                   value={formState.followUpDate}
-                  onChange={(event) =>
-                    setFormState((current) => ({ ...current, followUpDate: event.target.value }))
+                  onChange={(value) =>
+                    setFormState((current) => ({ ...current, followUpDate: value }))
                   }
-                  className="w-full rounded-md border border-[#dfeae6] bg-white px-3 py-2 text-sm text-[#1a2d29] outline-none transition focus:border-[#1f5c4b]"
+                  placeholder="Select follow-up date"
                 />
               </div>
 

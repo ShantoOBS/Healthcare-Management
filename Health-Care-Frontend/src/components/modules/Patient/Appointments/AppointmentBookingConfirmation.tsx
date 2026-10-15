@@ -124,12 +124,15 @@ const AppointmentBookingConfirmation = ({
             <p><span className="font-medium">Appointment:</span> {formatDateTime(scheduleStart)}</p>
             <p className="mt-2"><span className="font-medium">Consultation fee:</span> ৳{appointmentFee?.toFixed(2) ?? "0.00"}</p>
           </div>
-          <Button
-            asChild
-            className="appointment-pay-now w-full bg-[#2f6b5a] text-white hover:bg-[#254e42]"
-          >
-            <Link href="/consultation">Back to consultation</Link>
-          </Button>
+      
+          <div className="appointment-confirmation-actions">
+            <Button asChild variant="outline" className="appointment-confirmation-secondary">
+              <Link href="/consultation">Back to consultation</Link>
+            </Button>
+            <Button asChild className="appointment-confirmation-primary">
+              <Link href="/dashboard/my-appointments">My Appointments</Link>
+            </Button>
+          </div>
         </section>
       </main>
     )

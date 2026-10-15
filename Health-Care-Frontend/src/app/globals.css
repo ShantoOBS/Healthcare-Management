@@ -2746,6 +2746,54 @@
   text-align: right;
 }
 
+.appointment-confirmation-actions {
+  display: flex;
+  width: 100%;
+  max-width: 30rem;
+  justify-content: center;
+  gap: 0.75rem;
+  margin-inline: auto;
+}
+
+.appointment-confirmation-actions [data-slot="button"] {
+  min-height: 2.65rem;
+  flex: 1 1 0;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  transition: background-color 150ms ease, border-color 150ms ease, color 150ms ease;
+}
+
+.appointment-confirmation-actions .appointment-confirmation-primary {
+  border-color: #174c3b;
+  background: #174c3b;
+  color: #fff;
+}
+
+.appointment-confirmation-actions .appointment-confirmation-primary:hover:not(:disabled) {
+  border-color: #23634d;
+  background: #23634d;
+}
+
+.appointment-confirmation-actions .appointment-confirmation-secondary {
+  border-color: #dce7df;
+  background: #fff;
+  color: #174c3b;
+}
+
+.appointment-confirmation-actions .appointment-confirmation-secondary:hover:not(:disabled) {
+  background: #f3f7f4;
+}
+
+@media (max-width: 480px) {
+  .appointment-confirmation-actions {
+    flex-direction: column;
+  }
+
+  .appointment-confirmation-actions [data-slot="button"] {
+    width: 100%;
+  }
+}
+
 .appointment-payment-actions {
   display: grid;
   gap: 0.55rem;

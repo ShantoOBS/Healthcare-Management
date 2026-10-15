@@ -97,7 +97,10 @@ const DataTable = <TData,>({ data = [] as TData[], columns, actions, actionMenuC
                         <DropdownMenuContent align="end" className={actionMenuClassName}>
                             {
                                 actions.onView && (
-                                    <DropdownMenuItem onClick={() => actions.onView?.(rowData)}>
+                                  <DropdownMenuItem
+                                    className="cursor-pointer focus:bg-[#edf4f0] focus:text-[#1f5c4b]"
+                                    onClick={() => actions.onView?.(rowData)}
+                                  >
                                         View
                                     </DropdownMenuItem>
                                 )
@@ -113,7 +116,10 @@ const DataTable = <TData,>({ data = [] as TData[], columns, actions, actionMenuC
 
                             {
                                 actions.onDelete && (
-                                    <DropdownMenuItem onClick={() => actions.onDelete?.(rowData)}>
+                                  <DropdownMenuItem
+                                    className="cursor-pointer focus:bg-[#edf4f0] focus:text-[#1f5c4b]"
+                                    onClick={() => actions.onDelete?.(rowData)}
+                                  >
                                         Delete
                                     </DropdownMenuItem>
                                 )

@@ -215,11 +215,20 @@ const DataTablePagination = <TData,>({
 
           <SelectContent className={pageSizeMenuClassName}>
             {DEFAULT_PAGE_SIZES.map((size) => (
-              <SelectItem key={size} value={String(size)}>
+              <SelectItem
+                key={size}
+                value={String(size)}
+                className="cursor-pointer rounded-sm focus:bg-[#edf4f0] focus:text-[#1f5c4b] data-[state=checked]:bg-[#edf4f0] data-[state=checked]:text-[#1f5c4b]"
+              >
                 {size}
               </SelectItem>
             ))}
-            <SelectItem value="custom">Custom</SelectItem>
+            <SelectItem
+              value="custom"
+              className="cursor-pointer rounded-sm focus:bg-[#edf4f0] focus:text-[#1f5c4b] data-[state=checked]:bg-[#edf4f0] data-[state=checked]:text-[#1f5c4b]"
+            >
+              Custom
+            </SelectItem>
           </SelectContent>
         </Select>
         <span>rows</span>

@@ -197,9 +197,18 @@ const SingleSelectFilterControl = ({
           <SelectValue placeholder={filter.label} />
         </SelectTrigger>
         <SelectContent className={optionMenuClassName}>
-          <SelectItem value="all">All</SelectItem>
+          <SelectItem
+            value="all"
+            className="cursor-pointer rounded-sm focus:bg-[#edf4f0] focus:text-[#1f5c4b] data-[state=checked]:bg-[#edf4f0] data-[state=checked]:text-[#1f5c4b]"
+          >
+            All
+          </SelectItem>
           {filter.options.map((option) => (
-            <SelectItem key={option.value} value={option.value}>
+            <SelectItem
+              key={option.value}
+              value={option.value}
+              className="cursor-pointer rounded-sm focus:bg-[#edf4f0] focus:text-[#1f5c4b] data-[state=checked]:bg-[#edf4f0] data-[state=checked]:text-[#1f5c4b]"
+            >
               {option.label}
             </SelectItem>
           ))}

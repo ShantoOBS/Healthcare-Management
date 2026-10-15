@@ -1,3 +1,5 @@
+"use server";
+
 import { httpClient } from "@/lib/axios/httpClient";
 
 // ─── Request Types ────────────────────────────────────────────────────────────
@@ -14,6 +16,8 @@ export interface IRagSource {
     id: string;
     content: string;
     similarity: number;
+    sourceLabel?: string;
+    sourceId?: string;
     metadata?: {
         name?: string;
         [key: string]: unknown;
@@ -22,9 +26,9 @@ export interface IRagSource {
 }
 
 export interface IRagQueryData {
-    answer: any;
+    answer: unknown;
     sources: IRagSource[];
-    contextUsed: string;
+    contextUsed: boolean;
 }
 
 export interface IIngestDoctorsData {
@@ -33,7 +37,21 @@ export interface IIngestDoctorsData {
     indexedCount: number;
 }
 
+export interface IRagStatsData {
+    totalActiveDocuments: number;
+    sourceTypeBreakdown: Record<string, number>;
+    timestamp: string;
+}
+
 // ─── Service Functions ────────────────────────────────────────────────────────
+
+/**
+ * GET /rag/stats
+ * Retrieves document counts and source types from the vector store.
+ */
+export const getRagStatsService = async () => {
+    return httpClient.get<IRagStatsData>("/rag/stats");
+};
 
 /**
  * POST /rag/query
