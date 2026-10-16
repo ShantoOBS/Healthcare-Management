@@ -6,6 +6,7 @@ import { auth } from "../../lib/auth.js";
 import { prisma } from "../../lib/prisma.js";
 import { ICreateAdminPayload, ICreateDoctorPayload } from "./user.interface.js";
 import { Role } from "../../../generated/prisma/enums.js";
+import { notifyPatientsDoctorCreated } from "../../lib/notificationSocket.js";
 
 const createDoctor = async (payload: ICreateDoctorPayload) => {
 
@@ -120,6 +121,14 @@ const createDoctor = async (payload: ICreateDoctorPayload) => {
             return doctor;
 
         })
+
+        if (result) {
+            try {
+                await notifyPatientsDoctorCreated(result.name);
+            } catch (notificationError) {
+                console.error("Doctor was created, but patient notifications could not be saved:", notificationError);
+            }
+        }
 
         return result;
     } catch (error) {

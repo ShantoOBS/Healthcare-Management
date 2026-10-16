@@ -69,7 +69,7 @@ const DashboardNavbarContent = ({ dashboardHome, navItems, userInfo }: Dashboard
 
 
         {/* Notification dropdown */}
-        <NotificationDropdown />
+        <NotificationDropdown enabled={userInfo.role === "PATIENT"} />
 
         {/* User Profile Dropdown  */}
         <UserDropdown userInfo={userInfo} />

@@ -14,6 +14,7 @@ const router = Router();
 
 
 router.post("/create-doctor",
+    checkAuth(Role.ADMIN, Role.SUPER_ADMIN),
     multerUpload.single("file"),
     createDoctorProfilePhotoMiddleware,
 

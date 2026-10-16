@@ -39,3 +39,7 @@ enum PaymentStatus {
   PAID
   UNPAID
 }
+
+enum NotificationType {
+  DOCTOR_CREATED
+}

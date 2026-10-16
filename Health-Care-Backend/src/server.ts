@@ -3,6 +3,7 @@ import app from "./app.js";
 import { envVars } from "./app/config/env.js";
 import { seedSuperAdmin } from "./app/utils/seed.js";
 import { redisService } from "./app/lib/redis.js";
+import { initializeNotificationSocket } from "./app/lib/notificationSocket.js";
 
 let server : Server;
 const bootstrap = async() => {
@@ -12,6 +13,7 @@ const bootstrap = async() => {
         server = app.listen(envVars.PORT, () => {
             console.log(`Server is running on http://localhost:${envVars.PORT}`);
         });
+        initializeNotificationSocket(server);
     } catch (error) {
         console.error('Failed to start server:', error);
     }   

@@ -1,5 +1,5 @@
 {
-  "name": "frontend-project-ph-healthcare",
+  "name": "DocLink-Frontend",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -31,6 +31,7 @@
     "react-day-picker": "^9.13.2",
     "react-dom": "19.2.3",
     "recharts": "^3.8.0",
+    "socket.io-client": "^4.8.4",
     "sonner": "^2.0.7",
     "tailwind-merge": "^3.5.0",
     "vaul": "^1.1.2",
